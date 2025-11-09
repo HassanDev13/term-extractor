@@ -18,6 +18,7 @@ it('accepts a valid request and returns success response', function () {
         'file' => $file,
         'use_gpt' => true,
         'use_tesseract' => true,
+        'page' => 1
     ]);
 
     $response->assertOk()
@@ -57,6 +58,7 @@ it('casts boolean fields correctly', function () {
         'file' => $file,
         'use_gpt' => '0',
         'use_tesseract' => '1',
+        'page' => 1
     ]);
 
     $response->assertOk();

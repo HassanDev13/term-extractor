@@ -14,12 +14,13 @@ class ExtractController extends Controller
         $result = $action->execute(
             $request->file('file'),
             $request->boolean('use_gpt'),
-            $request->boolean('use_tesseract')
+            $request->boolean('use_tesseract'),
+            $request->integer('page')
         );
 
         return response()->json([
             'status' => 'success',
             'data' => $result,
-        ]);
+        ], 200, [], JSON_UNESCAPED_UNICODE);
     }
 }
