@@ -70,12 +70,12 @@ class ExtractTermsAction
                 }
 
                 if ($page !== null) {
-                    $command = "pdftoppm -png -r 300 -f {$page} -l {$page} " 
-                        . escapeshellarg($fullPath) . " " 
+                    $command = "pdftoppm -png -r 300 -f {$page} -l {$page} "
+                        . escapeshellarg($fullPath) . " "
                         . escapeshellarg($outputDir . '/page');
                 } else {
-                    $command = "pdftoppm -png -r 300 " 
-                        . escapeshellarg($fullPath) . " " 
+                    $command = "pdftoppm -png -r 300 "
+                        . escapeshellarg($fullPath) . " "
                         . escapeshellarg($outputDir . '/page');
                 }
 
@@ -167,6 +167,29 @@ PROMPT;
         } catch (Exception $e) {
             Log::error('GPT processing failed', ['error' => $e->getMessage()]);
             throw new Exception('GPT processing failed: ' . $e->getMessage());
+        }
+    }
+
+    public function executeText(string $text, string $source = 'unknown', bool $useGpt = false): array
+    {
+        try {
+            Log::info('ExtractTermsAction.executeText started', ['source' => $source, 'chars' => strlen($text)]);
+
+            $result = [
+                'text' => $text,
+                'source' => $source,
+            ];
+
+            if ($useGpt) {
+                $prompt = $this->generatePrompt($text, $source);
+                $gptOutput = $this->processWithGpt($prompt);
+                $result['gpt'] = $gptOutput;
+            }
+
+            return $result;
+        } catch (Exception $e) {
+            Log::error('ExtractTermsAction.executeText error', ['error' => $e->getMessage()]);
+            return ['error' => $e->getMessage()];
         }
     }
 }
