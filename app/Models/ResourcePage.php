@@ -20,4 +20,9 @@ class ResourcePage extends Model
     {
         return $this->belongsTo(Resource::class);
     }
+
+    public function terms()
+    {
+        return $this->hasMany(Term::class);
+    }
 }
