@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Resource extends Model
 {
-    protected $fillable = ['name', 'path', 'status', 'error_message'];
+    protected $fillable = ['name', 'path', 'status', 'error_message', 'rejection_reason', 'verification_status'];
 
     public function pages(): HasMany
     {

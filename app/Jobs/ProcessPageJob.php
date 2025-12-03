@@ -25,13 +25,15 @@ class ProcessPageJob implements ShouldQueue
         try {
             $fullPath = storage_path('app/' . $this->page->image_path);
 
-            $ocrText = (new TesseractOCR($fullPath))
-                ->lang('ara+eng')
+            $tesseract = new TesseractOCR($fullPath);
+            $tesseract->lang('ara+eng')
                 ->psm(4)
                 ->config('tessedit_unrej_any_wd', '1')
                 ->config('preserve_interword_spaces', '1')
-                ->oem(1)
-                ->run();
+                ->oem(1);
+
+            // Run for Text
+            $ocrText = $tesseract->run();
             $ocrText = $this->removeArabicDiacritics($ocrText);
             $this->page->update([
                 'text' => trim($ocrText),

@@ -12,6 +12,7 @@ class ResourcePage extends Model
         'page_number',
         'image_path',
         'text',
+        'layout_data',
         'status',
         'error_message'
     ];

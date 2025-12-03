@@ -35,14 +35,26 @@ class ProcessPageExtractionJob implements ShouldQueue
         }
 
         try {
-            $text = Pdf::getText($fullPath);
+            $pdf = new Pdf();
+            $pdf->setPdf($fullPath);
+            
+            // Extract plain text
+            $text = $pdf->setOptions(['-f ' . $this->pageNumber, '-l ' . $this->pageNumber])->text();
 
-            if (!empty(trim($text)) && $this->forceOCR) {
+            // Extract layout data (XML/HTML with bbox)
+            $layoutData = '';
+            try {
+                $layoutData = $pdf->setOptions(['-bbox', '-f ' . $this->pageNumber, '-l ' . $this->pageNumber])->text();
+            } catch (Exception $e) {
+                Log::warning("Failed to extract layout data for page {$this->pageNumber}: " . $e->getMessage());
+            }
 
-                // NEED WORK , ALL Content stored on single page
+            if (!empty(trim($text)) && !$this->forceOCR) {
+
                 $this->resource->pages()->create([
                     'page_number' => $this->pageNumber,
                     'text'        => trim($text),
+                    'layout_data' => $layoutData,
                     'image_path' => '',
                     'status'      => 'done',
                 ]);

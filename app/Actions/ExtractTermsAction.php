@@ -137,16 +137,20 @@ class ExtractTermsAction
         Log::debug('Generating GPT prompt', ['chars_in_text' => strlen($text)]);
 
         return <<<PROMPT
-You are a terminology extraction assistant. Extract all specialized terms from the following text. 
-For each term, provide a CSV-formatted line with the following columns:
+IMPORTANT: You are a precise terminology extraction assistant. Extract ONLY the specialized terms that are LITERALLY PRESENT in the text below. 
+
+Do NOT generate, suggest, translate, or infer any terms that are not explicitly written in the text. If the text contains no specialized terms, return an empty result.
+
+For each term found, provide a CSV-formatted line with the following columns:
 
 source,english_term,arabic_term,review_status
 
 - "source" should contain the source file or page name: {$source}
-- "english_term" should be the term in English
-- "arabic_term" should be the term in Arabic
-- "review_status" should be "matched" if the translation is correct, "needs review" if uncertain
+- "english_term" should be the term in English AS IT APPEARS in the text
+- "arabic_term" should be the term in Arabic AS IT APPEARS in the text
+- "review_status" should be "matched" if both English and Arabic appear together, "needs review" if only one language is present
 
+Only include terms where BOTH English and Arabic versions are present in the text. Do not translate missing terms.
 Do not include explanations or numbering. Output only CSV lines.
 
 Text:

@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Actions\ExtractTermsAction;
 use App\Http\Requests\ExtractRequest;
 use App\Jobs\ProcessResourceJob;
+use App\Jobs\ProcessPageForGPTJob;
 use App\Models\Resource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -15,25 +16,11 @@ use Pest\Support\Str;
 
 class ExtractController extends Controller
 {
-    public function store(ExtractRequest $request, ExtractTermsAction $action): JsonResponse
-    {
-        $result = $action->execute(
-            $request->file('file'),
-            $request->boolean('use_gpt'),
-            $request->boolean('use_tesseract'),
-            $request->integer('page')
-        );
-
-        return response()->json([
-            'status' => 'success',
-            'data' => $result,
-        ], 200, [], JSON_UNESCAPED_UNICODE);
-    }
 
     public function upload(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'file' => 'required|file|max:10240|mimes:pdf'
+            'file' => 'required|file|max:100240|mimes:pdf'
         ]);
 
         if ($validator->fails()) {
