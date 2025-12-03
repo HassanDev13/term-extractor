@@ -1,0 +1,39 @@
+name: CI/CD Laravel
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Log in to Docker registry
+        run: |
+          echo "" | docker login 46.224.110.223:5000 --username "" --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t 46.224.110.223:5000/laravel_app:latest -f Dockerfile.prod .
+
+      - name: Push Docker image to private registry
+        run: |
+          docker push 46.224.110.223:5000/laravel_app:latest
+
+      - name: SSH deploy to VPS
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            docker pull 46.224.110.223:5000/laravel_app:latest
+            docker-compose -f /srv/term-extractor/docker-compose.prod.yml up -d

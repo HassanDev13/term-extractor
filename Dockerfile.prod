@@ -1,0 +1,55 @@
+# ===============================
+# Stage 1: Composer dependencies
+# ===============================
+FROM composer:2 AS builder
+
+WORKDIR /app
+
+# Copy composer files only to install dependencies
+COPY composer.json composer.lock ./
+
+# Install PHP dependencies (no dev)
+RUN composer install --no-dev --optimize-autoloader
+
+# ===============================
+# Stage 2: Runtime
+# ===============================
+FROM php:8.2-fpm-alpine
+
+# Set working directory
+WORKDIR /var/www
+
+# Install basic tools + PHP extensions + OCR & PDF tools
+RUN apk add --no-cache \
+    bash \
+    git \
+    libpng-dev \
+    libjpeg-turbo-dev \
+    libzip-dev \
+    tesseract-ocr \
+    tesseract-ocr-ara \
+    tesseract-ocr-eng \
+    poppler-utils \
+    imagemagick \
+    autoconf \
+    g++ \
+    make \
+    && docker-php-ext-install pdo_mysql zip gd opcache \
+    && pecl install redis \
+    && docker-php-ext-enable redis
+
+# Configure PHP for production
+RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.memory_consumption=256" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
+    && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
+
+# Copy Laravel app & dependencies
+COPY --from=builder /app /var/www
+COPY . .
+
+# Expose port 9000 for php-fpm
+EXPOSE 9000
+
+# Start PHP-FPM
+CMD ["php-fpm"]
