@@ -76,8 +76,18 @@ services:
       - app_network
     labels:
       - "traefik.enable=true"
+      # HTTP router - redirect to HTTPS
+      - "traefik.http.routers.laravel-http.rule=Host(`${APP_DOMAIN}`)"
+      - "traefik.http.routers.laravel-http.entrypoints=web"
+      - "traefik.http.routers.laravel-http.middlewares=redirect-to-https"
+      # HTTPS router
       - "traefik.http.routers.laravel.rule=Host(`${APP_DOMAIN}`)"
-      - "traefik.http.routers.laravel.entrypoints=web"
+      - "traefik.http.routers.laravel.entrypoints=websecure"
+      - "traefik.http.routers.laravel.tls=true"
+      - "traefik.http.routers.laravel.tls.certresolver=letsencrypt"
+      # Middleware for redirect
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.permanent=true"
 
   traefik:
     image: traefik:v2.14
@@ -86,12 +96,20 @@ services:
     command:
       - "--api.insecure=true"
       - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge=true"
+      - "--certificatesresolvers.letsencrypt.acme.httpchallenge.entrypoint=web"
+      - "--certificatesresolvers.letsencrypt.acme.email=admin@munasiq.org"
+      - "--certificatesresolvers.letsencrypt.acme.storage=/letsencrypt/acme.json"
     ports:
       - "80:80"
+      - "443:443"
       - "8081:8080"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./letsencrypt:/letsencrypt
     networks:
       - app_network
 
