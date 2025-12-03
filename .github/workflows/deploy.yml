@@ -16,24 +16,25 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Log in to Docker registry
+      - name: Log in to Private Registry
         run: |
-          echo "" | docker login 46.224.110.223:5000 --username "" --password-stdin
+          echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_URL }} --username "${{ secrets.REGISTRY_USER }}" --password-stdin
 
       - name: Build Docker image
         run: |
-          docker build -t 46.224.110.223:5000/laravel_app:latest -f Dockerfile.prod .
+          docker build -t ${{ secrets.REGISTRY_URL }}/laravel_app:latest -f Dockerfile.prod .
 
       - name: Push Docker image to private registry
         run: |
-          docker push 46.224.110.223:5000/laravel_app:latest
+          docker push ${{ secrets.REGISTRY_URL }}/laravel_app:latest
 
-      - name: SSH deploy to VPS
+      - name: SSH Deploy to VPS
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            docker pull 46.224.110.223:5000/laravel_app:latest
-            docker-compose -f /srv/term-extractor/docker-compose.prod.yml up -d
+            cd /srv/term-extractor
+            docker pull ${{ secrets.REGISTRY_URL }}/laravel_app:latest
+            docker-compose -f docker-compose.prod.yml up -d
