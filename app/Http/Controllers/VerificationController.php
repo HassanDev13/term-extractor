@@ -41,6 +41,9 @@ class VerificationController extends Controller
             ->first();
 
         return Inertia::render('Terms/Verify', [
+            'auth' => [
+                'user' => auth()->user(),
+            ],
             'currentTerm' => $currentTerm,
             'page' => $page,
             'resource' => [

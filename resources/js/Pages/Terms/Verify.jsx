@@ -12,7 +12,7 @@ import { Document, Page, pdfjs } from 'react-pdf';
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
-export default function Verify({ currentTerm, page, resource, terms, nextPageId, prevPageId, totalPages, pdfUrl }) {
+export default function Verify({ auth, currentTerm, page, resource, terms, nextPageId, prevPageId, totalPages, pdfUrl }) {
     const [numPages, setNumPages] = useState(null);
     const [pageInput, setPageInput] = useState(page.page_number.toString());
     const [rejectionDialog, setRejectionDialog] = useState({ open: false, term: null });
@@ -189,6 +189,10 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
         }
     };
 
+    const handleLogout = () => {
+        router.post('/logout');
+    };
+
     return (
         <>
             <Head title={`Verify - ${resource.name} - Page ${page.page_number}`} />
@@ -196,13 +200,30 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                 <div className="container mx-auto px-4 py-6 max-w-[1800px]">
                     {/* Header */}
-                    <div className="mb-6">
-                        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                            Term Verification
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            {resource.name} - Page {page.page_number} of {totalPages}
-                        </p>
+                    <div className="mb-6 flex items-start justify-between">
+                        <div>
+                            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                                Term Verification
+                            </h1>
+                            <p className="text-gray-600 dark:text-gray-400">
+                                {resource.name} - Page {page.page_number} of {totalPages}
+                            </p>
+                        </div>
+                        {auth?.user && (
+                            <div className="flex items-center gap-4">
+                                <div className="text-right">
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">Signed in as</p>
+                                    <p className="text-sm font-medium text-gray-900 dark:text-white">{auth.user.email}</p>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    onClick={handleLogout}
+                                    className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                >
+                                    Logout
+                                </Button>
+                            </div>
+                        )}
                     </div>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">

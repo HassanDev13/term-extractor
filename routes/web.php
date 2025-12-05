@@ -8,6 +8,13 @@ Route::get('/', [TermController::class, 'index'])->name('terms.index');
 // Redirect old /terms route to root for backward compatibility
 Route::redirect('/terms', '/', 301);
 
+// Authentication routes
+use App\Http\Controllers\AuthController;
+
+Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/login', [AuthController::class, 'login']);
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
 use App\Http\Controllers\VerificationController;
 
 // Verification routes - require authentication
