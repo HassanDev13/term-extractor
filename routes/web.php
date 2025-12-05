@@ -3,11 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TermController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/terms', [TermController::class, 'index'])->name('terms.index');
+Route::get('/', [TermController::class, 'index'])->name('terms.index');
 
 use App\Http\Controllers\VerificationController;
 
