@@ -37,7 +37,7 @@ class ResourceForm
                     ->required()
                     ->reactive(),
                 Textarea::make('rejection_reason')
-                    ->visible(fn (\Filament\Forms\Get $get) => $get('verification_status') === 'rejected')
+                    ->visible(fn (\Filament\Schemas\Components\Utilities\Get $get) => $get('verification_status') === 'rejected')
                     ->columnSpanFull(),
                 Textarea::make('error_message')
                     ->readOnly()
