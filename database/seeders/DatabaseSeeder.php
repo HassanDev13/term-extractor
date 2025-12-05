@@ -15,6 +15,14 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Create Admin user
+        User::factory()->create([
+            'name' => 'Admin',
+            'email' => 'admin@munasiq.org',
+            'password' => 'password', // Default password, should be changed after first login
+            'is_admin' => true,
+        ]);
+
         // Create Hacene user
         User::factory()->create([
             'name' => 'Hacene',
