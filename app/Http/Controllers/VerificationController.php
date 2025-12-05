@@ -70,10 +70,25 @@ class VerificationController extends Controller
         return response()->file($path);
     }
 
+    public function updateTerm(Request $request, Term $term)
+    {
+        $validated = $request->validate([
+            'term_en' => 'nullable|string|max:255',
+            'term_ar' => 'nullable|string|max:255',
+        ]);
+
+        // Remove null values to only update provided fields
+        $validated = array_filter($validated, fn($value) => $value !== null);
+
+        $term->update($validated);
+
+        return back();
+    }
+
     public function updateTermStatus(Request $request, Term $term)
     {
         $validated = $request->validate([
-            'status' => 'required|in:accepted,rejected,inverfy',
+            'status' => 'required|in:accepted,rejected,unverified',
             'rejection_reason' => 'nullable|string|required_if:status,rejected',
         ]);
 

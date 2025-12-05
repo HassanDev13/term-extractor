@@ -18,7 +18,8 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
     const [rejectionDialog, setRejectionDialog] = useState({ open: false, term: null });
     const [rejectionReason, setRejectionReason] = useState('');
     const [scale, setScale] = useState(1.0);
-    const [editingTerms, setEditingTerms] = useState({});
+    const [editingEnglishTerms, setEditingEnglishTerms] = useState({});
+    const [editingArabicTerms, setEditingArabicTerms] = useState({});
     
     // Dragging state for PDF
     const [isDragging, setIsDragging] = useState(false);
@@ -86,22 +87,53 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
         }
     };
 
+    const handleEnglishTermChange = (termId, value) => {
+        setEditingEnglishTerms(prev => ({
+            ...prev,
+            [termId]: value
+        }));
+    };
+
+    const handleEnglishTermUpdate = (term) => {
+        const newValue = editingEnglishTerms[term.id];
+        if (newValue && newValue.trim() !== '' && newValue !== term.term_en) {
+            router.put(route('terms.update', term.id), {
+                term_en: newValue.trim(),
+            }, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    setEditingEnglishTerms(prev => {
+                        const updated = { ...prev };
+                        delete updated[term.id];
+                        return updated;
+                    });
+                },
+            });
+        }
+    };
+
+    const handleEnglishInputKeyPress = (e, term) => {
+        if (e.key === 'Enter') {
+            handleEnglishTermUpdate(term);
+        }
+    };
+
     const handleArabicTermChange = (termId, value) => {
-        setEditingTerms(prev => ({
+        setEditingArabicTerms(prev => ({
             ...prev,
             [termId]: value
         }));
     };
 
     const handleArabicTermUpdate = (term) => {
-        const newValue = editingTerms[term.id];
+        const newValue = editingArabicTerms[term.id];
         if (newValue && newValue.trim() !== '' && newValue !== term.term_ar) {
             router.put(route('terms.update', term.id), {
                 term_ar: newValue.trim(),
             }, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    setEditingTerms(prev => {
+                    setEditingArabicTerms(prev => {
                         const updated = { ...prev };
                         delete updated[term.id];
                         return updated;
@@ -299,7 +331,7 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
                                         <TableRow className="border-b border-gray-200 dark:border-gray-700">
-                                            <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">English</TableHead>
+                                            <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">English (Editable)</TableHead>
                                             <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">Arabic (Editable)</TableHead>
                                             <TableHead className="w-[12%] text-gray-700 dark:text-gray-300">Status</TableHead>
                                             <TableHead className="w-[18%] text-right text-gray-700 dark:text-gray-300">Actions</TableHead>
@@ -322,14 +354,22 @@ export default function Verify({ currentTerm, page, resource, terms, nextPageId,
                                                             : 'hover:bg-gray-50 dark:hover:bg-gray-700/50'
                                                     }`}
                                                 >
-                                                    <TableCell className="font-medium text-gray-900 dark:text-gray-100 py-4">
-                                                        {term.term_en}
+                                                    <TableCell className="py-4">
+                                                        <Input
+                                                            type="text"
+                                                            value={editingEnglishTerms[term.id] !== undefined ? editingEnglishTerms[term.id] : term.term_en}
+                                                            onChange={(e) => handleEnglishTermChange(term.id, e.target.value)}
+                                                            onBlur={() => handleEnglishTermUpdate(term)}
+                                                            onKeyPress={(e) => handleEnglishInputKeyPress(e, term)}
+                                                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                                            placeholder="Enter English term"
+                                                        />
                                                     </TableCell>
                                                     <TableCell className="py-4">
                                                         <Input
                                                             type="text"
                                                             dir="rtl"
-                                                            value={editingTerms[term.id] !== undefined ? editingTerms[term.id] : term.term_ar}
+                                                            value={editingArabicTerms[term.id] !== undefined ? editingArabicTerms[term.id] : term.term_ar}
                                                             onChange={(e) => handleArabicTermChange(term.id, e.target.value)}
                                                             onBlur={() => handleArabicTermUpdate(term)}
                                                             onKeyPress={(e) => handleArabicInputKeyPress(e, term)}
