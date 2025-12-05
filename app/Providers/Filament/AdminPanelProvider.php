@@ -56,7 +56,6 @@ class AdminPanelProvider extends PanelProvider
                 Authenticate::class,
             ])
             ->authGuard('web')
-            ->authPasswordBroker('users')
-            ->authorize(fn () => auth()->check() && auth()->user()->is_admin);
+            ->authPasswordBroker('users');
     }
 }
