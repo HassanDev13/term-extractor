@@ -1,40 +1,78 @@
-name: CI/CD Laravel
+name: 🚀 Deploy Laravel App
 
 on:
   push:
     branches:
       - main
+      - staging
 
 jobs:
-  build-and-deploy:
+  web-deploy:
+    name: 🎉 Deploy to Server
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      # Step 1: Checkout the latest code
+      - name: 🚚 Get latest code
+        uses: actions/checkout@v3
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Log in to Private Registry
-        run: |
-          echo "${{ secrets.REGISTRY_PASSWORD }}" | docker login ${{ secrets.REGISTRY_URL }} --username "${{ secrets.REGISTRY_USER }}" --password-stdin
-
-      - name: Build Docker image
-        run: |
-          docker build -t ${{ secrets.REGISTRY_URL }}/laravel_app:latest -f Dockerfile.prod .
-
-      - name: Push Docker image to private registry
-        run: |
-          docker push ${{ secrets.REGISTRY_URL }}/laravel_app:latest
-
-      - name: SSH Deploy to VPS
-        uses: appleboy/ssh-action@v0.1.6
+      # Step 2: Deploy to VPS using SSH
+      - name: 📂 Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.VPS_HOST }}
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
+          port: 22
           script: |
-            cd /srv/term-extractor
-            docker pull ${{ secrets.REGISTRY_URL }}/laravel_app:latest
-            docker-compose -f docker-compose.prod.yml up -d
+            # Determine the deployment directory based on the branch
+            case "${{ github.ref_name }}" in
+              "main")
+                DEPLOY_DIR="/www/wwwroot/app.munasiq"
+                ;;
+              "staging")
+                DEPLOY_DIR="/www/wwwroot/staging.munasiq"
+                ;;
+              *)
+                echo "❌ Unknown branch: ${{ github.ref_name }}"
+                exit 1
+                ;;
+            esac
+
+            echo "📌 Deploying branch: ${{ github.ref_name }}"
+            echo "📂 Target directory: $DEPLOY_DIR"
+
+            cd "$DEPLOY_DIR"
+
+            echo "🔄 Pulling latest code..."
+            git stash
+            git pull origin ${{ github.ref_name }}
+
+            echo "⚙️ Switching PHP version..."
+            sudo update-alternatives --set php /www/server/php/84/bin/php
+
+            echo "📦 Installing PHP dependencies..."
+            composer install --no-dev --prefer-dist --optimize-autoloader
+
+            echo "📦 Installing Node dependencies..."
+            npm install --legacy-peer-deps
+
+            echo "⚡ Building assets..."
+            npm run build
+
+            echo "🔧 Optimizing Filament..."
+            php artisan filament:optimize || true
+
+            echo "📊 Running migrations..."
+            php artisan migrate --force
+
+            echo "🧹 Clearing and caching configs..."
+            php artisan l5-swagger:generate
+            php artisan config:cache
+            php artisan route:cache
+            php artisan view:cache
+            
+            echo "🔄 Restarting Supervisor..."
+            sudo systemctl restart supervisor
+
+            echo "✅ Deployment completed successfully!"
