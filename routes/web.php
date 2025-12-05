@@ -5,6 +5,9 @@ use App\Http\Controllers\TermController;
 
 Route::get('/', [TermController::class, 'index'])->name('terms.index');
 
+// Redirect old /terms route to root for backward compatibility
+Route::redirect('/terms', '/', 301);
+
 use App\Http\Controllers\VerificationController;
 
 Route::get('/terms/{term}/verify', [VerificationController::class, 'verifyTerm'])->name('terms.verify');

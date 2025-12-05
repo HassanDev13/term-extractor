@@ -11,7 +11,7 @@ export default function Index({ terms, filters }) {
     // Debounced search
     useEffect(() => {
         const timer = setTimeout(() => {
-            router.get('/terms', { search }, {
+            router.get('/', { search }, {
                 preserveState: true,
                 preserveScroll: true,
                 replace: true,
