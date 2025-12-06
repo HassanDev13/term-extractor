@@ -12,5 +12,12 @@ class Term extends Model
     {
         return $this->belongsTo(ResourcePage::class);
     }
-    //
+
+    /**
+     * Get the edit history for this term.
+     */
+    public function edits()
+    {
+        return $this->hasMany(TermEdit::class);
+    }
 }

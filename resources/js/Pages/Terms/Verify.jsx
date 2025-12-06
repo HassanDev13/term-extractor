@@ -6,17 +6,19 @@ import { Badge } from '@/Components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import { Textarea } from '@/Components/ui/textarea';
-import { ChevronLeft, ChevronRight, Check, X, ZoomIn, ZoomOut, RotateCcw } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Check, X, ZoomIn, ZoomOut, RotateCcw, History } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function Verify({ auth, currentTerm, page, resource, terms, nextPageId, prevPageId, totalPages, pdfUrl }) {
+    const isAuthenticated = !!auth?.user;
     const [numPages, setNumPages] = useState(null);
     const [pageInput, setPageInput] = useState(page.page_number.toString());
     const [rejectionDialog, setRejectionDialog] = useState({ open: false, term: null });
     const [rejectionReason, setRejectionReason] = useState('');
+    const [historyDialog, setHistoryDialog] = useState({ open: false, term: null });
     const [scale, setScale] = useState(1.0);
     const [editingEnglishTerms, setEditingEnglishTerms] = useState({});
     const [editingArabicTerms, setEditingArabicTerms] = useState({});
@@ -226,6 +228,16 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                         )}
                     </div>
 
+                    {/* Read-Only Mode Banner */}
+                    {!isAuthenticated && (
+                        <div className="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                            <p className="text-sm text-blue-800 dark:text-blue-200">
+                                <strong>Read-Only Mode:</strong> You are viewing this page as a guest. To edit terms or change verification status, please <a href="/login" className="underline hover:text-blue-600">log in</a>.
+                            </p>
+                        </div>
+                    )}
+
+
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                         {/* Left: PDF Viewer - 5 columns */}
                         <div className="lg:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200">
@@ -352,10 +364,10 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
                                         <TableRow className="border-b border-gray-200 dark:border-gray-700">
-                                            <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">English (Editable)</TableHead>
-                                            <TableHead className="w-[35%] text-gray-700 dark:text-gray-300">Arabic (Editable)</TableHead>
+                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">English (Editable)</TableHead>
+                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">Arabic (Editable)</TableHead>
                                             <TableHead className="w-[12%] text-gray-700 dark:text-gray-300">Status</TableHead>
-                                            <TableHead className="w-[18%] text-right text-gray-700 dark:text-gray-300">Actions</TableHead>
+                                            <TableHead className="w-[28%] text-right text-gray-700 dark:text-gray-300">Actions</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
@@ -384,6 +396,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                             onKeyPress={(e) => handleEnglishInputKeyPress(e, term)}
                                                             className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                                                             placeholder="Enter English term"
+                                                            disabled={!isAuthenticated}
                                                         />
                                                     </TableCell>
                                                     <TableCell className="py-4">
@@ -396,6 +409,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                             onKeyPress={(e) => handleArabicInputKeyPress(e, term)}
                                                             className="font-arabic text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
                                                             placeholder="أدخل المصطلح العربي"
+                                                            disabled={!isAuthenticated}
                                                         />
                                                     </TableCell>
                                                     <TableCell className="py-4">
@@ -414,6 +428,17 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                     </TableCell>
                                                     <TableCell className="text-right py-4">
                                                         <div className="flex items-center justify-end gap-1">
+                                                            {/* History Button */}
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                onClick={() => setHistoryDialog({ open: true, term })}
+                                                                className="h-8 w-8 p-0"
+                                                                title="View edit history"
+                                                            >
+                                                                <History className="h-4 w-4" />
+                                                            </Button>
+                                                            
                                                             {(term.status === 'accepted' || term.status === 'rejected') && (
                                                                 <Button
                                                                     size="sm"
@@ -421,6 +446,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                                     onClick={() => handleStatusUpdate(term, 'unverified')}
                                                                     className="h-8 w-8 p-0"
                                                                     title="Return to unverified"
+                                                                    disabled={!isAuthenticated}
                                                                 >
                                                                     <RotateCcw className="h-4 w-4" />
                                                                 </Button>
@@ -430,7 +456,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                                 size="sm"
                                                                 variant={term.status === 'accepted' ? 'default' : 'outline'}
                                                                 onClick={() => handleStatusUpdate(term, 'accepted')}
-                                                                disabled={term.status === 'accepted'}
+                                                                disabled={!isAuthenticated || term.status === 'accepted'}
                                                                 className="h-8 w-8 p-0"
                                                                 title="Accept term"
                                                             >
@@ -440,7 +466,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                                 size="sm"
                                                                 variant={term.status === 'rejected' ? 'destructive' : 'outline'}
                                                                 onClick={() => handleStatusUpdate(term, 'rejected')}
-                                                                disabled={term.status === 'rejected'}
+                                                                disabled={!isAuthenticated || term.status === 'rejected'}
                                                                 className="h-8 w-8 p-0"
                                                                 title="Reject term"
                                                             >
@@ -491,6 +517,82 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                             disabled={!rejectionReason.trim()}
                         >
                             Reject Term
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+
+            {/* Edit History Dialog */}
+            <Dialog open={historyDialog.open} onOpenChange={(open) => setHistoryDialog({ open, term: null })}>
+                <DialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 max-w-3xl max-h-[80vh] overflow-y-auto">
+                    <DialogHeader>
+                        <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
+                            <History className="h-5 w-5" />
+                            Edit History
+                        </DialogTitle>
+                        <DialogDescription className="text-gray-600 dark:text-gray-400">
+                            {historyDialog.term && (
+                                <div className="mt-2">
+                                    <p className="font-medium">English: {historyDialog.term.term_en}</p>
+                                    <p className="font-medium font-arabic" dir="rtl">Arabic: {historyDialog.term.term_ar}</p>
+                                </div>
+                            )}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <div className="py-4">
+                        {historyDialog.term?.edits && historyDialog.term.edits.length > 0 ? (
+                            <div className="space-y-4">
+                                {historyDialog.term.edits.map((edit, index) => (
+                                    <div 
+                                        key={edit.id} 
+                                        className="border-l-4 border-blue-500 pl-4 py-2 bg-gray-50 dark:bg-gray-700/50 rounded-r"
+                                    >
+                                        <div className="flex items-start justify-between mb-2">
+                                            <div>
+                                                <p className="text-sm font-medium text-gray-900 dark:text-white">
+                                                    {edit.user ? edit.user.name : 'System'}
+                                                </p>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">
+                                                    {new Date(edit.created_at).toLocaleString()}
+                                                </p>
+                                            </div>
+                                            <Badge variant="outline" className="text-xs">
+                                                {edit.field_changed === 'term_en' ? 'English' : 
+                                                 edit.field_changed === 'term_ar' ? 'Arabic' : 
+                                                 'Status'}
+                                            </Badge>
+                                        </div>
+                                        <div className="mt-2 space-y-1">
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <span className="text-red-600 dark:text-red-400 font-medium">Old:</span>
+                                                <span className={`text-gray-700 dark:text-gray-300 ${edit.field_changed === 'term_ar' ? 'font-arabic' : ''}`} dir={edit.field_changed === 'term_ar' ? 'rtl' : 'ltr'}>
+                                                    {edit.old_value || '(empty)'}
+                                                </span>
+                                            </div>
+                                            <div className="flex items-center gap-2 text-sm">
+                                                <span className="text-green-600 dark:text-green-400 font-medium">New:</span>
+                                                <span className={`text-gray-700 dark:text-gray-300 ${edit.field_changed === 'term_ar' ? 'font-arabic' : ''}`} dir={edit.field_changed === 'term_ar' ? 'rtl' : 'ltr'}>
+                                                    {edit.new_value || '(empty)'}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
+                                <History className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                                <p>No edit history available for this term</p>
+                            </div>
+                        )}
+                    </div>
+                    <DialogFooter>
+                        <Button 
+                            variant="outline" 
+                            onClick={() => setHistoryDialog({ open: false, term: null })}
+                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        >
+                            Close
                         </Button>
                     </DialogFooter>
                 </DialogContent>

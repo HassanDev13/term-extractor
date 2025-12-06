@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Resource;
 use App\Models\ResourcePage;
 use App\Models\Term;
+use App\Models\TermEdit;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
@@ -27,6 +28,11 @@ class VerificationController extends Controller
         $resource = $page->resource;
         $resource->load('pages');
         $terms = $page->terms()->orderBy('y')->get();
+
+        // Load edit history for each term with user information
+        $terms->load(['edits' => function ($query) {
+            $query->with('user')->orderBy('created_at', 'desc');
+        }]);
 
         $allPages = $resource->pages()->orderBy('page_number')->get();
         
@@ -83,6 +89,22 @@ class VerificationController extends Controller
         // Remove null values to only update provided fields
         $validated = array_filter($validated, fn($value) => $value !== null);
 
+        // Record edit history for each changed field
+        foreach ($validated as $field => $newValue) {
+            $oldValue = $term->$field;
+            
+            // Only record if value actually changed
+            if ($oldValue !== $newValue) {
+                TermEdit::create([
+                    'term_id' => $term->id,
+                    'user_id' => auth()->id(),
+                    'field_changed' => $field,
+                    'old_value' => $oldValue,
+                    'new_value' => $newValue,
+                ]);
+            }
+        }
+
         $term->update($validated);
 
         return back();
@@ -94,6 +116,20 @@ class VerificationController extends Controller
             'status' => 'required|in:accepted,rejected,unverified',
             'rejection_reason' => 'nullable|string|required_if:status,rejected',
         ]);
+
+        // Record status change in edit history
+        $oldStatus = $term->status;
+        $newStatus = $validated['status'];
+        
+        if ($oldStatus !== $newStatus) {
+            TermEdit::create([
+                'term_id' => $term->id,
+                'user_id' => auth()->id(),
+                'field_changed' => 'status',
+                'old_value' => $oldStatus,
+                'new_value' => $newStatus,
+            ]);
+        }
 
         $term->update($validated);
 

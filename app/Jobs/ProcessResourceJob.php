@@ -37,7 +37,7 @@ class ProcessResourceJob implements ShouldQueue
             Log::info("Dispatching {$numPages} page jobs for Resource {$this->resource->id}");
 
             for ($i = 1; $i <= $numPages; $i++) {
-                ProcessPageExtractionJob::dispatch($this->resource, $i);
+                ProcessPageExtractionJob::dispatch($this->resource, $i, $this->resource->force_ocr ?? false);
             }
 
             $this->resource->update(['status' => 'processing']);

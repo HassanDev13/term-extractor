@@ -3,7 +3,7 @@ import { Head, router } from '@inertiajs/react';
 import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
-import { Search, FileText, BookOpen } from 'lucide-react';
+import { Search, FileText, BookOpen, Trophy } from 'lucide-react';
 
 export default function Index({ terms, filters }) {
     const [search, setSearch] = useState(filters.search || '');
@@ -29,12 +29,23 @@ export default function Index({ terms, filters }) {
                 <div className="container mx-auto px-4 py-8">
                     {/* Header */}
                     <div className="mb-8">
-                        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                            Term Search Engine
-                        </h1>
-                        <p className="text-gray-600 dark:text-gray-400">
-                            Search through extracted technical terms in English and Arabic
-                        </p>
+                        <div className="flex items-center justify-between mb-4">
+                            <div>
+                                <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
+                                    Term Search Engine
+                                </h1>
+                                <p className="text-gray-600 dark:text-gray-400">
+                                    Search through extracted technical terms in English and Arabic
+                                </p>
+                            </div>
+                            <a
+                                href="/leaderboard"
+                                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+                            >
+                                <Trophy className="h-5 w-5" />
+                                Leaderboard
+                            </a>
+                        </div>
                     </div>
 
                     {/* Search Bar */}

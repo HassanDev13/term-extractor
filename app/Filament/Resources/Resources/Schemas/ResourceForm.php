@@ -20,6 +20,11 @@ class ResourceForm
                     ->required()
                     ->storeFileNamesIn('name')
                     ->columnSpanFull(),
+                \Filament\Forms\Components\Toggle::make('force_ocr')
+                    ->label('Force OCR')
+                    ->helperText('Force OCR processing even if text is extractable from PDF. Useful for scanned documents or PDFs with poor text extraction.')
+                    ->default(false)
+                    ->inline(false),
                 TextInput::make('name')
                     ->required()
                     ->maxLength(255),

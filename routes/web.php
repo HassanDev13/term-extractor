@@ -17,11 +17,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 use App\Http\Controllers\VerificationController;
 
-// Verification routes - require authentication
+// Verification view routes - accessible to all users (read-only for guests)
+Route::get('/terms/{term}/verify', [VerificationController::class, 'verifyTerm'])->name('terms.verify');
+Route::get('/pages/{page}/verify', [VerificationController::class, 'verifyPage'])->name('pages.verify');
+Route::get('/resources/{resource}/pdf', [VerificationController::class, 'servePdf'])->name('resources.pdf');
+
+// Leaderboard route - accessible to all users
+use App\Http\Controllers\LeaderboardController;
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard');
+
+// Verification mutation routes - require authentication
 Route::middleware('auth')->group(function () {
-    Route::get('/terms/{term}/verify', [VerificationController::class, 'verifyTerm'])->name('terms.verify');
-    Route::get('/pages/{page}/verify', [VerificationController::class, 'verifyPage'])->name('pages.verify');
-    Route::get('/resources/{resource}/pdf', [VerificationController::class, 'servePdf'])->name('resources.pdf');
     Route::put('/terms/{term}', [VerificationController::class, 'updateTerm'])->name('terms.update');
     Route::put('/terms/{term}/status', [VerificationController::class, 'updateTermStatus'])->name('terms.update-status');
 });
