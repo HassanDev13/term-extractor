@@ -9,11 +9,13 @@ import { Textarea } from '@/Components/ui/textarea';
 import { ChevronLeft, ChevronRight, Check, X, ZoomIn, ZoomOut, RotateCcw, History } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { useLanguage } from '@/Contexts/LanguageContext';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 export default function Verify({ auth, currentTerm, page, resource, terms, nextPageId, prevPageId, totalPages, pdfUrl }) {
+    const { t, locale } = useLanguage();
     const isAuthenticated = !!auth?.user;
     const [numPages, setNumPages] = useState(null);
     const [pageInput, setPageInput] = useState(page.page_number.toString());
@@ -198,7 +200,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
 
     return (
         <>
-            <Head title={`Verify - ${resource.name} - Page ${page.page_number}`} />
+            <Head title={`${t('verify.title')} - ${resource.name} - ${t('common.page')} ${page.page_number}`} />
             
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200">
                 <div className="container mx-auto px-4 py-6 max-w-[1800px]">
@@ -206,10 +208,10 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                     <div className="mb-6 flex items-start justify-between">
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                                Term Verification
+                                {t('verify.title')}
                             </h1>
                             <p className="text-gray-600 dark:text-gray-400">
-                                {resource.name} - Page {page.page_number} of {totalPages}
+                                {resource.name} - {t('common.page')} {page.page_number} {t('common.of')} {totalPages}
                             </p>
                         </div>
                         <div className="flex items-center gap-3">
@@ -217,7 +219,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                             {auth?.user && (
                                 <>
                                     <div className="text-right">
-                                        <p className="text-sm text-gray-600 dark:text-gray-400">Signed in as</p>
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">{t('common.signed_in_as')}</p>
                                         <p className="text-sm font-medium text-gray-900 dark:text-white">{auth.user.email}</p>
                                     </div>
                                     <Button
@@ -225,7 +227,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                         onClick={handleLogout}
                                         className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     >
-                                        Logout
+                                        {t('common.logout')}
                                     </Button>
                                 </>
                             )}
@@ -236,7 +238,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                     {!isAuthenticated && (
                         <div className="mb-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
                             <p className="text-sm text-blue-800 dark:text-blue-200">
-                                <strong>Read-Only Mode:</strong> You are viewing this page as a guest. To edit terms or change verification status, please <a href="/login" className="underline hover:text-blue-600">log in</a>.
+                                <strong>{t('verify.read_only_title')}</strong> {t('verify.read_only_desc')} <a href="/login" className="underline hover:text-blue-600">{t('common.login')}</a>.
                             </p>
                         </div>
                     )}
@@ -248,7 +250,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center justify-between">
                                     <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                        Document Preview
+                                        {t('verify.document_preview')}
                                     </h2>
                                     <div className="flex items-center gap-2">
                                         <Button
@@ -292,12 +294,12 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                         onLoadSuccess={onDocumentLoadSuccess}
                                         loading={
                                             <div className="flex items-center justify-center p-8">
-                                                <div className="text-gray-500 dark:text-gray-400">Loading PDF...</div>
+                                                <div className="text-gray-500 dark:text-gray-400">{t('verify.loading_pdf')}</div>
                                             </div>
                                         }
                                         error={
                                             <div className="flex items-center justify-center p-8">
-                                                <div className="text-red-500 dark:text-red-400">Failed to load PDF</div>
+                                                <div className="text-red-500 dark:text-red-400">{t('verify.failed_pdf')}</div>
                                             </div>
                                         }
                                     >
@@ -322,11 +324,11 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                         className="flex-shrink-0"
                                     >
                                         <ChevronLeft className="h-4 w-4 mr-2" />
-                                        Previous
+                                        {t('common.previous')}
                                     </Button>
 
                                     <div className="flex items-center gap-2 flex-shrink-0">
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">Page:</span>
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">{t('common.page')}:</span>
                                         <Input
                                             type="number"
                                             min="1"
@@ -336,8 +338,8 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                             onKeyPress={handlePageInputKeyPress}
                                             className="w-20 text-center bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600"
                                         />
-                                        <span className="text-sm text-gray-600 dark:text-gray-400">of {totalPages}</span>
-                                        <Button onClick={handlePageInputSubmit} size="sm">Go</Button>
+                                        <span className="text-sm text-gray-600 dark:text-gray-400">{t('common.of')} {totalPages}</span>
+                                        <Button onClick={handlePageInputSubmit} size="sm">{t('common.go')}</Button>
                                     </div>
 
                                     <Button
@@ -346,7 +348,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                         disabled={!nextPageId}
                                         className="flex-shrink-0"
                                     >
-                                        Next
+                                        {t('common.next')}
                                         <ChevronRight className="h-4 w-4 ml-2" />
                                     </Button>
                                 </div>
@@ -357,10 +359,10 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                         <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200">
                             <div className="p-4 border-b border-gray-200 dark:border-gray-700">
                                 <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-                                    Terms on This Page
+                                    {t('verify.terms_on_page')}
                                 </h2>
                                 <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                    {terms.length} term{terms.length !== 1 ? 's' : ''} found
+                                    {t('verify.terms_found', { count: terms.length })}
                                 </p>
                             </div>
 
@@ -368,17 +370,17 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
                                         <TableRow className="border-b border-gray-200 dark:border-gray-700">
-                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">English (Editable)</TableHead>
-                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">Arabic (Editable)</TableHead>
-                                            <TableHead className="w-[12%] text-gray-700 dark:text-gray-300">Status</TableHead>
-                                            <TableHead className="w-[28%] text-right text-gray-700 dark:text-gray-300">Actions</TableHead>
+                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">{t('verify.english_editable')}</TableHead>
+                                            <TableHead className="w-[30%] text-gray-700 dark:text-gray-300">{t('verify.arabic_editable')}</TableHead>
+                                            <TableHead className="w-[12%] text-gray-700 dark:text-gray-300">{t('common.status')}</TableHead>
+                                            <TableHead className="w-[28%] text-right text-gray-700 dark:text-gray-300">{t('common.actions')}</TableHead>
                                         </TableRow>
                                     </TableHeader>
                                     <TableBody>
                                         {terms.length === 0 ? (
                                             <TableRow>
                                                 <TableCell colSpan={4} className="text-center text-gray-500 dark:text-gray-400 py-12">
-                                                    No terms found on this page
+                                                    {t('verify.no_terms_on_page')}
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
@@ -399,7 +401,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                             onBlur={() => handleEnglishTermUpdate(term)}
                                                             onKeyPress={(e) => handleEnglishInputKeyPress(e, term)}
                                                             className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                                                            placeholder="Enter English term"
+                                                            placeholder={t('verify.enter_english')}
                                                             disabled={!isAuthenticated}
                                                         />
                                                     </TableCell>
@@ -412,7 +414,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                             onBlur={() => handleArabicTermUpdate(term)}
                                                             onKeyPress={(e) => handleArabicInputKeyPress(e, term)}
                                                             className="font-arabic text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                                                            placeholder="أدخل المصطلح العربي"
+                                                            placeholder={t('verify.enter_arabic')}
                                                             disabled={!isAuthenticated}
                                                         />
                                                     </TableCell>
@@ -425,9 +427,9 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                                             }
                                                             className="text-xs"
                                                         >
-                                                            {term.status === 'accepted' ? 'Accepted' :
-                                                             term.status === 'rejected' ? 'Rejected' :
-                                                             'Pending'}
+                                                            {term.status === 'accepted' ? t('verify.accepted') :
+                                                             term.status === 'rejected' ? t('verify.rejected') :
+                                                             t('verify.pending')}
                                                         </Badge>
                                                     </TableCell>
                                                     <TableCell className="text-right py-4">
@@ -493,14 +495,14 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
             <Dialog open={rejectionDialog.open} onOpenChange={(open) => setRejectionDialog({ open, term: null })}>
                 <DialogContent className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700">
                     <DialogHeader>
-                        <DialogTitle className="text-gray-900 dark:text-white">Rejection Reason</DialogTitle>
+                        <DialogTitle className="text-gray-900 dark:text-white">{t('verify.rejection_reason')}</DialogTitle>
                         <DialogDescription className="text-gray-600 dark:text-gray-400">
-                            Please provide a reason for rejecting this term.
+                            {t('verify.rejection_desc')}
                         </DialogDescription>
                     </DialogHeader>
                     <div className="py-4">
                         <Textarea
-                            placeholder="Enter rejection reason..."
+                            placeholder={t('verify.enter_rejection_reason')}
                             value={rejectionReason}
                             onChange={(e) => setRejectionReason(e.target.value)}
                             rows={4}
@@ -513,14 +515,14 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                             onClick={() => setRejectionDialog({ open: false, term: null })}
                             className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         >
-                            Cancel
+                            {t('common.cancel')}
                         </Button>
                         <Button 
                             variant="destructive" 
                             onClick={handleRejectSubmit}
                             disabled={!rejectionReason.trim()}
                         >
-                            Reject Term
+                            {t('verify.reject_term')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>
@@ -532,13 +534,13 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                     <DialogHeader>
                         <DialogTitle className="text-gray-900 dark:text-white flex items-center gap-2">
                             <History className="h-5 w-5" />
-                            Edit History
+                            {t('verify.edit_history')}
                         </DialogTitle>
                         <DialogDescription className="text-gray-600 dark:text-gray-400">
                             {historyDialog.term && (
                                 <div className="mt-2">
-                                    <p className="font-medium">English: {historyDialog.term.term_en}</p>
-                                    <p className="font-medium font-arabic" dir="rtl">Arabic: {historyDialog.term.term_ar}</p>
+                                    <p className="font-medium">{t('verify.english')}: {historyDialog.term.term_en}</p>
+                                    <p className="font-medium font-arabic" dir="rtl">{t('verify.arabic')}: {historyDialog.term.term_ar}</p>
                                 </div>
                             )}
                         </DialogDescription>
@@ -554,29 +556,29 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                         <div className="flex items-start justify-between mb-2">
                                             <div>
                                                 <p className="text-sm font-medium text-gray-900 dark:text-white">
-                                                    {edit.user ? edit.user.name : 'System'}
+                                                    {edit.user ? edit.user.name : t('common.system')}
                                                 </p>
                                                 <p className="text-xs text-gray-500 dark:text-gray-400">
                                                     {new Date(edit.created_at).toLocaleString()}
                                                 </p>
                                             </div>
                                             <Badge variant="outline" className="text-xs">
-                                                {edit.field_changed === 'term_en' ? 'English' : 
-                                                 edit.field_changed === 'term_ar' ? 'Arabic' : 
-                                                 'Status'}
+                                                {edit.field_changed === 'term_en' ? t('verify.english') : 
+                                                 edit.field_changed === 'term_ar' ? t('verify.arabic') : 
+                                                 t('common.status')}
                                             </Badge>
                                         </div>
                                         <div className="mt-2 space-y-1">
                                             <div className="flex items-center gap-2 text-sm">
-                                                <span className="text-red-600 dark:text-red-400 font-medium">Old:</span>
+                                                <span className="text-red-600 dark:text-red-400 font-medium">{t('common.old')}:</span>
                                                 <span className={`text-gray-700 dark:text-gray-300 ${edit.field_changed === 'term_ar' ? 'font-arabic' : ''}`} dir={edit.field_changed === 'term_ar' ? 'rtl' : 'ltr'}>
-                                                    {edit.old_value || '(empty)'}
+                                                    {edit.old_value || t('common.empty')}
                                                 </span>
                                             </div>
                                             <div className="flex items-center gap-2 text-sm">
-                                                <span className="text-green-600 dark:text-green-400 font-medium">New:</span>
+                                                <span className="text-green-600 dark:text-green-400 font-medium">{t('common.new')}:</span>
                                                 <span className={`text-gray-700 dark:text-gray-300 ${edit.field_changed === 'term_ar' ? 'font-arabic' : ''}`} dir={edit.field_changed === 'term_ar' ? 'rtl' : 'ltr'}>
-                                                    {edit.new_value || '(empty)'}
+                                                    {edit.new_value || t('common.empty')}
                                                 </span>
                                             </div>
                                         </div>
@@ -586,7 +588,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                         ) : (
                             <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                                 <History className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                                <p>No edit history available for this term</p>
+                                <p>{t('verify.no_history')}</p>
                             </div>
                         )}
                     </div>
@@ -596,7 +598,7 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                             onClick={() => setHistoryDialog({ open: false, term: null })}
                             className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         >
-                            Close
+                            {t('common.close')}
                         </Button>
                     </DialogFooter>
                 </DialogContent>

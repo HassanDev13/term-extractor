@@ -2,6 +2,7 @@ export const translations = {
     en: {
         common: {
             back: "Back",
+            login: "Login",
             logout: "Logout",
             signed_in_as: "Signed in as",
             loading: "Loading...",
@@ -41,7 +42,8 @@ export const translations = {
         },
         verify: {
             title: "Term Verification",
-            read_only_mode: "Read-Only Mode: You are viewing this page as a guest. To edit terms or change verification status, please log in.",
+            read_only_title: "Read-Only Mode:",
+            read_only_desc: "You are viewing this page as a guest. To edit terms or change verification status, please",
             document_preview: "Document Preview",
             loading_pdf: "Loading PDF...",
             failed_pdf: "Failed to load PDF",
@@ -68,6 +70,7 @@ export const translations = {
     ar: {
         common: {
             back: "رجوع",
+            login: "تسجيل الدخول",
             logout: "تسجيل الخروج",
             signed_in_as: "تم تسجيل الدخول باسم",
             loading: "جاري التحميل...",
@@ -107,7 +110,8 @@ export const translations = {
         },
         verify: {
             title: "التحقق من المصطلحات",
-            read_only_mode: "وضع القراءة فقط: أنت تشاهد هذه الصفحة كضيف. لتعديل المصطلحات أو تغيير حالة التحقق، يرجى تسجيل الدخول.",
+            read_only_title: "وضع القراءة فقط:",
+            read_only_desc: "أنت تشاهد هذه الصفحة كضيف. لتعديل المصطلحات أو تغيير حالة التحقق، يرجى",
             document_preview: "معاينة المستند",
             loading_pdf: "جاري تحميل ملف PDF...",
             failed_pdf: "فشل تحميل ملف PDF",
