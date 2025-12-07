@@ -4,8 +4,11 @@ import { Input } from '@/Components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Badge } from '@/Components/ui/badge';
 import { Search, FileText, BookOpen, Trophy } from 'lucide-react';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { useLanguage } from '@/Contexts/LanguageContext';
 
 export default function Index({ terms, filters }) {
+    const { t } = useLanguage();
     const [search, setSearch] = useState(filters.search || '');
 
     // Debounced search
@@ -23,7 +26,7 @@ export default function Index({ terms, filters }) {
 
     return (
         <>
-            <Head title="Term Search" />
+            <Head title={t('search.title')} />
             
             <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
                 <div className="container mx-auto px-4 py-8">
@@ -32,19 +35,22 @@ export default function Index({ terms, filters }) {
                         <div className="flex items-center justify-between mb-4">
                             <div>
                                 <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-2">
-                                    Term Search Engine
+                                    {t('search.title')}
                                 </h1>
                                 <p className="text-gray-600 dark:text-gray-400">
-                                    Search through extracted technical terms in English and Arabic
+                                    {t('search.subtitle')}
                                 </p>
                             </div>
-                            <a
-                                href="/leaderboard"
-                                className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
-                            >
-                                <Trophy className="h-5 w-5" />
-                                Leaderboard
-                            </a>
+                            <div className="flex items-center gap-3">
+                                <LanguageSwitcher />
+                                <a
+                                    href="/leaderboard"
+                                    className="flex items-center gap-2 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg"
+                                >
+                                    <Trophy className="h-5 w-5" />
+                                    {t('leaderboard.title')}
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -54,14 +60,14 @@ export default function Index({ terms, filters }) {
                             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
                             <Input
                                 type="text"
-                                placeholder="Search terms in English or Arabic..."
+                                placeholder={t('search.placeholder')}
                                 value={search}
                                 onChange={(e) => setSearch(e.target.value)}
                                 className="pl-10 h-12 text-lg dark:text-white"
                             />
                         </div>
                         <p className="mt-2 text-sm text-gray-500">
-                            Found {terms.total} term{terms.total !== 1 ? 's' : ''}
+                            {t('search.found_terms', { count: terms.total })}
                         </p>
                     </div>
 
@@ -70,9 +76,9 @@ export default function Index({ terms, filters }) {
                         {terms.data.length === 0 ? (
                             <div className="col-span-full text-center py-12">
                                 <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                <p className="text-gray-500 text-lg">No terms found</p>
+                                <p className="text-gray-500 text-lg">{t('search.no_results')}</p>
                                 <p className="text-gray-400 text-sm mt-2">
-                                    Try adjusting your search query
+                                    {t('search.try_adjusting')}
                                 </p>
                             </div>
                         ) : (
@@ -103,20 +109,20 @@ export default function Index({ terms, filters }) {
                                             <div className="flex items-center gap-2 text-sm">
                                                 <BookOpen className="h-4 w-4 text-gray-500" />
                                                 <span className="text-gray-700 dark:text-gray-300 font-medium">
-                                                    {term.resource_page?.resource?.name || 'Unknown Resource'}
+                                                    {term.resource_page?.resource?.name || t('search.unknown_resource')}
                                                 </span>
                                             </div>
                                             
                                             {/* Page Number */}
                                             <div className="flex items-center gap-2">
                                                 <Badge variant="secondary">
-                                                    Page {term.resource_page?.page_number || 'N/A'}
+                                                    {t('common.page')} {term.resource_page?.page_number || 'N/A'}
                                                 </Badge>
                                             </div>
 
                                             {/* Created Date */}
                                             <div className="text-xs text-gray-500 mt-2">
-                                                Added: {new Date(term.created_at).toLocaleDateString()}
+                                                {t('search.added')}: {new Date(term.created_at).toLocaleDateString()}
                                             </div>
                                         </div>
                                     </CardContent>

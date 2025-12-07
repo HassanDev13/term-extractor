@@ -15,5 +15,42 @@
 /* Arabic font styling */
 .font-arabic {
     font-family: var(--font-arabic);
+}
+
+/* RTL Support */
+[dir="rtl"] {
+    direction: rtl;
+}
+
+[dir="rtl"] body {
+    font-family: var(--font-arabic);
+}
+
+/* RTL-aware utilities using logical properties */
+[dir="rtl"] .text-left {
+    text-align: right;
+}
+
+[dir="rtl"] .text-right {
+    text-align: left;
+}
+
+/* Flip icons and elements that should mirror in RTL */
+[dir="rtl"] .rtl-flip {
+    transform: scaleX(-1);
+}
+
+/* Ensure proper spacing in RTL */
+[dir="rtl"] .space-x-reverse> :not([hidden])~ :not([hidden]) {
+    --tw-space-x-reverse: 1;
+}
+
+/* RTL-aware flex direction */
+[dir="rtl"] .flex-row {
+    flex-direction: row-reverse;
+}
+
+/* Ensure dropdowns and popovers align correctly in RTL */
+[dir="rtl"] [data-radix-popper-content-wrapper] {
     direction: rtl;
 }

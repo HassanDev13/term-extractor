@@ -3,8 +3,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Com
 import { Badge } from '@/Components/ui/badge';
 import { Trophy, Medal, Award, ArrowLeft } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
+import { useLanguage } from '@/Contexts/LanguageContext';
 
 export default function Leaderboard({ leaderboard }) {
+    const { t } = useLanguage();
     const getMedalIcon = (rank) => {
         if (rank === 1) return <Trophy className="h-6 w-6 text-yellow-500" />;
         if (rank === 2) return <Medal className="h-6 w-6 text-gray-400" />;
@@ -21,30 +24,31 @@ export default function Leaderboard({ leaderboard }) {
 
     return (
         <>
-            <Head title="Leaderboard - Top Contributors" />
+            <Head title={`${t('leaderboard.title')} - ${t('leaderboard.subtitle')}`} />
             
             <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
                 <div className="container mx-auto px-4 py-8">
                     {/* Header */}
                     <div className="mb-8">
-                        <div className="flex items-center gap-4 mb-4">
+                        <div className="flex items-center justify-between mb-4">
                             <Button
                                 variant="outline"
                                 onClick={() => window.history.back()}
                                 className="flex items-center gap-2"
                             >
                                 <ArrowLeft className="h-4 w-4" />
-                                Back
+                                {t('common.back')}
                             </Button>
+                            <LanguageSwitcher />
                         </div>
                         <div className="flex items-center gap-3 mb-2">
                             <Trophy className="h-10 w-10 text-yellow-500" />
                             <h1 className="text-4xl font-bold text-gray-900 dark:text-white">
-                                Leaderboard
+                                {t('leaderboard.title')}
                             </h1>
                         </div>
                         <p className="text-gray-600 dark:text-gray-400">
-                            Top contributors who help improve our term database
+                            {t('leaderboard.subtitle')}
                         </p>
                     </div>
 
@@ -53,9 +57,9 @@ export default function Leaderboard({ leaderboard }) {
                         {leaderboard.length === 0 ? (
                             <div className="col-span-full text-center py-12">
                                 <Trophy className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                                <p className="text-gray-500 text-lg">No contributors yet</p>
+                                <p className="text-gray-500 text-lg">{t('leaderboard.no_contributors')}</p>
                                 <p className="text-gray-400 text-sm mt-2">
-                                    Be the first to contribute!
+                                    {t('leaderboard.be_first')}
                                 </p>
                             </div>
                         ) : (
@@ -94,7 +98,7 @@ export default function Leaderboard({ leaderboard }) {
                                         <CardContent>
                                             <div className="flex items-center justify-between">
                                                 <span className="text-sm text-gray-600 dark:text-gray-400">
-                                                    Total Edits
+                                                    {t('leaderboard.total_edits')}
                                                 </span>
                                                 <Badge 
                                                     variant="default" 
@@ -116,10 +120,10 @@ export default function Leaderboard({ leaderboard }) {
                             <Card className="inline-block">
                                 <CardContent className="pt-6">
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Total Contributors: <strong>{leaderboard.length}</strong>
+                                        {t('leaderboard.total_contributors')}: <strong>{leaderboard.length}</strong>
                                     </p>
                                     <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
-                                        Total Edits: <strong>
+                                        {t('leaderboard.total_edits')}: <strong>
                                             {leaderboard.reduce((sum, c) => sum + parseInt(c.edit_count), 0)}
                                         </strong>
                                     </p>

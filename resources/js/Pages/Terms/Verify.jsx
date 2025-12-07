@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Textarea } from '@/Components/ui/textarea';
 import { ChevronLeft, ChevronRight, Check, X, ZoomIn, ZoomOut, RotateCcw, History } from 'lucide-react';
 import { Document, Page, pdfjs } from 'react-pdf';
+import LanguageSwitcher from '@/Components/LanguageSwitcher';
 
 // Configure PDF.js worker
 pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
@@ -211,21 +212,24 @@ export default function Verify({ auth, currentTerm, page, resource, terms, nextP
                                 {resource.name} - Page {page.page_number} of {totalPages}
                             </p>
                         </div>
-                        {auth?.user && (
-                            <div className="flex items-center gap-4">
-                                <div className="text-right">
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">Signed in as</p>
-                                    <p className="text-sm font-medium text-gray-900 dark:text-white">{auth.user.email}</p>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    onClick={handleLogout}
-                                    className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                                >
-                                    Logout
-                                </Button>
-                            </div>
-                        )}
+                        <div className="flex items-center gap-3">
+                            <LanguageSwitcher />
+                            {auth?.user && (
+                                <>
+                                    <div className="text-right">
+                                        <p className="text-sm text-gray-600 dark:text-gray-400">Signed in as</p>
+                                        <p className="text-sm font-medium text-gray-900 dark:text-white">{auth.user.email}</p>
+                                    </div>
+                                    <Button
+                                        variant="outline"
+                                        onClick={handleLogout}
+                                        className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                                    >
+                                        Logout
+                                    </Button>
+                                </>
+                            )}
+                        </div>
                     </div>
 
                     {/* Read-Only Mode Banner */}
