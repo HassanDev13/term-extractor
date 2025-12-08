@@ -1,5 +1,5 @@
-@import 'tailwindcss';
-
+@import "tailwindcss";
+@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 @source '../../storage/framework/views/*.php';
 @source '../**/*.blade.php';
@@ -7,9 +7,11 @@
 @source '../**/*.jsx';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-arabic: 'Noto Sans Arabic', 'Arial', sans-serif;
+    --font-sans:
+        "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+    --font-arabic: "Noto Sans Arabic", "Arial", sans-serif;
 }
 
 /* Arabic font styling */
@@ -41,7 +43,7 @@
 }
 
 /* Ensure proper spacing in RTL */
-[dir="rtl"] .space-x-reverse> :not([hidden])~ :not([hidden]) {
+[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
     --tw-space-x-reverse: 1;
 }
 
