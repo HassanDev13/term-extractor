@@ -22,56 +22,88 @@ class VerificationController extends Controller
         return $this->renderVerificationPage($page);
     }
 
-    private function renderVerificationPage(ResourcePage $page, ?Term $currentTerm = null)
-    {
-        $page->load('resource');
+    private function renderVerificationPage(
+        ResourcePage $page,
+        ?Term $currentTerm = null,
+    ) {
+        $page->load("resource");
         $resource = $page->resource;
-        $resource->load('pages');
-        $terms = $page->terms()->orderBy('y')->get();
+        $resource->load("pages");
+        $terms = $page->terms()->orderBy("y")->get();
 
         // Load edit history for each term with user information
-        $terms->load(['edits' => function ($query) {
-            $query->with('user')->orderBy('created_at', 'desc');
-        }]);
+        $terms->load([
+            "edits" => function ($query) {
+                $query->with("user")->orderBy("created_at", "desc");
+            },
+        ]);
 
-        $allPages = $resource->pages()->orderBy('page_number')->get();
-        
-        $nextPage = $resource->pages()
-            ->where('page_number', '>', $page->page_number)
-            ->orderBy('page_number')
+        $allPages = $resource->pages()->orderBy("page_number")->get();
+
+        $nextPage = $resource
+            ->pages()
+            ->where("page_number", ">", $page->page_number)
+            ->orderBy("page_number")
             ->first();
 
-        $prevPage = $resource->pages()
-            ->where('page_number', '<', $page->page_number)
-            ->orderBy('page_number', 'desc')
+        $prevPage = $resource
+            ->pages()
+            ->where("page_number", "<", $page->page_number)
+            ->orderBy("page_number", "desc")
             ->first();
 
-        return Inertia::render('Terms/Verify', [
-            'auth' => [
-                'user' => auth()->user(),
+        return Inertia::render("Terms/Verify", [
+            "auth" => [
+                "user" => auth()->user(),
             ],
-            'currentTerm' => $currentTerm,
-            'page' => $page,
-            'resource' => [
-                'id' => $resource->id,
-                'name' => $resource->name,
-                'pages' => $allPages->map(fn($p) => [
-                    'id' => $p->id,
-                    'page_number' => $p->page_number,
-                ]),
+            "currentTerm" => $currentTerm,
+            "page" => [
+                "id" => $page->id,
+                "page_number" => $page->page_number,
+                "image_path" => $page->image_path,
+                "status" => $page->status,
+                "resource_id" => $page->resource_id,
             ],
-            'terms' => $terms,
-            'nextPageId' => $nextPage?->id,
-            'prevPageId' => $prevPage?->id,
-            'totalPages' => $resource->pages()->count(),
-            'pdfUrl' => route('resources.pdf', $resource->id),
+            "resource" => [
+                "id" => $resource->id,
+                "name" => $resource->name,
+                "pages" => $allPages->map(
+                    fn($p) => [
+                        "id" => $p->id,
+                        "page_number" => $p->page_number,
+                    ],
+                ),
+            ],
+            "terms" => $terms,
+            "nextPageId" => $nextPage?->id,
+            "prevPageId" => $prevPage?->id,
+            "totalPages" => $resource->pages()->count(),
+            "pdfUrl" => route("resources.pdf", $resource->id),
+            "imageUrl" => $page->image_path
+                ? route("pages.image", $page->id)
+                : null,
         ]);
     }
 
     public function servePdf(Resource $resource)
     {
-        $path = storage_path('app/private/' . $resource->path);
-        
+        $path = storage_path("app/private/" . $resource->path);
+
+        if (!file_exists($path)) {
+            abort(404);
+        }
+
+        return response()->file($path);
+    }
+
+    public function serveImage(ResourcePage $page)
+    {
+        if (!$page->image_path) {
+            abort(404);
+        }
+
+        $path = storage_path("app/" . $page->image_path);
+
         if (!file_exists($path)) {
             abort(404);
         }
@@ -82,8 +114,8 @@ class VerificationController extends Controller
     public function updateTerm(Request $request, Term $term)
     {
         $validated = $request->validate([
-            'term_en' => 'nullable|string|max:255',
-            'term_ar' => 'nullable|string|max:255',
+            "term_en" => "nullable|string|max:255",
+            "term_ar" => "nullable|string|max:255",
         ]);
 
         // Remove null values to only update provided fields
@@ -92,15 +124,15 @@ class VerificationController extends Controller
         // Record edit history for each changed field
         foreach ($validated as $field => $newValue) {
             $oldValue = $term->$field;
-            
+
             // Only record if value actually changed
             if ($oldValue !== $newValue) {
                 TermEdit::create([
-                    'term_id' => $term->id,
-                    'user_id' => auth()->id(),
-                    'field_changed' => $field,
-                    'old_value' => $oldValue,
-                    'new_value' => $newValue,
+                    "term_id" => $term->id,
+                    "user_id" => auth()->id(),
+                    "field_changed" => $field,
+                    "old_value" => $oldValue,
+                    "new_value" => $newValue,
                 ]);
             }
         }
@@ -113,21 +145,21 @@ class VerificationController extends Controller
     public function updateTermStatus(Request $request, Term $term)
     {
         $validated = $request->validate([
-            'status' => 'required|in:accepted,rejected,unverified',
-            'rejection_reason' => 'nullable|string|required_if:status,rejected',
+            "status" => "required|in:accepted,rejected,unverified",
+            "rejection_reason" => "nullable|string|required_if:status,rejected",
         ]);
 
         // Record status change in edit history
         $oldStatus = $term->status;
-        $newStatus = $validated['status'];
-        
+        $newStatus = $validated["status"];
+
         if ($oldStatus !== $newStatus) {
             TermEdit::create([
-                'term_id' => $term->id,
-                'user_id' => auth()->id(),
-                'field_changed' => 'status',
-                'old_value' => $oldStatus,
-                'new_value' => $newStatus,
+                "term_id" => $term->id,
+                "user_id" => auth()->id(),
+                "field_changed" => "status",
+                "old_value" => $oldStatus,
+                "new_value" => $newStatus,
             ]);
         }
 

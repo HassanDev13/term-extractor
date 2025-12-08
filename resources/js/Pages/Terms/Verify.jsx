@@ -32,11 +32,9 @@ import {
     FileText,
     List,
 } from "lucide-react";
-import { Document, Page, pdfjs } from "react-pdf";
+import { Document, Page } from "react-pdf";
 import { useLanguage } from "@/Contexts/LanguageContext";
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import pdfjs, { pdfOptions } from "@/config/pdfjs";
 
 export default function Verify({
     auth,
@@ -48,6 +46,7 @@ export default function Verify({
     prevPageId,
     totalPages,
     pdfUrl,
+    imageUrl,
 }) {
     const { t, locale } = useLanguage();
     const isAuthenticated = !!auth?.user;
@@ -426,32 +425,57 @@ export default function Verify({
                                 }
                             >
                                 <div className="flex items-start justify-center p-2 sm:p-4 min-h-full">
-                                    <Document
-                                        file={pdfUrl}
-                                        onLoadSuccess={onDocumentLoadSuccess}
-                                        loading={
-                                            <div className="flex items-center justify-center p-8">
-                                                <div className="text-gray-500 dark:text-gray-400">
-                                                    {t("verify.loading_pdf")}
+                                    {imageUrl ? (
+                                        <div
+                                            style={{
+                                                transform: `scale(${scale})`,
+                                                transformOrigin: "center top",
+                                            }}
+                                        >
+                                            <img
+                                                src={imageUrl}
+                                                alt={`Page ${page.page_number}`}
+                                                style={{
+                                                    maxWidth: "800px",
+                                                    width: "auto",
+                                                    height: "auto",
+                                                    display: "block",
+                                                }}
+                                                className="shadow-lg"
+                                            />
+                                        </div>
+                                    ) : (
+                                        <Document
+                                            file={pdfUrl}
+                                            onLoadSuccess={
+                                                onDocumentLoadSuccess
+                                            }
+                                            options={pdfOptions}
+                                            loading={
+                                                <div className="flex items-center justify-center p-8">
+                                                    <div className="text-gray-500 dark:text-gray-400">
+                                                        {t(
+                                                            "verify.loading_pdf",
+                                                        )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        }
-                                        error={
-                                            <div className="flex items-center justify-center p-8">
-                                                <div className="text-red-500 dark:text-red-400">
-                                                    {t("verify.failed_pdf")}
+                                            }
+                                            error={
+                                                <div className="flex items-center justify-center p-8">
+                                                    <div className="text-red-500 dark:text-red-400">
+                                                        {t("verify.failed_pdf")}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        }
-                                    >
-                                        <Page
-                                            pageNumber={page.page_number}
-                                            scale={scale}
-                                            renderTextLayer={false}
-                                            renderAnnotationLayer={false}
-                                            className="shadow-lg pointer-events-none"
-                                        />
-                                    </Document>
+                                            }
+                                        >
+                                            <Page
+                                                pageNumber={page.page_number}
+                                                scale={scale}
+                                                renderTextLayer={false}
+                                                renderAnnotationLayer={false}
+                                            />
+                                        </Document>
+                                    )}
                                 </div>
                             </div>
 
