@@ -105,7 +105,7 @@ class ProcessPageForGPTJob implements ShouldQueue
         );
 
         $response = OpenAI::chat()->create([
-            "model" => env("OPENAI_MODEL", "gpt-4o"),
+            "model" => env("OPENAI_MODEL", "deepseek-chat"),
             "messages" => [
                 [
                     "role" => "system",
