@@ -47,7 +47,6 @@ class ProcessPageForGPTJob implements ShouldQueue
     public function handle(): void
     {
         $text = $this->page->text ?? '';
-
         if (empty(trim($text))) {
             Log::warning("ResourcePage {$this->page->id} has empty text. Skipping GPT processing.");
             return;

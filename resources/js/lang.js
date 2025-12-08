@@ -2,8 +2,10 @@ export const translations = {
     en: {
         common: {
             back: "Back",
+            back_short: "←",
             login: "Login",
             logout: "Logout",
+            logout_short: "Out",
             signed_in_as: "Signed in as",
             loading: "Loading...",
             close: "Close",
@@ -15,7 +17,9 @@ export const translations = {
             of: "of",
             go: "Go",
             previous: "Previous",
+            prev_short: "←",
             next: "Next",
+            next_short: "→",
             system: "System",
             old: "Old",
             new: "New",
@@ -23,6 +27,7 @@ export const translations = {
         },
         leaderboard: {
             title: "Leaderboard",
+            short: "Board",
             subtitle: "Top contributors who help improve our term database",
             no_contributors: "No contributors yet",
             be_first: "Be the first to contribute!",
@@ -32,7 +37,8 @@ export const translations = {
         },
         search: {
             title: "Term Search Engine",
-            subtitle: "Search through extracted technical terms in English and Arabic",
+            subtitle:
+                "Search through extracted technical terms in English and Arabic",
             placeholder: "Search terms in English or Arabic...",
             found_terms: "Found {count} term{s}",
             no_results: "No terms found",
@@ -42,8 +48,11 @@ export const translations = {
         },
         verify: {
             title: "Term Verification",
+            status: "Term Verification",
+            status_short: "Verify",
             read_only_title: "Read-Only Mode:",
-            read_only_desc: "You are viewing this page as a guest. To edit terms or change verification status, please",
+            read_only_desc:
+                "You are viewing this page as a guest. To edit terms or change verification status, please",
             document_preview: "Document Preview",
             loading_pdf: "Loading PDF...",
             failed_pdf: "Failed to load PDF",
@@ -64,14 +73,18 @@ export const translations = {
             edit_history: "Edit History",
             no_history: "No edit history available for this term",
             english: "English",
+            english_short: "EN",
             arabic: "Arabic",
-        }
+            arabic_short: "AR",
+        },
     },
     ar: {
         common: {
             back: "رجوع",
+            back_short: "←",
             login: "تسجيل الدخول",
             logout: "تسجيل الخروج",
+            logout_short: "خروج",
             signed_in_as: "تم تسجيل الدخول باسم",
             loading: "جاري التحميل...",
             close: "إغلاق",
@@ -83,7 +96,9 @@ export const translations = {
             of: "من",
             go: "اذهب",
             previous: "السابق",
+            prev_short: "←",
             next: "التالي",
+            next_short: "→",
             system: "النظام",
             old: "قديم",
             new: "جديد",
@@ -91,7 +106,9 @@ export const translations = {
         },
         leaderboard: {
             title: "لوحة المتصدرين",
-            subtitle: "أفضل المساهمين الذين يساعدون في تحسين قاعدة بيانات المصطلحات لدينا",
+            short: "المتصدرين",
+            subtitle:
+                "أفضل المساهمين الذين يساعدون في تحسين قاعدة بيانات المصطلحات لدينا",
             no_contributors: "لا يوجد مساهمين بعد",
             be_first: "كن أول المساهمين!",
             total_edits: "مجموع التعديلات",
@@ -100,7 +117,8 @@ export const translations = {
         },
         search: {
             title: "محرك بحث المصطلحات",
-            subtitle: "ابحث في المصطلحات التقنية المستخرجة باللغتين الإنجليزية والعربية",
+            subtitle:
+                "ابحث في المصطلحات التقنية المستخرجة باللغتين الإنجليزية والعربية",
             placeholder: "ابحث عن المصطلحات بالإنجليزية أو العربية...",
             found_terms: "تم العثور على {count} مصطلح",
             no_results: "لم يتم العثور على مصطلحات",
@@ -110,16 +128,19 @@ export const translations = {
         },
         verify: {
             title: "التحقق من المصطلحات",
+            status: "التحقق من المصطلحات",
+            status_short: "تحقق",
             read_only_title: "وضع القراءة فقط:",
-            read_only_desc: "أنت تشاهد هذه الصفحة كضيف. لتعديل المصطلحات أو تغيير حالة التحقق، يرجى",
+            read_only_desc:
+                "أنت تشاهد هذه الصفحة كضيف. لتعديل المصطلحات أو تغيير حالة التحقق، يرجى",
             document_preview: "معاينة المستند",
-            loading_pdf: "جاري تحميل ملف PDF...",
-            failed_pdf: "فشل تحميل ملف PDF",
+            loading_pdf: "جاري تحميل PDF...",
+            failed_pdf: "فشل تحميل PDF",
             terms_on_page: "المصطلحات في هذه الصفحة",
-            terms_found: "تم العثور على {count} مصطلح",
-            no_terms_on_page: "لا يوجد مصطلحات في هذه الصفحة",
-            english_editable: "الإنجليزية (قابل للتعديل)",
-            arabic_editable: "العربية (قابل للتعديل)",
+            terms_found: "تم العثور على {count} مصطلح{s}",
+            no_terms_on_page: "لا توجد مصطلحات في هذه الصفحة",
+            english_editable: "الإنجليزية (قابلة للتعديل)",
+            arabic_editable: "العربية (قابلة للتعديل)",
             enter_english: "أدخل المصطلح الإنجليزي",
             enter_arabic: "أدخل المصطلح العربي",
             accepted: "مقبول",
@@ -132,7 +153,9 @@ export const translations = {
             edit_history: "سجل التعديلات",
             no_history: "لا يوجد سجل تعديلات لهذا المصطلح",
             english: "الإنجليزية",
+            english_short: "EN",
             arabic: "العربية",
-        }
-    }
+            arabic_short: "AR",
+        },
+    },
 };

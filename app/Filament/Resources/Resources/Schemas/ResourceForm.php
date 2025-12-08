@@ -19,7 +19,16 @@ class ResourceForm
                     ->acceptedFileTypes(['application/pdf'])
                     ->required()
                     ->storeFileNamesIn('name')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->maxSize(512000) // 500MB
+                    ->validationAttribute('PDF file')
+                    ->validationMessages([
+                        'required' => 'Please upload a PDF file.',
+                        'mimes' => 'Only PDF files are allowed.',
+                        'max' => 'The file is too large. Maximum size is 500MB.',
+                        'uploaded' => 'The file failed to upload. This is usually due to server limits (max_upload_size) or connection issues.',
+                    ])
+                    ->helperText('Max file size: 500MB. Allowed type: PDF.'),
                 \Filament\Forms\Components\Toggle::make('force_ocr')
                     ->label('Force OCR')
                     ->helperText('Force OCR processing even if text is extractable from PDF. Useful for scanned documents or PDFs with poor text extraction.')
