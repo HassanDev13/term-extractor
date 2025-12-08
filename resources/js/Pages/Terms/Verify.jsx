@@ -276,7 +276,7 @@ export default function Verify({
                                 onClick={() =>
                                     router.visit(route("terms.index"))
                                 }
-                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 flex-shrink-0"
+                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shrink-0"
                             >
                                 <ArrowLeft className="h-4 w-4 mr-2" />
                                 <span className="hidden sm:inline">
@@ -369,7 +369,7 @@ export default function Verify({
                                                 -
                                             </span>
                                         </Button>
-                                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 min-w-[2.5rem] sm:min-w-[3rem] text-center">
+                                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 min-w-10 sm:min-w-12 text-center">
                                             {Math.round(scale * 100)}%
                                         </span>
                                         <Button
@@ -453,7 +453,7 @@ export default function Verify({
                                             )
                                         }
                                         disabled={!prevPageId}
-                                        className="flex-shrink-0 w-full sm:w-auto"
+                                        className="shrink-0 w-full sm:w-auto"
                                     >
                                         <ChevronLeft className="h-4 w-4 mr-2" />
                                         <span className="hidden sm:inline">
@@ -464,7 +464,7 @@ export default function Verify({
                                         </span>
                                     </Button>
 
-                                    <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 order-first sm:order-none">
+                                    <div className="flex items-center gap-1 sm:gap-2 shrink-0 order-first sm:order-0">
                                         <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                             {t("common.page")}:
                                         </span>
@@ -506,7 +506,7 @@ export default function Verify({
                                             )
                                         }
                                         disabled={!nextPageId}
-                                        className="flex-shrink-0 w-full sm:w-auto"
+                                        className="shrink-0 w-full sm:w-auto"
                                     >
                                         <span className="hidden sm:inline">
                                             {t("common.next")}
