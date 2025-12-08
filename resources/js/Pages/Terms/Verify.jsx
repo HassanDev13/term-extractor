@@ -30,6 +30,9 @@ import {
     RotateCcw,
     History,
     ArrowLeft,
+    Star,
+    FileText,
+    List,
 } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
 import LanguageSwitcher from "@/Components/LanguageSwitcher";
@@ -65,6 +68,9 @@ export default function Verify({
     const [scale, setScale] = useState(1.0);
     const [editingEnglishTerms, setEditingEnglishTerms] = useState({});
     const [editingArabicTerms, setEditingArabicTerms] = useState({});
+
+    // Mobile view toggle state
+    const [showPdfOnMobile, setShowPdfOnMobile] = useState(true);
 
     // Dragging state for PDF
     const [isDragging, setIsDragging] = useState(false);
@@ -348,9 +354,31 @@ export default function Verify({
                         </div>
                     )}
 
+                    {/* Mobile Toggle Button */}
+                    <div className="lg:hidden mb-4 flex gap-2">
+                        <Button
+                            variant={showPdfOnMobile ? "default" : "outline"}
+                            onClick={() => setShowPdfOnMobile(true)}
+                            className="flex-1"
+                        >
+                            <FileText className="h-4 w-4 mr-2" />
+                            PDF
+                        </Button>
+                        <Button
+                            variant={!showPdfOnMobile ? "default" : "outline"}
+                            onClick={() => setShowPdfOnMobile(false)}
+                            className="flex-1"
+                        >
+                            <List className="h-4 w-4 mr-2" />
+                            {t("verify.terms")} ({terms.length})
+                        </Button>
+                    </div>
+
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6">
                         {/* Left: PDF Viewer - 5 columns */}
-                        <div className="lg:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200">
+                        <div
+                            className={`lg:col-span-5 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${!showPdfOnMobile ? "hidden lg:block" : ""}`}
+                        >
                             <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
@@ -521,7 +549,9 @@ export default function Verify({
                         </div>
 
                         {/* Right: Terms Table - 7 columns */}
-                        <div className="lg:col-span-7 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200">
+                        <div
+                            className={`lg:col-span-7 bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden transition-colors duration-200 ${showPdfOnMobile ? "hidden lg:block" : "block"}`}
+                        >
                             <div className="p-3 sm:p-4 border-b border-gray-200 dark:border-gray-700">
                                 <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                                     {t("verify.terms_on_page")}
@@ -540,7 +570,7 @@ export default function Verify({
                                 <Table>
                                     <TableHeader className="sticky top-0 bg-white dark:bg-gray-800 z-10 shadow-sm">
                                         <TableRow className="border-b border-gray-200 dark:border-gray-700">
-                                            <TableHead className="w-[30%] sm:w-[30%] text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
+                                            <TableHead className="w-[25%] sm:w-[25%] text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                                 <span className="hidden sm:inline">
                                                     {t(
                                                         "verify.english_editable",
@@ -550,7 +580,7 @@ export default function Verify({
                                                     {t("verify.english_short")}
                                                 </span>
                                             </TableHead>
-                                            <TableHead className="w-[30%] sm:w-[30%] text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
+                                            <TableHead className="w-[25%] sm:w-[25%] text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                                 <span className="hidden sm:inline">
                                                     {t(
                                                         "verify.arabic_editable",
@@ -560,10 +590,18 @@ export default function Verify({
                                                     {t("verify.arabic_short")}
                                                 </span>
                                             </TableHead>
+                                            <TableHead className="w-[12%] sm:w-[12%] text-center text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
+                                                <span className="hidden sm:inline">
+                                                    Confidence
+                                                </span>
+                                                <span className="sm:hidden">
+                                                    Conf.
+                                                </span>
+                                            </TableHead>
                                             <TableHead className="w-[12%] sm:w-[12%] text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                                 {t("common.status")}
                                             </TableHead>
-                                            <TableHead className="w-[28%] sm:w-[28%] text-right text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
+                                            <TableHead className="w-[26%] sm:w-[26%] text-right text-gray-700 dark:text-gray-300 text-xs sm:text-sm">
                                                 {t("common.actions")}
                                             </TableHead>
                                         </TableRow>
@@ -572,7 +610,7 @@ export default function Verify({
                                         {terms.length === 0 ? (
                                             <TableRow>
                                                 <TableCell
-                                                    colSpan={4}
+                                                    colSpan={5}
                                                     className="text-center text-gray-500 dark:text-gray-400 py-8 sm:py-12 text-xs sm:text-sm"
                                                 >
                                                     {t(
@@ -581,220 +619,277 @@ export default function Verify({
                                                 </TableCell>
                                             </TableRow>
                                         ) : (
-                                            terms.map((term) => (
-                                                <TableRow
-                                                    key={term.id}
-                                                    className={`transition-colors border-b border-gray-100 dark:border-gray-700 ${
-                                                        currentTerm?.id ===
-                                                        term.id
-                                                            ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
-                                                            : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
-                                                    }`}
-                                                >
-                                                    <TableCell className="py-2 sm:py-4">
-                                                        <Input
-                                                            type="text"
-                                                            value={
-                                                                editingEnglishTerms[
-                                                                    term.id
-                                                                ] !== undefined
-                                                                    ? editingEnglishTerms[
-                                                                          term
-                                                                              .id
-                                                                      ]
-                                                                    : term.term_en
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleEnglishTermChange(
-                                                                    term.id,
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            onBlur={() =>
-                                                                handleEnglishTermUpdate(
-                                                                    term,
-                                                                )
-                                                            }
-                                                            onKeyPress={(e) =>
-                                                                handleEnglishInputKeyPress(
-                                                                    e,
-                                                                    term,
-                                                                )
-                                                            }
-                                                            className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                                                            placeholder={t(
-                                                                "verify.enter_english",
-                                                            )}
-                                                            disabled={
-                                                                !isAuthenticated
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="py-4">
-                                                        <Input
-                                                            type="text"
-                                                            dir="rtl"
-                                                            value={
-                                                                editingArabicTerms[
-                                                                    term.id
-                                                                ] !== undefined
-                                                                    ? editingArabicTerms[
-                                                                          term
-                                                                              .id
-                                                                      ]
-                                                                    : term.term_ar
-                                                            }
-                                                            onChange={(e) =>
-                                                                handleArabicTermChange(
-                                                                    term.id,
-                                                                    e.target
-                                                                        .value,
-                                                                )
-                                                            }
-                                                            onBlur={() =>
-                                                                handleArabicTermUpdate(
-                                                                    term,
-                                                                )
-                                                            }
-                                                            onKeyPress={(e) =>
-                                                                handleArabicInputKeyPress(
-                                                                    e,
-                                                                    term,
-                                                                )
-                                                            }
-                                                            className="font-arabic text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
-                                                            placeholder={t(
-                                                                "verify.enter_arabic",
-                                                            )}
-                                                            disabled={
-                                                                !isAuthenticated
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell className="py-4">
-                                                        <Badge
-                                                            variant={
-                                                                term.status ===
-                                                                "accepted"
-                                                                    ? "default"
-                                                                    : term.status ===
-                                                                        "rejected"
-                                                                      ? "destructive"
-                                                                      : "secondary"
-                                                            }
-                                                            className="text-xs"
-                                                        >
-                                                            {term.status ===
-                                                            "accepted"
-                                                                ? t(
-                                                                      "verify.accepted",
-                                                                  )
-                                                                : term.status ===
-                                                                    "rejected"
-                                                                  ? t(
-                                                                        "verify.rejected",
-                                                                    )
-                                                                  : t(
-                                                                        "verify.pending",
-                                                                    )}
-                                                        </Badge>
-                                                    </TableCell>
-                                                    <TableCell className="text-right py-4">
-                                                        <div className="flex items-center justify-end gap-1">
-                                                            {/* History Button */}
-                                                            <Button
-                                                                size="sm"
-                                                                variant="outline"
-                                                                onClick={() =>
-                                                                    setHistoryDialog(
-                                                                        {
-                                                                            open: true,
-                                                                            term,
-                                                                        },
+                                            terms.map((term) => {
+                                                const confidenceLevel =
+                                                    term.confidence_level || 0;
+                                                const confidenceColor =
+                                                    confidenceLevel >= 9
+                                                        ? "text-green-500 dark:text-green-400"
+                                                        : confidenceLevel >= 7
+                                                          ? "text-blue-500 dark:text-blue-400"
+                                                          : confidenceLevel >= 5
+                                                            ? "text-yellow-500 dark:text-yellow-400"
+                                                            : confidenceLevel >=
+                                                                3
+                                                              ? "text-orange-500 dark:text-orange-400"
+                                                              : "text-red-500 dark:text-red-400";
+
+                                                return (
+                                                    <TableRow
+                                                        key={term.id}
+                                                        className={`transition-colors border-b border-gray-100 dark:border-gray-700 ${
+                                                            currentTerm?.id ===
+                                                            term.id
+                                                                ? "bg-blue-50 dark:bg-blue-900/20 border-l-4 border-l-blue-500"
+                                                                : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                                                        }`}
+                                                    >
+                                                        <TableCell className="py-2 sm:py-4">
+                                                            <Input
+                                                                type="text"
+                                                                value={
+                                                                    editingEnglishTerms[
+                                                                        term.id
+                                                                    ] !==
+                                                                    undefined
+                                                                        ? editingEnglishTerms[
+                                                                              term
+                                                                                  .id
+                                                                          ]
+                                                                        : term.term_en
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleEnglishTermChange(
+                                                                        term.id,
+                                                                        e.target
+                                                                            .value,
                                                                     )
                                                                 }
-                                                                className="h-8 w-8 p-0"
-                                                                title="View edit history"
-                                                            >
-                                                                <History className="h-4 w-4" />
-                                                            </Button>
-
-                                                            {(term.status ===
-                                                                "accepted" ||
-                                                                term.status ===
-                                                                    "rejected") && (
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() =>
-                                                                        handleStatusUpdate(
-                                                                            term,
-                                                                            "unverified",
-                                                                        )
-                                                                    }
-                                                                    className="h-8 w-8 p-0"
-                                                                    title="Return to unverified"
-                                                                    disabled={
-                                                                        !isAuthenticated
-                                                                    }
-                                                                >
-                                                                    <RotateCcw className="h-4 w-4" />
-                                                                </Button>
-                                                            )}
-
-                                                            <Button
-                                                                size="sm"
+                                                                onBlur={() =>
+                                                                    handleEnglishTermUpdate(
+                                                                        term,
+                                                                    )
+                                                                }
+                                                                onKeyPress={(
+                                                                    e,
+                                                                ) =>
+                                                                    handleEnglishInputKeyPress(
+                                                                        e,
+                                                                        term,
+                                                                    )
+                                                                }
+                                                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                                                placeholder={t(
+                                                                    "verify.enter_english",
+                                                                )}
+                                                                disabled={
+                                                                    !isAuthenticated
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <Input
+                                                                type="text"
+                                                                dir="rtl"
+                                                                value={
+                                                                    editingArabicTerms[
+                                                                        term.id
+                                                                    ] !==
+                                                                    undefined
+                                                                        ? editingArabicTerms[
+                                                                              term
+                                                                                  .id
+                                                                          ]
+                                                                        : term.term_ar
+                                                                }
+                                                                onChange={(e) =>
+                                                                    handleArabicTermChange(
+                                                                        term.id,
+                                                                        e.target
+                                                                            .value,
+                                                                    )
+                                                                }
+                                                                onBlur={() =>
+                                                                    handleArabicTermUpdate(
+                                                                        term,
+                                                                    )
+                                                                }
+                                                                onKeyPress={(
+                                                                    e,
+                                                                ) =>
+                                                                    handleArabicInputKeyPress(
+                                                                        e,
+                                                                        term,
+                                                                    )
+                                                                }
+                                                                className="font-arabic text-right bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 focus:ring-blue-500 dark:focus:ring-blue-400"
+                                                                placeholder={t(
+                                                                    "verify.enter_arabic",
+                                                                )}
+                                                                disabled={
+                                                                    !isAuthenticated
+                                                                }
+                                                            />
+                                                        </TableCell>
+                                                        <TableCell className="py-4 text-center">
+                                                            <div className="flex flex-col items-center gap-1">
+                                                                <div className="flex items-center gap-0.5">
+                                                                    <Star
+                                                                        className={`h-3 w-3 ${confidenceColor} fill-current`}
+                                                                    />
+                                                                    <span
+                                                                        className={`text-xs sm:text-sm font-semibold ${confidenceColor}`}
+                                                                    >
+                                                                        {
+                                                                            confidenceLevel
+                                                                        }
+                                                                        /10
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-[10px] text-gray-500 dark:text-gray-400 hidden sm:inline">
+                                                                    {confidenceLevel >=
+                                                                    9
+                                                                        ? "Very High"
+                                                                        : confidenceLevel >=
+                                                                            7
+                                                                          ? "High"
+                                                                          : confidenceLevel >=
+                                                                              5
+                                                                            ? "Medium"
+                                                                            : confidenceLevel >=
+                                                                                3
+                                                                              ? "Low"
+                                                                              : confidenceLevel >
+                                                                                  0
+                                                                                ? "Very Low"
+                                                                                : "N/A"}
+                                                                </span>
+                                                            </div>
+                                                        </TableCell>
+                                                        <TableCell className="py-4">
+                                                            <Badge
                                                                 variant={
                                                                     term.status ===
                                                                     "accepted"
                                                                         ? "default"
-                                                                        : "outline"
+                                                                        : term.status ===
+                                                                            "rejected"
+                                                                          ? "destructive"
+                                                                          : "secondary"
                                                                 }
-                                                                onClick={() =>
-                                                                    handleStatusUpdate(
-                                                                        term,
-                                                                        "accepted",
-                                                                    )
-                                                                }
-                                                                disabled={
-                                                                    !isAuthenticated ||
-                                                                    term.status ===
-                                                                        "accepted"
-                                                                }
-                                                                className="h-8 w-8 p-0"
-                                                                title="Accept term"
+                                                                className="text-xs"
                                                             >
-                                                                <Check className="h-4 w-4" />
-                                                            </Button>
-                                                            <Button
-                                                                size="sm"
-                                                                variant={
-                                                                    term.status ===
-                                                                    "rejected"
-                                                                        ? "destructive"
-                                                                        : "outline"
-                                                                }
-                                                                onClick={() =>
-                                                                    handleStatusUpdate(
-                                                                        term,
-                                                                        "rejected",
-                                                                    )
-                                                                }
-                                                                disabled={
-                                                                    !isAuthenticated ||
-                                                                    term.status ===
+                                                                {term.status ===
+                                                                "accepted"
+                                                                    ? t(
+                                                                          "verify.accepted",
+                                                                      )
+                                                                    : term.status ===
                                                                         "rejected"
-                                                                }
-                                                                className="h-8 w-8 p-0"
-                                                                title="Reject term"
-                                                            >
-                                                                <X className="h-4 w-4" />
-                                                            </Button>
-                                                        </div>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
+                                                                      ? t(
+                                                                            "verify.rejected",
+                                                                        )
+                                                                      : t(
+                                                                            "verify.pending",
+                                                                        )}
+                                                            </Badge>
+                                                        </TableCell>
+                                                        <TableCell className="text-right py-4">
+                                                            <div className="flex items-center justify-end gap-1">
+                                                                {/* History Button */}
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant="outline"
+                                                                    onClick={() =>
+                                                                        setHistoryDialog(
+                                                                            {
+                                                                                open: true,
+                                                                                term,
+                                                                            },
+                                                                        )
+                                                                    }
+                                                                    className="h-8 w-8 p-0"
+                                                                    title="View edit history"
+                                                                >
+                                                                    <History className="h-4 w-4" />
+                                                                </Button>
+
+                                                                {(term.status ===
+                                                                    "accepted" ||
+                                                                    term.status ===
+                                                                        "rejected") && (
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        onClick={() =>
+                                                                            handleStatusUpdate(
+                                                                                term,
+                                                                                "unverified",
+                                                                            )
+                                                                        }
+                                                                        className="h-8 w-8 p-0"
+                                                                        title="Return to unverified"
+                                                                        disabled={
+                                                                            !isAuthenticated
+                                                                        }
+                                                                    >
+                                                                        <RotateCcw className="h-4 w-4" />
+                                                                    </Button>
+                                                                )}
+
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant={
+                                                                        term.status ===
+                                                                        "accepted"
+                                                                            ? "default"
+                                                                            : "outline"
+                                                                    }
+                                                                    onClick={() =>
+                                                                        handleStatusUpdate(
+                                                                            term,
+                                                                            "accepted",
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        !isAuthenticated ||
+                                                                        term.status ===
+                                                                            "accepted"
+                                                                    }
+                                                                    className="h-8 w-8 p-0"
+                                                                    title="Accept term"
+                                                                >
+                                                                    <Check className="h-4 w-4" />
+                                                                </Button>
+                                                                <Button
+                                                                    size="sm"
+                                                                    variant={
+                                                                        term.status ===
+                                                                        "rejected"
+                                                                            ? "destructive"
+                                                                            : "outline"
+                                                                    }
+                                                                    onClick={() =>
+                                                                        handleStatusUpdate(
+                                                                            term,
+                                                                            "rejected",
+                                                                        )
+                                                                    }
+                                                                    disabled={
+                                                                        !isAuthenticated ||
+                                                                        term.status ===
+                                                                            "rejected"
+                                                                    }
+                                                                    className="h-8 w-8 p-0"
+                                                                    title="Reject term"
+                                                                >
+                                                                    <X className="h-4 w-4" />
+                                                                </Button>
+                                                            </div>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })
                                         )}
                                     </TableBody>
                                 </Table>

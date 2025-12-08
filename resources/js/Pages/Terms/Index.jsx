@@ -9,7 +9,7 @@ import {
     CardTitle,
 } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
-import { Search, FileText, BookOpen, Trophy } from "lucide-react";
+import { Search, FileText, BookOpen, Trophy, Star } from "lucide-react";
 import LanguageSwitcher from "@/Components/LanguageSwitcher";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
@@ -99,66 +99,97 @@ export default function Index({ terms, filters }) {
                                 </p>
                             </div>
                         ) : (
-                            terms.data.map((term) => (
-                                <Card
-                                    key={term.id}
-                                    className="hover:shadow-lg transition-shadow cursor-pointer"
-                                    onClick={() => {
-                                        console.log(term.id);
-                                        router.visit(
-                                            route("terms.verify", term.id),
-                                        );
-                                    }}
-                                >
-                                    <CardHeader className="p-3 sm:p-6">
-                                        <div className="flex items-start justify-between">
-                                            <div className="flex-1">
-                                                <CardTitle className="text-base sm:text-lg mb-2 line-clamp-2">
-                                                    {term.term_en}
-                                                </CardTitle>
-                                                <CardDescription className="text-lg sm:text-xl font-arabic line-clamp-2">
-                                                    {term.term_ar}
-                                                </CardDescription>
-                                            </div>
-                                        </div>
-                                    </CardHeader>
-                                    <CardContent className="p-3 sm:p-6 pt-0">
-                                        <div className="space-y-2">
-                                            {/* Resource Info */}
-                                            <div className="flex items-center gap-2 text-xs sm:text-sm">
-                                                <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-                                                <span className="text-gray-700 dark:text-gray-300 font-medium truncate">
-                                                    {term.resource_page
-                                                        ?.resource?.name ||
-                                                        t(
-                                                            "search.unknown_resource",
-                                                        )}
-                                                </span>
-                                            </div>
+                            terms.data.map((term) => {
+                                const confidenceLevel =
+                                    term.confidence_level || 0;
+                                const confidenceColor =
+                                    confidenceLevel >= 9
+                                        ? "text-green-500"
+                                        : confidenceLevel >= 7
+                                          ? "text-blue-500"
+                                          : confidenceLevel >= 5
+                                            ? "text-yellow-500"
+                                            : confidenceLevel >= 3
+                                              ? "text-orange-500"
+                                              : "text-red-500";
 
-                                            {/* Page Number */}
-                                            <div className="flex items-center gap-2">
-                                                <Badge
-                                                    variant="secondary"
-                                                    className="text-xs"
-                                                >
-                                                    {t("common.page")}{" "}
-                                                    {term.resource_page
-                                                        ?.page_number || "N/A"}
-                                                </Badge>
+                                return (
+                                    <Card
+                                        key={term.id}
+                                        className="hover:shadow-lg transition-shadow cursor-pointer"
+                                        onClick={() => {
+                                            console.log(term.id);
+                                            router.visit(
+                                                route("terms.verify", term.id),
+                                            );
+                                        }}
+                                    >
+                                        <CardHeader className="p-3 sm:p-6">
+                                            <div className="flex items-start justify-between gap-2">
+                                                <div className="flex-1">
+                                                    <CardTitle className="text-base sm:text-lg mb-2 line-clamp-2">
+                                                        {term.term_en}
+                                                    </CardTitle>
+                                                    <CardDescription className="text-lg sm:text-xl font-arabic line-clamp-2">
+                                                        {term.term_ar}
+                                                    </CardDescription>
+                                                </div>
+                                                {confidenceLevel > 0 && (
+                                                    <div
+                                                        className="flex items-center gap-1 shrink-0"
+                                                        title={`Confidence: ${confidenceLevel}/10`}
+                                                    >
+                                                        <Star
+                                                            className={`h-4 w-4 ${confidenceColor} fill-current`}
+                                                        />
+                                                        <span
+                                                            className={`text-sm font-semibold ${confidenceColor}`}
+                                                        >
+                                                            {confidenceLevel}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </div>
+                                        </CardHeader>
+                                        <CardContent className="p-3 sm:p-6 pt-0">
+                                            <div className="space-y-2">
+                                                {/* Resource Info */}
+                                                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                                                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
+                                                    <span className="text-gray-700 dark:text-gray-300 font-medium truncate">
+                                                        {term.resource_page
+                                                            ?.resource?.name ||
+                                                            t(
+                                                                "search.unknown_resource",
+                                                            )}
+                                                    </span>
+                                                </div>
 
-                                            {/* Created Date */}
-                                            <div className="text-xs text-gray-500 mt-2">
-                                                {t("search.added")}:{" "}
-                                                {new Date(
-                                                    term.created_at,
-                                                ).toLocaleDateString()}
+                                                {/* Page Number */}
+                                                <div className="flex items-center gap-2">
+                                                    <Badge
+                                                        variant="secondary"
+                                                        className="text-xs"
+                                                    >
+                                                        {t("common.page")}{" "}
+                                                        {term.resource_page
+                                                            ?.page_number ||
+                                                            "N/A"}
+                                                    </Badge>
+                                                </div>
+
+                                                {/* Created Date */}
+                                                <div className="text-xs text-gray-500 mt-2">
+                                                    {t("search.added")}:{" "}
+                                                    {new Date(
+                                                        term.created_at,
+                                                    ).toLocaleDateString()}
+                                                </div>
                                             </div>
-                                        </div>
-                                    </CardContent>
-                                </Card>
-                            ))
+                                        </CardContent>
+                                    </Card>
+                                );
+                            })
                         )}
                     </div>
 
