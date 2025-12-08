@@ -25,8 +25,6 @@ import {
     ChevronRight,
     Check,
     X,
-    ZoomIn,
-    ZoomOut,
     RotateCcw,
     History,
     ArrowLeft,
@@ -221,8 +219,24 @@ export default function Verify({
         }
     };
 
-    const handleZoomIn = () => setScale((prev) => Math.min(prev + 0.2, 2.0));
-    const handleZoomOut = () => setScale((prev) => Math.max(prev - 0.2, 0.6));
+    // Wheel zoom handler (touchpad/mouse wheel)
+    const handleWheel = (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            const delta = e.deltaY > 0 ? -0.1 : 0.1;
+            setScale((prev) => Math.max(0.5, Math.min(3.0, prev + delta)));
+        }
+    };
+
+    // Double-click zoom handler
+    const handleDoubleClick = (e) => {
+        e.preventDefault();
+        if (scale === 1.0) {
+            setScale(1.5);
+        } else {
+            setScale(1.0);
+        }
+    };
 
     // PDF Dragging handlers
     const handleMouseDown = (e) => {
@@ -281,15 +295,10 @@ export default function Verify({
                                 onClick={() =>
                                     router.visit(route("terms.index"))
                                 }
-                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shrink-0"
+                                className="bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shrink-0 h-9 w-9 p-0"
+                                title={t("common.back")}
                             >
-                                <ArrowLeft className="h-4 w-4 mr-2" />
-                                <span className="hidden sm:inline">
-                                    {t("common.back")}
-                                </span>
-                                <span className="sm:hidden">
-                                    {t("common.back_short")}
-                                </span>
+                                <ArrowLeft className="h-4 w-4" />
                             </Button>
                             <div className="flex-1 min-w-0">
                                 <h1 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-1 sm:mb-2 truncate">
@@ -382,34 +391,14 @@ export default function Verify({
                                     <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
                                         {t("verify.document_preview")}
                                     </h2>
-                                    <div className="flex items-center gap-1 sm:gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleZoomOut}
-                                            disabled={scale <= 0.6}
-                                            className="h-8 w-8 sm:h-9 sm:w-auto px-1 sm:px-3"
-                                        >
-                                            <ZoomOut className="h-3 w-3 sm:h-4 sm:w-4" />
-                                            <span className="hidden sm:inline ml-1">
-                                                -
-                                            </span>
-                                        </Button>
-                                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400 min-w-10 sm:min-w-12 text-center">
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">
                                             {Math.round(scale * 100)}%
                                         </span>
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={handleZoomIn}
-                                            disabled={scale >= 2.0}
-                                            className="h-8 w-8 sm:h-9 sm:w-auto px-1 sm:px-3"
-                                        >
-                                            <ZoomIn className="h-3 w-3 sm:h-4 sm:w-4" />
-                                            <span className="hidden sm:inline ml-1">
-                                                +
-                                            </span>
-                                        </Button>
+                                        <span className="text-xs text-gray-500 dark:text-gray-500 hidden sm:inline">
+                                            (Ctrl+Scroll to zoom, Double-click
+                                            to reset)
+                                        </span>
                                     </div>
                                 </div>
                             </div>
@@ -421,6 +410,8 @@ export default function Verify({
                                     height: "calc(100vh - 320px)",
                                     cursor: scale > 1 ? "grab" : "default",
                                 }}
+                                onWheel={handleWheel}
+                                onDoubleClick={handleDoubleClick}
                                 onMouseDown={
                                     scale > 1 ? handleMouseDown : undefined
                                 }

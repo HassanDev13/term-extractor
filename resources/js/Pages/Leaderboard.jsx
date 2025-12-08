@@ -41,15 +41,10 @@ export default function Leaderboard({ leaderboard }) {
                             <Button
                                 variant="outline"
                                 onClick={() => window.history.back()}
-                                className="flex items-center gap-1 sm:gap-2 px-2 sm:px-4"
+                                className="h-9 w-9 p-0"
+                                title={t("common.back")}
                             >
-                                <ArrowLeft className="h-3 w-3 sm:h-4 sm:w-4" />
-                                <span className="hidden sm:inline">
-                                    {t("common.back")}
-                                </span>
-                                <span className="sm:hidden">
-                                    {t("common.back_short")}
-                                </span>
+                                <ArrowLeft className="h-4 w-4" />
                             </Button>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 mb-2">
