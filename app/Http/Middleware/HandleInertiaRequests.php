@@ -14,7 +14,7 @@ class HandleInertiaRequests extends Middleware
      *
      * @var string
      */
-    protected $rootView = 'app';
+    protected $rootView = "app";
 
     /**
      * Determines the current asset version.
@@ -35,13 +35,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $locale = app()->getLocale();
-        
+        // Force English locale only
+        // Multi-language support is currently disabled
+
         return [
             ...parent::share($request),
-            'locale' => $locale,
-            'availableLocales' => ['en', 'ar'],
-            'isRTL' => $locale === 'ar',
+            "locale" => "en",
+            "availableLocales" => ["en"],
+            "isRTL" => false,
         ];
     }
 }

@@ -35,7 +35,6 @@ import {
     List,
 } from "lucide-react";
 import { Document, Page, pdfjs } from "react-pdf";
-import LanguageSwitcher from "@/Components/LanguageSwitcher";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 // Configure PDF.js worker
@@ -309,7 +308,6 @@ export default function Verify({
                             </div>
                         </div>
                         <div className="flex items-center justify-between sm:justify-end gap-2 sm:gap-3">
-                            <LanguageSwitcher />
                             {auth?.user && (
                                 <>
                                     <div className="text-right hidden sm:block">

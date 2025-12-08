@@ -9,7 +9,6 @@ import {
 import { Badge } from "@/Components/ui/badge";
 import { Trophy, Medal, Award, ArrowLeft } from "lucide-react";
 import { Button } from "@/Components/ui/button";
-import LanguageSwitcher from "@/Components/LanguageSwitcher";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function Leaderboard({ leaderboard }) {
@@ -52,7 +51,6 @@ export default function Leaderboard({ leaderboard }) {
                                     {t("common.back_short")}
                                 </span>
                             </Button>
-                            <LanguageSwitcher />
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 mb-2">
                             <Trophy className="h-8 w-8 sm:h-10 sm:w-10 text-yellow-500" />

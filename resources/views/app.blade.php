@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}">
+<html lang="en" dir="ltr">
     <head>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,8 +19,7 @@
          <!-- Ziggy routes -->
         @routes
     </head>
-    <body class="font-sans antialiased {{ app()->getLocale() === 'ar' ? 'rtl' : '' }}">
+    <body class="font-sans antialiased">
         @inertia
     </body>
 </html>
-

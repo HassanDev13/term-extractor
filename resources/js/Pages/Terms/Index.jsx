@@ -10,7 +10,6 @@ import {
 } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
 import { Search, FileText, BookOpen, Trophy, Star } from "lucide-react";
-import LanguageSwitcher from "@/Components/LanguageSwitcher";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function Index({ terms, filters }) {
@@ -52,7 +51,6 @@ export default function Index({ terms, filters }) {
                                 </p>
                             </div>
                             <div className="flex items-center justify-between sm:justify-end gap-3">
-                                <LanguageSwitcher />
                                 <a
                                     href="/leaderboard"
                                     className="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
