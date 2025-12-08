@@ -34,7 +34,6 @@ import {
 } from "lucide-react";
 import { Document, Page } from "react-pdf";
 import { useLanguage } from "@/Contexts/LanguageContext";
-import pdfjs, { pdfOptions } from "@/config/pdfjs";
 
 export default function Verify({
     auth,
