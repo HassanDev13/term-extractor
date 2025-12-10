@@ -11,6 +11,10 @@ class Term extends Model
         "term_en",
         "term_ar",
         "confidence_level",
+        "corrections",
+        "positive_feedback_count",
+        "negative_feedback_count",
+        "total_feedback_count",
         "x",
         "y",
         "width",
@@ -30,5 +34,13 @@ class Term extends Model
     public function edits()
     {
         return $this->hasMany(TermEdit::class);
+    }
+
+    /**
+     * Get the feedback for this term.
+     */
+    public function feedback()
+    {
+        return $this->hasMany(TermFeedback::class);
     }
 }

@@ -14,55 +14,43 @@ class TermsTable
     {
         return $table
             ->columns([
-                TextColumn::make('resource_page_id')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('term_en')
-                    ->searchable(),
-                TextColumn::make('term_ar')
-                    ->searchable(),
-                TextColumn::make('created_at')
+                TextColumn::make("resource_page_id")->numeric()->sortable(),
+                TextColumn::make("term_en")->searchable(),
+                TextColumn::make("term_ar")->searchable(),
+                TextColumn::make("created_at")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
+                TextColumn::make("updated_at")
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('x')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('y')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('width')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('height')
-                    ->numeric()
-                    ->sortable(),
-                TextColumn::make('status')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'unverified' => 'warning',
-                        'accepted' => 'success',
-                        'rejected' => 'danger',
-                        default => 'gray',
-                    }),
-                TextColumn::make('rejection_reason')
+                TextColumn::make("x")->numeric()->sortable(),
+                TextColumn::make("y")->numeric()->sortable(),
+                TextColumn::make("width")->numeric()->sortable(),
+                TextColumn::make("height")->numeric()->sortable(),
+                TextColumn::make("status")->badge()->color(
+                    fn(string $state): string => match ($state) {
+                        "unverified" => "warning",
+                        "accepted" => "success",
+                        "rejected" => "danger",
+                        default => "gray",
+                    },
+                ),
+                TextColumn::make("rejection_reason")
                     ->limit(50)
                     ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make("corrections")
+                    ->limit(50)
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->label("Corrections"),
             ])
             ->filters([
                 //
             ])
-            ->recordActions([
-                EditAction::make(),
-            ])
+            ->recordActions([EditAction::make()])
             ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+                BulkActionGroup::make([DeleteBulkAction::make()]),
             ]);
     }
 }

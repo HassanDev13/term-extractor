@@ -9,7 +9,15 @@ import {
     CardTitle,
 } from "@/Components/ui/card";
 import { Badge } from "@/Components/ui/badge";
-import { Search, FileText, BookOpen, Trophy, Star } from "lucide-react";
+import {
+    Search,
+    FileText,
+    BookOpen,
+    Trophy,
+    Star,
+    Upload,
+    Eye,
+} from "lucide-react";
 import { useLanguage } from "@/Contexts/LanguageContext";
 
 export default function Index({ terms, filters }) {
@@ -52,6 +60,16 @@ export default function Index({ terms, filters }) {
                             </div>
                             <div className="flex items-center justify-between sm:justify-end gap-3">
                                 <a
+                                    href="/check"
+                                    className="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-green-500 hover:bg-green-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
+                                >
+                                    <Eye className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    <span className="hidden sm:inline">
+                                        Check Terms
+                                    </span>
+                                    <span className="sm:hidden">Check</span>
+                                </a>
+                                <a
                                     href="/leaderboard"
                                     className="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
                                 >
@@ -62,6 +80,16 @@ export default function Index({ terms, filters }) {
                                     <span className="sm:hidden">
                                         {t("leaderboard.short")}
                                     </span>
+                                </a>
+                                <a
+                                    href="/upload"
+                                    className="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 sm:py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors shadow-md hover:shadow-lg text-sm sm:text-base"
+                                >
+                                    <Upload className="h-4 w-4 sm:h-5 sm:w-5" />
+                                    <span className="hidden sm:inline">
+                                        Upload
+                                    </span>
+                                    <span className="sm:hidden">Upload</span>
                                 </a>
                             </div>
                         </div>
@@ -116,10 +144,29 @@ export default function Index({ terms, filters }) {
                                         key={term.id}
                                         className="hover:shadow-lg transition-shadow cursor-pointer"
                                         onClick={() => {
-                                            console.log(term.id);
-                                            router.visit(
-                                                route("terms.verify", term.id),
-                                            );
+                                            // Check if user is authenticated
+                                            const isAuthenticated =
+                                                document.querySelector(
+                                                    'meta[name="auth-user"]',
+                                                ) !== null;
+
+                                            if (isAuthenticated) {
+                                                // Authenticated users go to verify page
+                                                router.visit(
+                                                    route(
+                                                        "terms.verify",
+                                                        term.id,
+                                                    ),
+                                                );
+                                            } else {
+                                                // Non-authenticated users go to check page
+                                                router.visit(
+                                                    route(
+                                                        "check.term",
+                                                        term.id,
+                                                    ),
+                                                );
+                                            }
                                         }}
                                     >
                                         <CardHeader className="p-3 sm:p-6">

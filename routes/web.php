@@ -49,6 +49,25 @@ Route::get("/leaderboard", [LeaderboardController::class, "index"])->name(
     "leaderboard",
 );
 
+// Upload route - accessible to all users
+Route::get("/upload", function () {
+    return inertia("Upload");
+})->name("upload");
+
+// Check routes - accessible to all users for feedback
+use App\Http\Controllers\CheckController;
+Route::get("/check", [CheckController::class, "random"])->name("check.random");
+Route::get("/check/{term}", [CheckController::class, "show"])->name(
+    "check.term",
+);
+Route::post("/check/{term}/feedback", [
+    CheckController::class,
+    "storeFeedback",
+])->name("check.feedback");
+Route::get("/check/{term}/stats", [CheckController::class, "getStats"])->name(
+    "check.stats",
+);
+
 // Verification mutation routes - require authentication
 Route::middleware("auth")->group(function () {
     Route::put("/terms/{term}", [

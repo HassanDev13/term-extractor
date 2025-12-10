@@ -108,7 +108,34 @@ class VerificationController extends Controller
             abort(404);
         }
 
-        return response()->file($path);
+        // Add caching headers for better performance
+        $lastModified = filemtime($path);
+        $etag = md5($path . $lastModified);
+
+        // Check if client has cached version
+        $ifNoneMatch = request()->header("If-None-Match");
+        $ifModifiedSince = request()->header("If-Modified-Since");
+
+        if ($ifNoneMatch && $ifNoneMatch === $etag) {
+            return response()->make("", 304); // Not Modified
+        }
+
+        if ($ifModifiedSince && strtotime($ifModifiedSince) >= $lastModified) {
+            return response()->make("", 304); // Not Modified
+        }
+
+        return response()
+            ->file($path)
+            ->header("Cache-Control", "public, max-age=31536000") // 1 year
+            ->header(
+                "Expires",
+                gmdate("D, d M Y H:i:s", time() + 31536000) . " GMT",
+            )
+            ->header("ETag", $etag)
+            ->header(
+                "Last-Modified",
+                gmdate("D, d M Y H:i:s", $lastModified) . " GMT",
+            );
     }
 
     public function updateTerm(Request $request, Term $term)
@@ -116,6 +143,7 @@ class VerificationController extends Controller
         $validated = $request->validate([
             "term_en" => "nullable|string|max:255",
             "term_ar" => "nullable|string|max:255",
+            "corrections" => "nullable|string",
         ]);
 
         // Remove null values to only update provided fields
