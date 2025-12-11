@@ -28,6 +28,8 @@ import {
     SkipForward,
 } from "lucide-react";
 import { useLanguage } from "@/Contexts/LanguageContext";
+import ArabicTermsChart from "@/Components/charts/ArabicTermsChart";
+import ArabicTermAgreementChart from "@/Components/charts/ArabicTermAgreementChart";
 
 export default function CheckPage({
     term = null,
@@ -37,6 +39,8 @@ export default function CheckPage({
     prevTermId = null,
     totalTerms = 0,
     currentPosition = 0,
+    similarTerms = [],
+    arabicTermFrequency = [],
 }) {
     const { t } = useLanguage();
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -184,7 +188,6 @@ export default function CheckPage({
     return (
         <div className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800">
             <Head title={t("check.title")} />
-
             <div className="w-full max-w-7xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4 md:py-6">
                 {/* Header */}
                 <div className="mb-4 sm:mb-6">
@@ -200,24 +203,6 @@ export default function CheckPage({
                             </div>
 
                             <div className="flex items-center gap-2 sm:gap-3 flex-wrap sm:flex-nowrap">
-                                <Badge
-                                    variant="outline"
-                                    className="text-xs sm:text-sm whitespace-nowrap"
-                                >
-                                    {currentPosition} / {totalTerms}
-                                </Badge>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={handleRandomTerm}
-                                    className="text-xs sm:text-sm"
-                                >
-                                    <SkipForward className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-                                    <span className="hidden xs:inline">
-                                        {t("check.random_term")}
-                                    </span>
-                                    <span className="xs:hidden">Random</span>
-                                </Button>
                                 <Button
                                     variant="ghost"
                                     size="sm"
@@ -231,26 +216,6 @@ export default function CheckPage({
                                 </Button>
                             </div>
                         </div>
-
-                        {/* Progress bar */}
-                        {totalTerms > 0 && (
-                            <div>
-                                <div className="flex justify-between text-xs sm:text-sm text-gray-600 dark:text-gray-400 mb-1">
-                                    <span>{t("check.progress")}</span>
-                                    <span>
-                                        {Math.round(
-                                            (currentPosition / totalTerms) *
-                                                100,
-                                        )}
-                                        %
-                                    </span>
-                                </div>
-                                <Progress
-                                    value={(currentPosition / totalTerms) * 100}
-                                    className="h-1.5 sm:h-2"
-                                />
-                            </div>
-                        )}
                     </div>
                 </div>
 
@@ -679,7 +644,22 @@ export default function CheckPage({
                         </Card>
                     </div>
                 </div>
+                {/* Arabic Terms by Resource Chart */}
+                <div className="mt-6 sm:mt-8">
+                    <ArabicTermsChart
+                        data={similarTerms}
+                        currentTerm={term}
+                        currentResource={resource}
+                    />
+                </div>
 
+                {/* Arabic Term Agreement Radar Chart */}
+                <div className="mt-6 sm:mt-8">
+                    <ArabicTermAgreementChart
+                        data={arabicTermFrequency}
+                        currentTerm={term}
+                    />
+                </div>
                 {/* Footer note */}
                 <div className="mt-6 sm:mt-8 text-center text-xs sm:text-sm text-gray-500 dark:text-gray-400 px-4">
                     <p>

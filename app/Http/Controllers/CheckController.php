@@ -26,6 +26,9 @@ class CheckController extends Controller
         // Calculate current position (approximate based on ID order)
         $currentPosition = Term::where("id", "<=", $term->id)->count();
 
+        // Get similar terms across all resources for the chart
+        $similarTermsData = $this->getSimilarTerms($term);
+
         return Inertia::render("Check", [
             "term" => [
                 "id" => $term->id,
@@ -58,6 +61,8 @@ class CheckController extends Controller
             "prevTermId" => $adjacentTerms["prev"]?->id,
             "totalTerms" => $totalTerms,
             "currentPosition" => $currentPosition,
+            "similarTerms" => $similarTermsData["resources"],
+            "arabicTermFrequency" => $similarTermsData["arabic_term_frequency"],
         ]);
     }
 
@@ -188,6 +193,109 @@ class CheckController extends Controller
         return [
             "prev" => $prevTerm,
             "next" => $nextTerm,
+        ];
+    }
+
+    /**
+     * Get similar terms across resources for chart display
+     */
+    private function getSimilarTerms(Term $term)
+    {
+        // Find exact matches only - no partial matching
+        $similarTerms = Term::where("id", "!=", $term->id)
+            ->where(function ($query) use ($term) {
+                // Exact match for English term only
+                if ($term->term_en) {
+                    $query->where("term_en", "=", $term->term_en);
+                }
+                // Exact match for Arabic term only
+                if ($term->term_ar) {
+                    $query->orWhere("term_ar", "=", $term->term_ar);
+                }
+            })
+            ->with(["resourcePage.resource"])
+            ->get();
+
+        // Group by resource and collect Arabic terms
+        $resourceData = [];
+        $arabicTermFrequency = [];
+
+        foreach ($similarTerms as $similarTerm) {
+            if (
+                $similarTerm->resourcePage &&
+                $similarTerm->resourcePage->resource
+            ) {
+                $resourceId = $similarTerm->resourcePage->resource->id;
+                $resourceName = $similarTerm->resourcePage->resource->name;
+
+                if (!isset($resourceData[$resourceId])) {
+                    $resourceData[$resourceId] = [
+                        "resource_id" => $resourceId,
+                        "resource_name" => $resourceName,
+                        "arabic_terms" => [],
+                    ];
+                }
+
+                // Add Arabic term if it exists
+                if ($similarTerm->term_ar) {
+                    $arabicTerm = $similarTerm->term_ar;
+
+                    // Track frequency of Arabic terms
+                    if (!isset($arabicTermFrequency[$arabicTerm])) {
+                        $arabicTermFrequency[$arabicTerm] = [
+                            "term" => $arabicTerm,
+                            "count" => 0,
+                            "resources" => [],
+                        ];
+                    }
+
+                    $arabicTermFrequency[$arabicTerm]["count"]++;
+
+                    if (
+                        !in_array(
+                            $resourceId,
+                            $arabicTermFrequency[$arabicTerm]["resources"],
+                        )
+                    ) {
+                        $arabicTermFrequency[$arabicTerm][
+                            "resources"
+                        ][] = $resourceId;
+                    }
+
+                    if (
+                        !in_array(
+                            $arabicTerm,
+                            $resourceData[$resourceId]["arabic_terms"],
+                        )
+                    ) {
+                        $resourceData[$resourceId][
+                            "arabic_terms"
+                        ][] = $arabicTerm;
+                    }
+                }
+            }
+        }
+
+        // Convert to array and sort by number of Arabic terms descending
+        $result = array_values($resourceData);
+        usort($result, function ($a, $b) {
+            return count($b["arabic_terms"]) - count($a["arabic_terms"]);
+        });
+
+        // Prepare Arabic term frequency data for radar chart
+        $arabicTermFrequencyData = array_values($arabicTermFrequency);
+
+        // Sort by frequency descending
+        usort($arabicTermFrequencyData, function ($a, $b) {
+            return $b["count"] - $a["count"];
+        });
+
+        // Limit to top 10 most frequent Arabic terms for radar chart
+        $topArabicTerms = array_slice($arabicTermFrequencyData, 0, 10);
+
+        return [
+            "resources" => $result,
+            "arabic_term_frequency" => $topArabicTerms,
         ];
     }
 
