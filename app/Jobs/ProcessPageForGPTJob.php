@@ -94,6 +94,10 @@ class ProcessPageForGPTJob implements ShouldQueue
         $fullPrompt =
             $prompt . $jsonInstruction . "RAW OCR TEXT TO ANALYZE:\n" . $text;
 
+            // New instruction to filter out non-relevant texts
+        $fullPrompt .= "\n- Only extract terms where both English and Arabic terms exist in the same context (sentence or phrase).";
+        $fullPrompt .= "\n- Ignore texts like introductions, tables of contents, or anything that doesn't contain both an English term and its corresponding Arabic translation.";
+    
         // Debug: Log the text being analyzed
         Log::info(
             "ProcessPageForGPTJob - Page {$this->page->id} - Text length: " .
