@@ -17,12 +17,16 @@ import {
     Star,
     Upload,
     Eye,
+    Layers,
 } from "lucide-react";
 import { useLanguage } from "@/Contexts/LanguageContext";
+import TermStatsModal from "@/Components/TermStatsModal";
 
-export default function Index({ terms, filters }) {
+export default function Index({ groupedTerms = [], filters }) {
     const { t } = useLanguage();
     const [search, setSearch] = useState(filters.search || "");
+    const [selectedTerm, setSelectedTerm] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Debounced search
     useEffect(() => {
@@ -40,6 +44,11 @@ export default function Index({ terms, filters }) {
 
         return () => clearTimeout(timer);
     }, [search]);
+
+    const handleTermClick = (termGroup) => {
+        setSelectedTerm(termGroup);
+        setIsModalOpen(true);
+    };
 
     return (
         <>
@@ -107,14 +116,28 @@ export default function Index({ terms, filters }) {
                                 className="pl-8 sm:pl-10 h-10 sm:h-12 text-base sm:text-lg dark:text-white"
                             />
                         </div>
-                        <p className="mt-2 text-xs sm:text-sm text-gray-500">
-                            {t("search.found_terms", { count: terms.total })}
-                        </p>
+                        {search && (
+                            <p className="mt-2 text-xs sm:text-sm text-gray-500">
+                                Found {groupedTerms.length} unique term
+                                {groupedTerms.length !== 1 ? "s" : ""}
+                            </p>
+                        )}
                     </div>
 
                     {/* Results */}
                     <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
-                        {terms.data.length === 0 ? (
+                        {!search ? (
+                            <div className="col-span-full text-center py-8 sm:py-12">
+                                <Search className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
+                                <p className="text-gray-500 text-base sm:text-lg">
+                                    Enter a search term to get started
+                                </p>
+                                <p className="text-gray-400 text-xs sm:text-sm mt-2">
+                                    Search is case-insensitive and will group
+                                    similar terms
+                                </p>
+                            </div>
+                        ) : groupedTerms.length === 0 ? (
                             <div className="col-span-full text-center py-8 sm:py-12">
                                 <FileText className="mx-auto h-10 w-10 sm:h-12 sm:w-12 text-gray-400 mb-3 sm:mb-4" />
                                 <p className="text-gray-500 text-base sm:text-lg">
@@ -125,110 +148,132 @@ export default function Index({ terms, filters }) {
                                 </p>
                             </div>
                         ) : (
-                            terms.data.map((term) => {
-                                const confidenceLevel =
-                                    term.confidence_level || 0;
-                                const confidenceColor =
-                                    confidenceLevel >= 9
-                                        ? "text-green-500"
-                                        : confidenceLevel >= 7
-                                          ? "text-blue-500"
-                                          : confidenceLevel >= 5
-                                            ? "text-yellow-500"
-                                            : confidenceLevel >= 3
-                                              ? "text-orange-500"
-                                              : "text-red-500";
-
+                            groupedTerms.map((termGroup, idx) => {
                                 return (
                                     <Card
-                                        key={term.id}
+                                        key={idx}
                                         className="hover:shadow-lg transition-shadow cursor-pointer"
-                                        onClick={() => {
-                                            // Check if user is authenticated
-                                            const isAuthenticated =
-                                                document.querySelector(
-                                                    'meta[name="auth-user"]',
-                                                ) !== null;
-
-                                            if (isAuthenticated) {
-                                                // Authenticated users go to verify page
-                                                router.visit(
-                                                    route(
-                                                        "terms.verify",
-                                                        term.id,
-                                                    ),
-                                                );
-                                            } else {
-                                                // Non-authenticated users go to check page
-                                                router.visit(
-                                                    route(
-                                                        "check.term",
-                                                        term.id,
-                                                    ),
-                                                );
-                                            }
-                                        }}
+                                        onClick={() =>
+                                            handleTermClick(termGroup)
+                                        }
                                     >
                                         <CardHeader className="p-3 sm:p-6">
-                                            <div className="flex items-start justify-between gap-2">
-                                                <div className="flex-1">
-                                                    <CardTitle className="text-base sm:text-lg mb-2 line-clamp-2">
-                                                        {term.term_en}
-                                                    </CardTitle>
-                                                    <CardDescription className="text-lg sm:text-xl font-arabic line-clamp-2">
-                                                        {term.term_ar}
-                                                    </CardDescription>
-                                                </div>
-                                                {confidenceLevel > 0 && (
-                                                    <div
-                                                        className="flex items-center gap-1 shrink-0"
-                                                        title={`Confidence: ${confidenceLevel}/10`}
-                                                    >
-                                                        <Star
-                                                            className={`h-4 w-4 ${confidenceColor} fill-current`}
-                                                        />
-                                                        <span
-                                                            className={`text-sm font-semibold ${confidenceColor}`}
-                                                        >
-                                                            {confidenceLevel}
-                                                        </span>
-                                                    </div>
-                                                )}
+                                            <div className="flex items-start justify-between gap-2 mb-2">
+                                                <CardTitle className="text-base sm:text-lg line-clamp-2 flex-1">
+                                                    {termGroup.display_term_en ||
+                                                        "N/A"}
+                                                </CardTitle>
                                             </div>
+                                            <CardDescription
+                                                className="text-lg sm:text-xl font-arabic line-clamp-2"
+                                                dir="rtl"
+                                            >
+                                                {termGroup.display_term_ar ||
+                                                    "N/A"}
+                                            </CardDescription>
                                         </CardHeader>
                                         <CardContent className="p-3 sm:p-6 pt-0">
-                                            <div className="space-y-2">
-                                                {/* Resource Info */}
-                                                <div className="flex items-center gap-2 text-xs sm:text-sm">
-                                                    <BookOpen className="h-3 w-3 sm:h-4 sm:w-4 text-gray-500" />
-                                                    <span className="text-gray-700 dark:text-gray-300 font-medium truncate">
-                                                        {term.resource_page
-                                                            ?.resource?.name ||
-                                                            t(
-                                                                "search.unknown_resource",
-                                                            )}
-                                                    </span>
-                                                </div>
+                                            <div className="space-y-3">
+                                                {/* Statistics Badges */}
+                                                <div className="flex flex-wrap gap-2">
+                                                    <Badge
+                                                        variant="default"
+                                                        className="text-xs bg-blue-500"
+                                                    >
+                                                        <Layers className="h-3 w-3 mr-1" />
+                                                        {termGroup.total_count}{" "}
+                                                        occurrence
+                                                        {termGroup.total_count !==
+                                                        1
+                                                            ? "s"
+                                                            : ""}
+                                                    </Badge>
 
-                                                {/* Page Number */}
-                                                <div className="flex items-center gap-2">
                                                     <Badge
                                                         variant="secondary"
                                                         className="text-xs"
                                                     >
-                                                        {t("common.page")}{" "}
-                                                        {term.resource_page
-                                                            ?.page_number ||
-                                                            "N/A"}
+                                                        <BookOpen className="h-3 w-3 mr-1" />
+                                                        {
+                                                            termGroup.resource_count
+                                                        }{" "}
+                                                        book
+                                                        {termGroup.resource_count !==
+                                                        1
+                                                            ? "s"
+                                                            : ""}
                                                     </Badge>
+
+                                                    {termGroup.variations
+                                                        .length > 1 && (
+                                                        <Badge
+                                                            variant="outline"
+                                                            className="text-xs"
+                                                        >
+                                                            {
+                                                                termGroup
+                                                                    .variations
+                                                                    .length
+                                                            }{" "}
+                                                            variation
+                                                            {termGroup
+                                                                .variations
+                                                                .length !== 1
+                                                                ? "s"
+                                                                : ""}
+                                                        </Badge>
+                                                    )}
                                                 </div>
 
-                                                {/* Created Date */}
-                                                <div className="text-xs text-gray-500 mt-2">
-                                                    {t("search.added")}:{" "}
-                                                    {new Date(
-                                                        term.created_at,
-                                                    ).toLocaleDateString()}
+                                                {/* Top Resources Preview */}
+                                                <div className="text-xs text-gray-600 dark:text-gray-400">
+                                                    <div className="font-medium mb-1">
+                                                        Top Books:
+                                                    </div>
+                                                    <div className="space-y-1">
+                                                        {termGroup.resources
+                                                            .slice(0, 2)
+                                                            .map(
+                                                                (
+                                                                    resource,
+                                                                    ridx,
+                                                                ) => (
+                                                                    <div
+                                                                        key={
+                                                                            ridx
+                                                                        }
+                                                                        className="flex items-center justify-between"
+                                                                    >
+                                                                        <span className="truncate flex-1">
+                                                                            {
+                                                                                resource.resource_name
+                                                                            }
+                                                                        </span>
+                                                                        <span className="ml-2 font-semibold text-gray-900 dark:text-white">
+                                                                            {
+                                                                                resource.count
+                                                                            }
+                                                                            x
+                                                                        </span>
+                                                                    </div>
+                                                                ),
+                                                            )}
+                                                        {termGroup.resources
+                                                            .length > 2 && (
+                                                            <div className="text-gray-500 italic">
+                                                                +
+                                                                {termGroup
+                                                                    .resources
+                                                                    .length - 2}{" "}
+                                                                more...
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {/* Click to view more */}
+                                                <div className="text-xs text-blue-600 dark:text-blue-400 font-medium pt-2 border-t border-gray-200 dark:border-gray-700">
+                                                    Click to view details →
                                                 </div>
                                             </div>
                                         </CardContent>
@@ -237,38 +282,15 @@ export default function Index({ terms, filters }) {
                             })
                         )}
                     </div>
-
-                    {/* Pagination */}
-                    {terms.last_page > 1 && (
-                        <div className="mt-6 sm:mt-8 flex flex-wrap justify-center gap-1 sm:gap-2">
-                            {terms.links.map((link, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => {
-                                        if (link.url) {
-                                            router.visit(link.url, {
-                                                preserveState: true,
-                                                preserveScroll: false,
-                                            });
-                                        }
-                                    }}
-                                    disabled={!link.url}
-                                    className={`px-2 sm:px-4 py-1 sm:py-2 rounded-md text-xs sm:text-sm font-medium transition-colors ${
-                                        link.active
-                                            ? "bg-gray-900 text-white dark:bg-white dark:text-gray-900"
-                                            : link.url
-                                              ? "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700"
-                                              : "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-600"
-                                    }`}
-                                    dangerouslySetInnerHTML={{
-                                        __html: link.label,
-                                    }}
-                                />
-                            ))}
-                        </div>
-                    )}
                 </div>
             </div>
+
+            {/* Term Statistics Modal */}
+            <TermStatsModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                termGroup={selectedTerm}
+            />
         </>
     );
 }
