@@ -202,8 +202,12 @@
                             <div class="meta-row">
                                 <span class="meta-item">
                                     <strong>الجودة:</strong> 
-                                    @for($i = 0; $i < ($arabicData['stars'] ?? 0); $i++)
-                                        ⭐
+                                    @for($i = 1; $i <= 5; $i++)
+                                        @if($i <= ($arabicData['stars'] ?? 0))
+                                            <span style="color:#f39c12;">★</span>
+                                        @else
+                                            <span style="color:#bdc3c7;">☆</span>
+                                        @endif
                                     @endfor
                                     ({{ $arabicData['stars'] ?? 0 }}/5)
                                 </span>
@@ -220,7 +224,7 @@
                                 <strong>المصادر:</strong>
                                 @foreach($arabicData['sources'] as $sourceIndex => $source)
                                     <span class="source-item">
-                                        {{ $source['resource_name'] }} (صفحة {{ $source['page_number'] }})@if($sourceIndex < count($arabicData['sources']) - 1), @endif
+                                        {{ $source['resource_name'] }} (صفحات: {{ $source['pages'] }})@if($sourceIndex < count($arabicData['sources']) - 1), @endif
                                     </span>
                                 @endforeach
                             </div>

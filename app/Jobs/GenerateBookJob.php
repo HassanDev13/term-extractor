@@ -93,16 +93,29 @@ class GenerateBookJob implements ShouldQueue
                     return $term->resourcePage->resource_id;
                 })->unique();
                 
-                // Collect resource and page information
-                $sources = $subGroup->map(function ($term) {
-                    return [
-                        'resource_name' => $term->resourcePage->resource->name ?? 'Unknown',
-                        'page_number' => $term->resourcePage->page_number ?? 0,
+                // Collect and group sources by resource
+                $sourcesByResource = [];
+                foreach ($subGroup as $term) {
+                    $resourceName = $term->resourcePage->resource->name ?? 'Unknown';
+                    $pageNumber = $term->resourcePage->page_number ?? 0;
+                    
+                    if (!isset($sourcesByResource[$resourceName])) {
+                        $sourcesByResource[$resourceName] = [];
+                    }
+                    if (!in_array($pageNumber, $sourcesByResource[$resourceName])) {
+                        $sourcesByResource[$resourceName][] = $pageNumber;
+                    }
+                }
+                
+                // Format sources: "Resource Name (pages: 1, 5, 10)"
+                $sources = [];
+                foreach ($sourcesByResource as $resourceName => $pages) {
+                    sort($pages);
+                    $sources[] = [
+                        'resource_name' => $resourceName,
+                        'pages' => implode(', ', $pages)
                     ];
-                })->unique(function ($item) {
-                    // Unique by resource name and page number combination
-                    return $item['resource_name'] . '-' . $item['page_number'];
-                })->values();
+                }
                 
                 $count = $uniqueResources->count();
                 $totalCount = $group->map(fn($t) => $t->resourcePage->resource_id)->unique()->count();
@@ -128,10 +141,22 @@ class GenerateBookJob implements ShouldQueue
                 ];
             })->sortByDesc('count')->values();
             
-            // Mark the most common translation
-            if ($arabicTermsData->isNotEmpty()) {
-                $arabicTermsData = $arabicTermsData->map(function ($item, $index) {
-                    $item['is_most_common'] = $index === 0; // First item after sorting by count
+            // Mark the most common translation ONLY if:
+            // 1. There are multiple Arabic terms (> 1)
+            // 2. The first term has a higher count than the second (no tie)
+            if ($arabicTermsData->count() > 1) {
+                $firstCount = $arabicTermsData[0]['count'];
+                $secondCount = $arabicTermsData[1]['count'];
+                
+                $arabicTermsData = $arabicTermsData->map(function ($item, $index) use ($firstCount, $secondCount) {
+                    // Only mark as most common if it's the first AND has higher count than second
+                    $item['is_most_common'] = ($index === 0 && $firstCount > $secondCount);
+                    return $item;
+                });
+            } else {
+                // Single term - don't mark as most common
+                $arabicTermsData = $arabicTermsData->map(function ($item) {
+                    $item['is_most_common'] = false;
                     return $item;
                 });
             }
