@@ -293,7 +293,11 @@ export default function CheckPage({
                         </CardHeader>
                         <CardContent className="p-0 h-full">
                             <div className="relative bg-gray-900 h-[calc(100vh-300px)] min-h-[400px] sm:min-h-[500px] flex items-center justify-center overflow-hidden">
-                                {(showPdf || showPdfDirectly) &&
+                                {/* Always show PDF if: 
+                                    1. User toggled to PDF view, OR
+                                    2. No image available, OR  
+                                    3. Image failed to load */}
+                                {(showPdf || showPdfDirectly || !page?.image_path || imageError) &&
                                 resource &&
                                 page?.page_number ? (
                                     <iframe
@@ -301,9 +305,7 @@ export default function CheckPage({
                                         className="w-full h-full border-0"
                                         title="PDF Viewer"
                                     />
-                                ) : page?.image_path &&
-                                  !showPdfDirectly &&
-                                  !showPdf ? (
+                                ) : page?.image_path ? (
                                     <>
                                         {!imageLoaded && !imageError && (
                                             <div className="absolute inset-0 flex items-center justify-center bg-gray-800">
@@ -315,39 +317,14 @@ export default function CheckPage({
                                                 </div>
                                             </div>
                                         )}
-                                        {imageError ? (
-                                            <div className="text-center p-4 sm:p-8">
-                                                <XCircle className="h-10 w-10 sm:h-12 sm:w-12 text-red-400 mx-auto mb-2 sm:mb-3" />
-                                                <p className="text-xs sm:text-sm text-gray-400">
-                                                    {t(
-                                                        "check.no_image_available",
-                                                    )}
-                                                </p>
-                                                <Button
-                                                    variant="outline"
-                                                    size="sm"
-                                                    onClick={() => {
-                                                        setImageError(false);
-                                                        setImageLoaded(false);
-                                                        setShowPdfDirectly(
-                                                            true,
-                                                        );
-                                                        setShowPdf(true);
-                                                    }}
-                                                    className="mt-2 text-xs"
-                                                >
-                                                    View PDF Instead
-                                                </Button>
-                                            </div>
-                                        ) : (
-                                            <img
-                                                src={route(
-                                                    "pages.image",
-                                                    page.id,
-                                                )}
-                                                alt={`Page ${page?.page_number}`}
-                                                className={`w-full h-full object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
-                                                loading="eager"
+                                        <img
+                                            src={route(
+                                                "pages.image",
+                                                page.id,
+                                            )}
+                                            alt={`Page ${page?.page_number}`}
+                                            className={`w-full h-full object-contain transition-opacity duration-300 ${imageLoaded ? "opacity-100" : "opacity-0"}`}
+                                            loading="eager"
                                                 decoding="async"
                                                 onLoad={() =>
                                                     setImageLoaded(true)
@@ -358,7 +335,6 @@ export default function CheckPage({
                                                     setShowPdf(true);
                                                 }}
                                             />
-                                        )}
                                     </>
                                 ) : (
                                     <div className="text-center p-4 sm:p-8">
