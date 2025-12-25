@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Term extends Model
 {
+    use HasFactory;
     protected $fillable = [
         "resource_page_id",
         "term_en",
@@ -21,6 +23,8 @@ class Term extends Model
         "height",
         "status",
         "rejection_reason",
+        "source_url",
+        "source_type",
     ];
 
     public function resourcePage()

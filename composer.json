@@ -12,8 +12,11 @@
         "inertiajs/inertia-laravel": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "mpdf/mpdf": "^8.2",
         "openai-php/laravel": "^0.18.0",
         "spatie/pdf-to-text": "^1.54",
+        "symfony/css-selector": "^7.4",
+        "symfony/dom-crawler": "^8.0",
         "thiagoalessio/tesseract_ocr": "^2.13",
         "tightenco/ziggy": "^2.6"
     },
