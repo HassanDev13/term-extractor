@@ -79,3 +79,6 @@ Route::middleware("auth")->group(function () {
         "updateTermStatus",
     ])->name("terms.update-status");
 });
+
+use App\Http\Controllers\Api\ChatController;
+Route::get("/chat", [ChatController::class, "index"])->name("chat.index");

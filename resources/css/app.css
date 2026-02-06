@@ -11,7 +11,7 @@
         "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
         "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
         "Noto Color Emoji";
-    --font-arabic: "Noto Sans Arabic", "Arial", sans-serif;
+    --font-arabic: "Tajawal", "Noto Sans Arabic", "Arial", sans-serif;
 }
 
 /* Arabic font styling */
@@ -28,14 +28,7 @@
     font-family: var(--font-arabic);
 }
 
-/* RTL-aware utilities using logical properties */
-[dir="rtl"] .text-left {
-    text-align: right;
-}
 
-[dir="rtl"] .text-right {
-    text-align: left;
-}
 
 /* Flip icons and elements that should mirror in RTL */
 [dir="rtl"] .rtl-flip {
@@ -43,7 +36,7 @@
 }
 
 /* Ensure proper spacing in RTL */
-[dir="rtl"] .space-x-reverse > :not([hidden]) ~ :not([hidden]) {
+[dir="rtl"] .space-x-reverse> :not([hidden])~ :not([hidden]) {
     --tw-space-x-reverse: 1;
 }
 
