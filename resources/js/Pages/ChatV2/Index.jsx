@@ -106,6 +106,7 @@ export default function LandingSearchPage() {
                         <div className="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
                             <a href="#theory" className="hover:text-blue-600 transition-colors">نظرية المثلث</a>
                             <a href="#methodology" className="hover:text-blue-600 transition-colors">المنهجية</a>
+                            <a href="#future" className="hover:text-blue-600 transition-colors">آفاق المستقبل</a>
                             <div className="px-3 py-1 bg-blue-50 text-blue-600 border border-blue-100 rounded-full text-[10px]">Version Beta</div>
                         </div>
                     </div>
@@ -179,7 +180,7 @@ export default function LandingSearchPage() {
                                     <button
                                         key={tag}
                                         onClick={() => handleSearch(null, tag)}
-                                        className="px-4 py-1.5 bg-white border border-slate-100 rounded-full text-xs font-bold text-slate-500 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm"
+                                        className="px-4 py-1.5 bg-white border border-slate-100 rounded-full text-xs font-bold text-slate-500 hover:border-blue-500 hover:text-blue-600 transition-all shadow-sm hover:shadow-md active:scale-95"
                                     >
                                         {tag}
                                     </button>
@@ -349,6 +350,38 @@ export default function LandingSearchPage() {
                                     </div>
                                     <p className="text-xs text-slate-500 italic">مقارنة بين المعجم الموحد (2000) والواقع الاستعمالي الحديث.</p>
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Future Plans Section */}
+                <section id="future" className="py-24 px-4 bg-slate-50">
+                    <div className="container mx-auto max-w-6xl">
+                        <div className="text-center mb-16 space-y-4">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">آفاق البحث المستقبلية</h3>
+                            <p className="text-slate-500 text-lg max-w-2xl mx-auto">خطواتنا القادمة نحو بناء معجم عربي ذكي وشامل.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                                <div className="bg-blue-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <Bot className="h-7 w-7 text-blue-600" />
+                                </div>
+                                <h4 className="text-xl font-bold text-slate-800 mb-4">التوليد بالذكاء الاصطناعي</h4>
+                                <p className="text-slate-500 leading-relaxed">
+                                    في حال عدم توفر المصطلح ضمن قاعدة البيانات، سيتم الاستعانة بالنماذج اللغوية لاقتراح عدة بدائل، مع إتاحة الفرصة لمستهلك المعرفة لاختيار الأنسب منها.
+                                </p>
+                            </div>
+
+                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
+                                <div className="bg-indigo-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                                    <Database className="h-7 w-7 text-indigo-600" />
+                                </div>
+                                <h4 className="text-xl font-bold text-slate-800 mb-4">توسيع قاعدة البيانات</h4>
+                                <p className="text-slate-500 leading-relaxed">
+                                    العمل على توسيع قاعدة البيانات بشكل تدريجي لتشمل المزيد من المعاجم والمصادر، وتطوير تطبيقات لتصحيح المصطلحات المستخدمة آلياً.
+                                </p>
                             </div>
                         </div>
                     </div>
