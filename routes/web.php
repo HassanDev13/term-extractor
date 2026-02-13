@@ -5,6 +5,9 @@ use App\Http\Controllers\TermController;
 
 use App\Http\Controllers\Api\ChatV2Controller;
 Route::get("/", [ChatV2Controller::class, "index"])->name("home");
+Route::get("/paper", function () {
+    return inertia("ChatV2/Paper");
+})->name("paper");
 Route::get("/classic", [TermController::class, "index"])->name("terms.index");
 
 // Redirect old /terms route to root for backward compatibility

@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Head } from "@inertiajs/react";
+import { Head, Link } from "@inertiajs/react";
 import { Input } from "@/Components/ui/input";
 import { Button } from "@/Components/ui/button";
 import { Card, CardContent } from "@/Components/ui/card";
@@ -112,7 +112,7 @@ export default function LandingSearchPage() {
                 </nav>
 
                 {/* Hero Section */}
-                <header className="relative pt-40 pb-20 overflow-hidden">
+                <header className="relative pt-32 md:pt-40 pb-12 md:pb-20 overflow-hidden">
                     <div className="absolute top-0 right-0 w-full h-full pointer-events-none">
                         <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-blue-100/50 blur-[120px] rounded-full" />
                         <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-indigo-50/50 blur-[100px] rounded-full" />
@@ -120,13 +120,32 @@ export default function LandingSearchPage() {
 
                     <div className="container mx-auto px-4 relative z-10 text-center space-y-12">
                         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                            <h2 className="text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.1]">
+                            <h2 className="text-4xl sm:text-5xl md:text-7xl font-black text-slate-900 tracking-tight leading-[1.15] md:leading-[1.1]">
                                 توحيد المصطلحات <br />
                                 <span className="text-blue-600">بمنهجية الأكثر استعمالاً</span>
                             </h2>
                             <p className="text-slate-500 text-lg md:text-2xl max-w-3xl mx-auto leading-relaxed font-medium">
                                 معجم عربي ذكي يقوم على قياس المقبولية والاستعمال الواقعي، بدلاً من التوحيد النظري الجامد.
                             </p>
+                            
+                            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-100 px-4">
+                                <a 
+                                    href="https://docs.google.com/document/d/YOUR_GOOGLE_DOC_ID" 
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-slate-900 text-white px-8 py-4 rounded-full font-bold hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/10 hover:shadow-slate-900/20 active:scale-95 group text-sm md:text-base"
+                                >
+                                    <FileText className="h-5 w-5 group-hover:rotate-3 transition-transform" /> 
+                                    <span>تصفح الورقة المفاهيمية</span>
+                                </a>
+                                <a 
+                                    href="#methodology" 
+                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-600 px-8 py-4 rounded-full font-bold border border-slate-200 hover:border-blue-200 hover:text-blue-600 transition-colors active:scale-95 text-sm md:text-base"
+                                >
+                                    <span>استكشاف المنهجية</span>
+                                    <ArrowLeft className="h-5 w-5" />
+                                </a>
+                            </div>
                         </div>
 
                         {/* Large Search Bar */}
@@ -141,7 +160,7 @@ export default function LandingSearchPage() {
                                         value={query}
                                         onChange={(e) => setQuery(e.target.value)}
                                         placeholder="ابحث عن المصطلح (مثلاً: array, cloud, algorithm)..."
-                                        className="flex-1 bg-transparent border-none focus:ring-0 text-xl py-4 px-4 text-right font-arabic placeholder:text-slate-300"
+                                        className="flex-1 bg-transparent border-none outline-none focus:outline-none focus:ring-0 active:outline-none text-xl py-4 px-4 text-right font-arabic placeholder:text-slate-300"
                                         dir="rtl"
                                     />
                                     <Button 
@@ -149,7 +168,7 @@ export default function LandingSearchPage() {
                                         disabled={!query.trim() || loading}
                                         className="h-16 px-8 rounded-[2rem] bg-blue-600 hover:bg-blue-700 text-white shadow-xl shadow-blue-600/20 transition-all text-lg font-black"
                                     >
-                                        {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "بحث ذكي"}
+                                        {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : "بحث"}
                                     </Button>
                                 </div>
                             </form>
@@ -331,6 +350,41 @@ export default function LandingSearchPage() {
                                     <p className="text-xs text-slate-500 italic">مقارنة بين المعجم الموحد (2000) والواقع الاستعمالي الحديث.</p>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Join Community Section */}
+                <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white mx-4 md:mx-10 rounded-[3rem] shadow-2xl shadow-blue-900/20 relative overflow-hidden mb-12">
+                    <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
+                         <div className="absolute top-[-20%] right-[-20%] w-[600px] h-[600px] bg-white rounded-full blur-[100px]" />
+                    </div>
+                    
+                    <div className="container mx-auto px-4 text-center relative z-10 space-y-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-sm font-bold animate-pulse">
+                            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
+                            مجتمع المعرفة
+                        </div>
+                        
+                        <h2 className="text-3xl md:text-6xl font-black tracking-tight leading-tight">
+                            كن جزءاً من الحوار <br />
+                            <span className="text-blue-200">حول مستقبل المصطلح العربي</span>
+                        </h2>
+                        
+                        <p className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
+                            انضم إلى قناتنا على تيليجرام لمتابعة آخر تحديثات المشروع، والنقاشات حول توحيد المصطلحات، والمساهمة في بناء المعجم.
+                        </p>
+
+                        <div className="pt-4">
+                            <a 
+                                href="https://t.me/hacene_dev" 
+                                target="_blank" 
+                                rel="noopener noreferrer"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 md:px-10 md:py-5 rounded-full font-black text-base md:text-lg hover:bg-blue-50 transition-all shadow-xl shadow-blue-900/20 hover:scale-105 active:scale-95 group"
+                            >
+                                <Send className="h-5 w-5 md:h-6 md:w-6 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                                انضم للقناة الآن
+                            </a>
                         </div>
                     </div>
                 </section>
