@@ -95,8 +95,8 @@ export default function LandingSearchPage() {
                 <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 py-4 shadow-sm">
                     <div className="container mx-auto px-4 flex items-center justify-between">
                         <div className="flex items-center gap-3 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-                            <div className="bg-blue-600 p-2 rounded-xl text-white">
-                                <Sparkles className="h-5 w-5" />
+                            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100">
+                                <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
                             </div>
                             <div>
                                 <h1 className="text-lg font-black text-slate-800 leading-tight">مشروع التعريب</h1>
@@ -426,8 +426,8 @@ export default function LandingSearchPage() {
                 <footer className="py-20 border-t border-slate-200 bg-white">
                     <div className="container mx-auto px-4 text-center space-y-8">
                         <div className="flex flex-col items-center gap-4">
-                            <div className="bg-blue-600 p-2 rounded-xl text-white">
-                                <Sparkles className="h-6 w-6" />
+                            <div className="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 mb-2">
+                                <img src="/images/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
                             </div>
                             <h4 className="text-2xl font-black text-slate-800">مشروع التعريب</h4>
                             <p className="text-slate-400 text-sm max-w-md mx-auto font-medium">

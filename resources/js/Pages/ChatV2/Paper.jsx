@@ -179,8 +179,8 @@ export default function Paper() {
                 <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-slate-200 py-4 shadow-sm">
                     <div className="container mx-auto px-4 flex items-center justify-between">
                         <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-                            <div className="p-2 rounded-xl text-blue-600 bg-blue-50">
-                                <ArrowRight className="h-5 w-5" />
+                            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100">
+                                <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
                             </div>
                             <div>
                                 <h1 className="text-lg font-black text-slate-800 leading-tight">مشروع التعريب</h1>
