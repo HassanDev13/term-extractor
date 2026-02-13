@@ -14,3 +14,5 @@ Route::get('/resources', [SearchController::class, 'resources']);
 
 use App\Http\Controllers\Api\ChatController;
 Route::post('/chat', [ChatController::class, 'chat']);
+use App\Http\Controllers\Api\ChatV2Controller;
+Route::post('/chat_v2', [ChatV2Controller::class, 'chat']);

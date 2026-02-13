@@ -3,7 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TermController;
 
-Route::get("/", [TermController::class, "index"])->name("terms.index");
+use App\Http\Controllers\Api\ChatV2Controller;
+Route::get("/", [ChatV2Controller::class, "index"])->name("home");
+Route::get("/classic", [TermController::class, "index"])->name("terms.index");
 
 // Redirect old /terms route to root for backward compatibility
 Route::redirect("/terms", "/", 301);
