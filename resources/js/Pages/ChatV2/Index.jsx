@@ -711,7 +711,7 @@ export default function LandingSearchPage() {
                 </section>
 
                 {/* Testimonial Section */}
-                <section className="py-20 px-4 bg-white border-b border-slate-100">
+                <section className="py-20 px-4 bg-slate-50 border-b border-slate-100">
                     <div className="container mx-auto max-w-5xl">
                         <div className="text-center mb-12 space-y-3">
                             <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
