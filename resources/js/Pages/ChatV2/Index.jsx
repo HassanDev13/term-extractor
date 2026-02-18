@@ -5,10 +5,108 @@ import { Switch } from "@/Components/ui/switch";
 import { 
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
-    BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2
+    BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+
+const SHOWCASE = [
+    {
+        en: "query",
+        short: "\u0627\u0633\u062a\u0639\u0644\u0627\u0645",
+        full: `\u0628\u0646\u0627\u0621\u064b \u0639\u0644\u0649 \u0646\u062a\u0627\u0626\u062c \u0627\u0644\u0628\u062d\u062b\u060c \u0627\u0644\u0645\u0635\u0637\u0644\u062d \u0627\u0644\u0623\u0643\u062b\u0631 \u0627\u0633\u062a\u0639\u0645\u0627\u0644\u0627\u064b \u0644\u0640 "query" \u0647\u0648 **\u0627\u0633\u062a\u0639\u0644\u0627\u0645** — \u0638\u0647\u0631 3 \u0645\u0631\u0627\u062a \u0645\u0646 \u0623\u0635\u0644 4 \u0641\u064a \u0645\u0635\u062f\u0631\u064a\u0646 (\u0627\u0644\u062c\u0632\u0627\u0626\u0631 \u0648\u0627\u0644\u0645\u063a\u0631\u0628). \u0627\u0644\u0628\u062f\u064a\u0644: **\u0627\u0633\u062a\u0641\u0633\u0627\u0631** (\u0633\u0648\u0631\u064a\u0627 \u2014 \u0645\u0631\u0629 \u0648\u0627\u062d\u062f\u0629).`
+    },
+    {
+        en: "automation",
+        short: "\u0623\u062a\u0645\u062a\u0629",
+        full: `**\u0623\u062a\u0645\u062a\u0629** \u0647\u0648 \u0627\u0644\u0623\u0643\u062b\u0631 \u0627\u0633\u062a\u0639\u0645\u0627\u0644\u0627\u064b \u2014 4 \u0645\u0631\u0627\u062a \u0641\u064a 3 \u0645\u0635\u0627\u062f\u0631 (\u0627\u0644\u0633\u0639\u0648\u062f\u064a\u0629\u060c \u0633\u0648\u0631\u064a\u0627). \u0627\u0644\u0628\u062f\u064a\u0644: **\u062a\u0634\u063a\u064a\u0644 \u0623\u0648\u062a\u0648\u0645\u0627\u062a\u064a (\u0623\u0648\u062a\u0645\u0629)** \u2014 \u0645\u0635\u0631 2012 \u0641\u0642\u0637.`
+    },
+    {
+        en: "per default",
+        short: "\u0644\u0645 \u064a\u062c\u062f",
+        full: `\u0644\u0645 \u064a\u064f\u0639\u062b\u0631 \u0639\u0644\u0649 \u0623\u064a \u0646\u062a\u064a\u062c\u0629 \u0645\u0637\u0627\u0628\u0642\u0629 \u062a\u0645\u0627\u0645\u0627\u064b \u0644\u0640 "per default" \u0641\u064a \u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a. \u0627\u0644\u062a\u0639\u0628\u064a\u0631\u0627\u062a \u0627\u0644\u0645\u062d\u062a\u0645\u0644\u0629: **\u0628\u0634\u0643\u0644 \u0627\u0641\u062a\u0631\u0627\u0636\u064a** \u00b7 **\u0627\u0641\u062a\u0631\u0627\u0636\u064a\u0627\u064b** \u00b7 **\u062a\u0644\u0642\u0627\u0626\u064a\u0627\u064b**.`
+    },
+    {
+        en: "client",
+        short: "\u0632\u0628\u0648\u0646",
+        full: `**\u0632\u0628\u0648\u0646** \u0647\u0648 \u0627\u0644\u062a\u0631\u062c\u0645\u0629 \u0627\u0644\u0648\u062d\u064a\u062f\u0629 \u0641\u064a \u0642\u0627\u0639\u062f\u0629 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u2014 \u0638\u0647\u0631 5 \u0645\u0631\u0627\u062a \u0641\u064a \u0627\u0644\u0642\u0627\u0626\u0645\u0629 \u0627\u0644\u0633\u0648\u0631\u064a\u0629 2017 \u0641\u064a \u0633\u064a\u0627\u0642\u0627\u062a \u0645\u062e\u062a\u0644\u0641\u0629 (BitTorrent client\u060c chat client\u060c client application...).`
+    },
+    {
+        en: "code",
+        short: "\u0634\u0641\u0631\u0629",
+        full: `\u062a\u0639\u0627\u062f\u0644 \u062b\u0644\u0627\u062b\u0629 \u0645\u0635\u0637\u0644\u062d\u0627\u062a: **\u0634\u0641\u0631\u0629** (\u0633\u0648\u0631\u064a\u0627 2017) \u00b7 **\u0631\u0645\u0632** (\u0645\u0635\u0631 2012) \u00b7 **\u0643\u0648\u062f** (\u0645\u0635\u0631 2012). \u0627\u0644\u062a\u0648\u0635\u064a\u0629: **\u0634\u0641\u0631\u0629** \u0644\u0643\u0648\u0646\u0647\u0627 \u0639\u0631\u0628\u064a\u0629 \u0623\u0635\u064a\u0644\u0629 \u0648\u0645\u0633\u062a\u062e\u062f\u0645\u0629 \u0641\u064a \u0645\u0635\u062f\u0631 \u062d\u062f\u064a\u062b (2017) \u0628\u062a\u0643\u0631\u0627\u0631 \u0623\u0639\u0644\u0649.`
+    },
+    {
+        en: "configuration",
+        short: "\u062a\u0634\u0643\u064a\u0644",
+        full: `\u062a\u0646\u0648\u0639 \u0643\u0628\u064a\u0631 \u0628\u064a\u0646 \u0627\u0644\u062f\u0648\u0644: **\u062a\u0634\u0643\u064a\u0644** (\u0633\u0648\u0631\u064a\u0627) \u00b7 **\u062a\u0634\u0643\u064a\u0644\u0629** (\u0627\u0644\u062c\u0632\u0627\u0626\u0631) \u00b7 **\u062a\u0631\u0643\u064a\u0628\u0629 \u0627\u0644\u062d\u0627\u0633\u0648\u0628** (\u0645\u0635\u0631) \u00b7 **\u062a\u0647\u064a\u0626\u0629** (\u0627\u0644\u0645\u063a\u0631\u0628). \u0627\u0644\u0623\u0643\u062b\u0631 \u0627\u0633\u062a\u0639\u0645\u0627\u0644\u0627\u064b: **\u062a\u0634\u0643\u064a\u0644** (\u0628\u0635\u064a\u063a\u062a\u064a\u0647 \u0645\u0639\u0627\u064b).`
+    },
+    {
+        en: "font",
+        short: "\u062e\u0637",
+        full: `**\u062e\u0637** \u0647\u0648 \u0627\u0644\u0623\u0643\u062b\u0631 \u0627\u0646\u062a\u0634\u0627\u0631\u0627\u064b \u2014 \u0638\u0647\u0631 \u0641\u064a 3 \u0645\u0635\u0627\u062f\u0631 (\u0633\u0648\u0631\u064a\u0627 2017\u060c \u0645\u0635\u0631 2012\u060c \u0627\u0644\u0645\u063a\u0631\u0628 2000). \u0627\u0644\u0628\u062f\u0627\u0626\u0644: \u0645\u062d\u0631\u0641 \u00b7 \u0646\u0645\u0637 \u062e\u0637 \u00b7 \u0646\u0645\u0637 \u0637\u0628\u0627\u0639\u064a (كلها \u0641\u064a \u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0645\u0635\u0631\u064a \u0641\u0642\u0637).`
+    },
+    {
+        en: "file",
+        short: "\u0645\u0644\u0641",
+        full: `**\u0645\u0644\u0641** \u0645\u062a\u0641\u0642 \u0639\u0644\u064a\u0647 \u0641\u064a 3 \u0645\u0635\u0627\u062f\u0631 (\u0633\u0648\u0631\u064a\u0627\u060c \u0645\u0635\u0631\u060c \u0627\u0644\u0645\u063a\u0631\u0628). \u0627\u0644\u0628\u062f\u0627\u0626\u0644 \u0641\u064a \u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0645\u0635\u0631\u064a: \u0645\u0633\u062a\u0646\u062f \u00b7 \u0633\u062c\u0644 \u00b7 \u0645\u062c\u0644\u062f \u00b7 \u0645\u0636\u0628\u0637\u0629.`
+    },
+    {
+        en: "tester",
+        short: "\u0645\u062e\u062a\u0628\u0631",
+        full: `**\u0645\u062e\u062a\u0628\u0631** \u0638\u0647\u0631 \u0641\u064a \u0645\u0635\u062f\u0631\u064a\u0646 (\u0633\u0648\u0631\u064a\u0627 2017\u060c \u0645\u0635\u0631 2012). \u0627\u0644\u0645\u0635\u0637\u0644\u062d\u0627\u062a \u0627\u0644\u0645\u0631\u0643\u0628\u0629 \u0643\u0644\u0647\u0627 \u0645\u0634\u062a\u0642\u0629 \u0645\u0646\u0647 (\u0645\u062e\u062a\u0628\u0631 \u0628\u0631\u0645\u062c\u064a\u0627\u062a\u060c \u0645\u062e\u062a\u0628\u0631 \u0623\u0645\u0646...).`
+    },
+    {
+        en: "array",
+        short: "\u0645\u0635\u0641\u0648\u0641\u0629",
+        full: `**\u0645\u0635\u0641\u0648\u0641\u0629** \u0647\u0648 \u0627\u0644\u0623\u0643\u062b\u0631 \u0627\u0646\u062a\u0634\u0627\u0631\u0627\u064b \u2014 3 \u0645\u0635\u0627\u062f\u0631 (\u0633\u0648\u0631\u064a\u0627\u060c \u0645\u0635\u0631\u060c \u0627\u0644\u0645\u063a\u0631\u0628). \u0627\u0644\u0628\u062f\u0627\u0626\u0644 \u0641\u064a \u0627\u0644\u0645\u0635\u062f\u0631 \u0627\u0644\u0645\u0635\u0631\u064a: \u062c\u062f\u0648\u0644 \u00b7 \u0645\u062c\u0645\u0648\u0639\u0629 \u00b7 \u062a\u0631\u062a\u064a\u0628 \u00b7 \u0635\u0641\u064a\u0641.`
+    },
+];
+
+function ShowcaseTable() {
+    const [open, setOpen] = useState(null);
+    return (
+        <div className="rounded-3xl border border-slate-100 overflow-hidden shadow-sm">
+            {/* Header row */}
+            <div className="grid grid-cols-[1fr_auto_auto] bg-slate-50 border-b border-slate-100 px-5 py-3 text-xs font-black text-slate-400 uppercase tracking-widest">
+                <span>المصطلح الإنجليزي</span>
+                <span className="text-center px-6">بإختصار</span>
+                <span className="w-8" />
+            </div>
+            {SHOWCASE.map((row, i) => (
+                <div key={i} className="border-b border-slate-100 last:border-0">
+                    {/* Clickable row */}
+                    <button
+                        onClick={() => setOpen(open === i ? null : i)}
+                        className="w-full grid grid-cols-[1fr_auto_auto] items-center px-5 py-4 bg-white hover:bg-blue-50/40 transition-colors text-right group"
+                    >
+                        <span className="font-mono font-bold text-slate-700 text-sm group-hover:text-blue-700 transition-colors">{row.en}</span>
+                        <span className="px-6">
+                            <span className="bg-blue-50 text-blue-700 font-black text-sm px-3 py-1 rounded-full border border-blue-100">{row.short}</span>
+                        </span>
+                        <span className={`w-8 h-8 flex items-center justify-center rounded-full transition-all ${open === i ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-100 text-slate-400 group-hover:bg-blue-100 group-hover:text-blue-600'}`}>
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </span>
+                    </button>
+                    {/* Expanded full answer */}
+                    {open === i && (
+                        <div className="px-5 pb-5 bg-slate-50 border-t border-slate-100">
+                            <div className="mt-4 bg-white rounded-2xl border border-slate-100 p-5 text-sm text-slate-600 leading-relaxed font-medium prose prose-sm prose-slate max-w-none text-right" dir="rtl">
+                                <ReactMarkdown remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        strong: ({node, ...props}) => <strong className="text-blue-700 font-black" {...props} />,
+                                        p: ({node, ...props}) => <p className="mb-0" {...props} />,
+                                    }}
+                                >{row.full}</ReactMarkdown>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
 
 export default function LandingSearchPage() {
     const [query, setQuery] = useState("");
@@ -99,68 +197,85 @@ export default function LandingSearchPage() {
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden" dir="rtl">
                 
                 {/* Fixed Header */}
-                <nav className="fixed top-0 w-full z-50 bg-white/90 backdrop-blur-xl border-b border-slate-200 shadow-sm">
-                    <div className="container mx-auto px-4 flex items-center justify-between h-16">
+                <nav className="fixed top-0 left-0 right-0 z-50 flex justify-center pt-4 px-4">
+                    <div className="w-full max-w-4xl bg-white/80 backdrop-blur-2xl border border-slate-200/80 rounded-2xl shadow-lg shadow-slate-900/5 px-4 h-14 flex items-center justify-between">
+
                         {/* Logo */}
-                        <div className="flex items-center gap-2.5 cursor-pointer" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
-                            <div className="bg-white p-1 rounded-xl shadow-sm border border-slate-100">
-                                <img src="/images/logo.png" alt="Logo" className="h-7 w-7 object-contain" />
+                        <div className="flex items-center gap-2.5 cursor-pointer shrink-0" onClick={() => window.scrollTo({top: 0, behavior: 'smooth'})}>
+                            <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1.5 rounded-xl shadow-sm">
+                                <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                             </div>
-                            <div>
-                                <h1 className="text-base font-black text-slate-800 leading-tight">مشروع التعريب</h1>
-                                <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider hidden sm:block">Informatics Terminology Unification</p>
-                            </div>
+                            <span className="text-sm font-black text-slate-800 tracking-tight">مشروع التعريب</span>
                         </div>
 
-                        {/* Desktop nav */}
-                        <div className="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
-                            <a href="#methodology" className="hover:text-blue-600 transition-colors">المنهجية</a>
-                            <Link href={route('thanks')} className="hover:text-blue-600 transition-colors">شكر وتقدير</Link>
+                        {/* Desktop links */}
+                        <div className="hidden md:flex items-center gap-1">
+                            <a href="#methodology" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50 group">
+                                المنهجية
+                            </a>
+                            <Link href={route('thanks')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                شكر وتقدير
+                            </Link>
                             {auth.user && (
-                                <div className="flex items-center gap-3">
-                                    <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-100">
-                                        <div className="bg-blue-600 text-white rounded-full p-1"><User className="h-3 w-3" /></div>
-                                        <span className="text-blue-700">{auth.user.name}</span>
+                                <>
+                                    <div className="w-px h-5 bg-slate-200 mx-1" />
+                                    <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">
+                                        <div className="bg-blue-600 text-white rounded-lg p-0.5"><User className="h-3 w-3" /></div>
+                                        <span className="text-blue-700 text-xs font-bold">{auth.user.name}</span>
                                     </div>
-                                    <Link href={route('logout')} method="post" as="button" className="flex items-center gap-2 text-slate-500 hover:text-red-600 transition-colors">
-                                        <LogOut className="h-4 w-4" /><span>خروج</span>
+                                    <Link href={route('logout')} method="post" as="button" className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
+                                        <LogOut className="h-3.5 w-3.5" /><span>خروج</span>
                                     </Link>
-                                </div>
+                                </>
                             )}
                         </div>
 
-                        {/* Mobile: hamburger only */}
-                        <div className="flex md:hidden items-center">
-                            <button
-                                onClick={() => setMobileMenuOpen(o => !o)}
-                                className="p-2 rounded-xl text-slate-600 hover:bg-slate-100 transition-colors"
-                                aria-label="القائمة"
-                            >
-                                <div className="space-y-1.5">
-                                    <span className={`block w-5 h-0.5 bg-slate-600 transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} />
-                                    <span className={`block w-5 h-0.5 bg-slate-600 transition-all ${mobileMenuOpen ? 'opacity-0' : ''}`} />
-                                    <span className={`block w-5 h-0.5 bg-slate-600 transition-all ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-                                </div>
-                            </button>
-                        </div>
+                        {/* Mobile hamburger */}
+                        <button
+                            onClick={() => setMobileMenuOpen(o => !o)}
+                            className="md:hidden flex flex-col items-center justify-center w-9 h-9 rounded-xl hover:bg-slate-100 transition-colors gap-1.5"
+                            aria-label="القائمة"
+                        >
+                            <span className={`block w-4.5 h-0.5 bg-slate-600 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'rotate-45 translate-y-2' : ''}`} style={{width:'18px'}} />
+                            <span className={`block h-0.5 bg-slate-600 rounded-full transition-all duration-300 ${mobileMenuOpen ? 'opacity-0 scale-x-0' : ''}`} style={{width:'14px'}} />
+                            <span className={`block h-0.5 bg-slate-600 rounded-full transition-all duration-300 ${mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''}`} style={{width:'18px'}} />
+                        </button>
                     </div>
 
-                    {/* Mobile dropdown menu */}
+                    {/* Mobile dropdown */}
                     {mobileMenuOpen && (
-                        <div className="md:hidden bg-white border-t border-slate-100 px-4 py-4 space-y-3 shadow-lg">
-                            <a href="#methodology" onClick={() => setMobileMenuOpen(false)} className="flex items-center gap-3 py-2.5 px-4 rounded-2xl text-slate-700 font-bold hover:bg-blue-50 hover:text-blue-600 transition-colors">المنهجية</a>
-                            <Link href={route('thanks')} className="flex items-center gap-3 py-2.5 px-4 rounded-2xl text-slate-700 font-bold hover:bg-blue-50 hover:text-blue-600 transition-colors">شكر وتقدير</Link>
-                            {auth.user && (
-                                <Link href={route('logout')} method="post" as="button" className="flex items-center gap-3 py-2.5 px-4 rounded-2xl text-red-500 font-bold hover:bg-red-50 w-full transition-colors">
-                                    <LogOut className="h-4 w-4" /><span>خروج</span>
+                        <div className="absolute top-[72px] left-4 right-4 max-w-4xl mx-auto bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-900/10 overflow-hidden">
+                            <div className="p-2 space-y-0.5">
+                                <a
+                                    href="#methodology"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    المنهجية
+                                </a>
+                                <Link
+                                    href={route('thanks')}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                                    شكر وتقدير
                                 </Link>
-                            )}
+                                {auth.user && (
+                                    <>
+                                        <div className="h-px bg-slate-100 mx-2 my-1" />
+                                        <Link href={route('logout')} method="post" as="button" className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 font-bold text-sm hover:bg-red-50 w-full transition-colors">
+                                            <LogOut className="h-4 w-4" /><span>خروج</span>
+                                        </Link>
+                                    </>
+                                )}
+                            </div>
                         </div>
                     )}
                 </nav>
 
                 {/* Hero Section */}
-                <header className="relative pt-24 md:pt-36 pb-10 md:pb-20 overflow-hidden">
+                <header className="relative pt-28 md:pt-40 pb-10 md:pb-20 overflow-hidden">
                     <div className="absolute top-0 right-0 w-full h-full pointer-events-none">
                         <div className="absolute top-[-10%] right-[-10%] w-[400px] h-[400px] bg-blue-100/50 blur-[120px] rounded-full" />
                         <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-indigo-50/50 blur-[100px] rounded-full" />
@@ -364,16 +479,33 @@ export default function LandingSearchPage() {
 
 
 
+                {/* Showcase Section */}
+                <section className="py-20 px-4 bg-slate-50 border-b border-slate-100">
+                    <div className="container mx-auto max-w-5xl">
+                        <div className="text-center mb-12 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                نتائج <span className="text-blue-600">حقيقية</span> من الأداة
+                            </h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                                عينة من مصطلحات جرى البحث عنها فعلياً — اضغط على أي صف لعرض الإجابة الكاملة.
+                            </p>
+                        </div>
+
+                        {/* Table */}
+                        <ShowcaseTable />
+                    </div>
+                </section>
+
                 {/* Methodology Section */}
+
                 <section id="methodology" className="py-20 px-4 bg-slate-50 border-y border-slate-100">
                     <div className="container mx-auto max-w-5xl">
-                        {/* Header */}
                         <div className="text-center mb-14 space-y-3">
                            
                             <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
                                 كيف نختار <span className="text-blue-600">المصطلح الأنسب؟</span>
                             </h3>
-                            <p className="text-slate-500 text-lg max-w-2xl mx-auto font-medium">
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
                                 نعتمد على مبدأ بسيط: <strong className="text-slate-700">الأكثر استعمالاً هو الأصح</strong>. نقيس الاستخدام الفعلي عبر مصادر متعددة ونختار الفائز.
                             </p>
                         </div>
@@ -403,7 +535,7 @@ export default function LandingSearchPage() {
                                     desc: "المصطلح الذي يحظى بأعلى نسبة استخدام فعلي هو المُوصى به — لا رأي لجنة، بل بيانات."
                                 }
                             ].map((item, i) => (
-                                <div key={i} className="relative bg-slate-50 rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
+                                <div key={i} className="relative bg-white rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
                                     <div className="absolute top-5 left-5 text-6xl font-black text-slate-100 select-none group-hover:text-blue-50 transition-colors">{item.step}</div>
                                     <div className="relative z-10 space-y-4">
                                         <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center`}>
@@ -480,33 +612,186 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
-                {/* Future Plans Section */}
-                <section id="future" className="py-24 px-4 bg-slate-50">
-                    <div className="container mx-auto max-w-6xl">
-                        <div className="text-center mb-16 space-y-4">
-                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">آفاق البحث المستقبلية</h3>
-                            <p className="text-slate-500 text-lg max-w-2xl mx-auto">خطواتنا القادمة نحو بناء معجم عربي ذكي وشامل.</p>
+                {/* Limitations Section */}
+                <section className="py-20 px-4 bg-slate-50 border-y border-slate-100">
+                    <div className="container mx-auto max-w-5xl">
+                        <div className="text-center mb-12 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                ما الذي <span className="text-amber-600">يُعيقنا</span> حتى الآن؟
+                            </h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                                الشفافية جزء من منهجيتنا — نشارككم التحديات الحقيقية التي نواجهها.
+                            </p>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
-                                <div className="bg-blue-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <Bot className="h-7 w-7 text-blue-600" />
+                        {/* Cards */}
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            {[
+                                {
+                                    icon: <ShieldAlert className="h-6 w-6 text-amber-600" />,
+                                    bg: "bg-amber-50",
+                                    border: "border-amber-100 hover:border-amber-300",
+                                    title: "دقة الاستخراج",
+                                    desc: "عند استخراج المصطلحات من الكتب المُمسوحة ضوئياً، كانت المخرجات في الغالب صحيحة، غير أن بعض المصطلحات لم تُستخرج بشكل كامل أو دقيق بسبب جودة المسح."
+                                },
+                                {
+                                    icon: <Mail className="h-6 w-6 text-blue-600" />,
+                                    bg: "bg-blue-50",
+                                    border: "border-blue-100 hover:border-blue-300",
+                                    title: "طلبات المعاجم الرقمية",
+                                    desc: "تواصلنا مع عدد من المجامع اللغوية لطلب نسخ رقمية من معاجمها لرفع دقة النتائج، إلا أننا لم نتلقَّ أي رد حتى الآن."
+                                },
+                                {
+                                    icon: <Database className="h-6 w-6 text-indigo-600" />,
+                                    bg: "bg-indigo-50",
+                                    border: "border-indigo-100 hover:border-indigo-300",
+                                    title: "جودة البيانات = جودة النتائج",
+                                    desc: "المشروع يعتمد اعتماداً كبيراً على سلامة البيانات المُدخلة. كلما كانت المصادر أدق وأشمل، زادت قيمة التوصيات وفائدتها للمجامع والباحثين."
+                                },
+                            ].map((item, i) => (
+                                <div key={i} className={`bg-white rounded-3xl p-7 border ${item.border} shadow-sm hover:shadow-lg transition-all`}>
+                                    <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center mb-5`}>
+                                        {item.icon}
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-800 mb-3">{item.title}</h4>
+                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{item.desc}</p>
                                 </div>
-                                <h4 className="text-xl font-bold text-slate-800 mb-4">التوليد بالذكاء الاصطناعي</h4>
-                                <p className="text-slate-500 leading-relaxed">
-                                    في حال عدم توفر المصطلح ضمن قاعدة البيانات، سيتم الاستعانة بالنماذج اللغوية لاقتراح عدة بدائل، مع إتاحة الفرصة لمستهلك المعرفة لاختيار الأنسب منها.
-                                </p>
-                            </div>
+                            ))}
+                        </div>
 
-                            <div className="bg-white p-8 rounded-3xl border border-slate-100 shadow-sm hover:shadow-xl transition-all group">
-                                <div className="bg-indigo-50 w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
-                                    <Database className="h-7 w-7 text-indigo-600" />
+                       
+                    </div>
+                </section>
+
+                {/* Future Plans Section */}
+                <section id="future" className="py-20 px-4 bg-slate-50 border-b border-slate-100">
+                    <div className="container mx-auto max-w-5xl">
+                        <div className="text-center mb-12 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">آفاق البحث المستقبلية</h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">خطواتنا القادمة نحو بناء معجم عربي ذكي وشامل.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            {[
+                                {
+                                    icon: <Bot className="h-6 w-6 text-blue-600" />,
+                                    bg: "bg-blue-50",
+                                    title: "التوليد بالذكاء الاصطناعي",
+                                    desc: "في حال عدم توفر المصطلح ضمن قاعدة البيانات — كما لاحظنا في مثال \"per default\" — سيتم الاستعانة بالنماذج اللغوية لاقتراح عدة بدائل، مع إتاحة الفرصة لمستهلك المعرفة لاختيار الأنسب أو اقتراح بديل آخر، على أن يُعتمد لاحقاً وفق منهجية الأكثر استعمالاً."
+                                },
+                                {
+                                    icon: <Database className="h-6 w-6 text-indigo-600" />,
+                                    bg: "bg-indigo-50",
+                                    title: "توسيع قاعدة البيانات",
+                                    desc: "العمل على توسيع قاعدة البيانات بشكل تدريجي لتشمل عدداً أكبر من المصطلحات المستمدة من مصادر متنوعة في مجال المعلوماتية، بما يعزز شمولية القاعدة ودقتها."
+                                },
+                                {
+                                    icon: <Zap className="h-6 w-6 text-emerald-600" />,
+                                    bg: "bg-emerald-50",
+                                    title: "تطبيقات التصحيح الذكي",
+                                    desc: "تطوير إضافات وتطبيقات تهدف إلى تصحيح المصطلحات آلياً، بحيث في حال استعمال مصطلح غير مناسب، يُقترح التصحيح المناسب فوراً، بما يسهم في توحيد المصطلحات وتحسين جودة الاستخدام."
+                                },
+                                {
+                                    icon: <BarChart3 className="h-6 w-6 text-rose-600" />,
+                                    bg: "bg-rose-50",
+                                    title: "توسيع المجالات العلمية",
+                                    desc: "توسيع نطاق العمل ليشمل مجالات علمية أخرى كالمجال الطبي والهندسي، بما يدعم قابلية تعميم المنهجية على تخصصات مختلفة وتحقيق أثر أوسع."
+                                },
+                            ].map((item, i) => (
+                                <div key={i} className="bg-white rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
+                                    <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
+                                        {item.icon}
+                                    </div>
+                                    <h4 className="text-lg font-black text-slate-800 mb-3">{item.title}</h4>
+                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{item.desc}</p>
                                 </div>
-                                <h4 className="text-xl font-bold text-slate-800 mb-4">توسيع قاعدة البيانات</h4>
-                                <p className="text-slate-500 leading-relaxed">
-                                    العمل على توسيع قاعدة البيانات بشكل تدريجي لتشمل المزيد من المعاجم والمصادر، وتطوير تطبيقات لتصحيح المصطلحات المستخدمة آلياً.
-                                </p>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+
+                {/* Testimonial Section */}
+                <section className="py-20 px-4 bg-white border-b border-slate-100">
+                    <div className="container mx-auto max-w-5xl">
+                        <div className="text-center mb-12 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                ماذا قالوا عن <span className="text-blue-600">المشروع؟</span>
+                            </h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                                آراء متخصصين في اللغة العربية حول هذه المبادرة.
+                            </p>
+                        </div>
+
+                        {/* Quote card */}
+                        <div className="bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+                            <div className="grid grid-cols-1 md:grid-cols-[280px_1fr]">
+
+                                {/* Left — person */}
+                                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 flex flex-col items-center justify-center text-center text-white gap-4">
+                                    <div className="relative">
+                                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl">
+                                            <img src="/images/mokhtar.jpg" alt="د.مختار الغوث" className="w-full h-full object-cover" />
+                                        </div>
+                                        <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow">
+                                            <div className="bg-blue-600 rounded-full p-1">
+                                                <Quote className="h-3 w-3 text-white" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <p className="font-black text-lg leading-tight">د. مختار الغوث</p>
+                                        <p className="text-blue-200 text-xs font-medium mt-1 leading-relaxed">لغوي موريتاني · بروفيسور في جامعة طيبة، المدينة المنورة</p>
+                                    </div>
+                                    <a
+                                        href="https://ar.wikipedia.org/wiki/%D9%85%D8%AE%D8%AA%D8%A7%D8%B1_%D8%A7%D9%84%D8%BA%D9%88%D8%AB"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="flex items-center gap-1.5 text-xs text-blue-200 hover:text-white transition-colors border border-white/20 px-3 py-1.5 rounded-full hover:border-white/40"
+                                    >
+                                        <ExternalLink className="h-3 w-3" />
+                                        ويكيبيديا
+                                    </a>
+                                </div>
+
+                                {/* Right — quote + videos */}
+                                <div className="p-8 flex flex-col gap-6">
+                                    {/* Quote */}
+                                    <div className="relative">
+                                        <Quote className="absolute top-0 right-0 h-8 w-8 text-blue-100 -translate-y-1" />
+                                        <blockquote className="text-slate-700 text-base md:text-lg leading-loose font-medium pr-8" dir="rtl">
+                                            قرأت الأوراق وسررت بها كثيرًا، وأرجو الله أن يكتب لك التوفيق والنجاح. فكرتها جميلة، ولكنها تحتاج إلى فريق جاد ومخلص ومصابر، وإذا كتب له النجاح، فسوف تكون فيه خدمة جليلة للعربية.
+                                        </blockquote>
+                                    </div>
+
+                                    {/* Divider */}
+                                    <div className="h-px bg-slate-100" />
+
+                                    {/* Videos */}
+                                    <div>
+                                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">محاضرات مختارة</p>
+                                        <div className="space-y-2">
+                                            {[
+                                                { title: "العودة إلى الهوية العربية", url: "https://youtu.be/MwqxPOtJJ7k" },
+                                                { title: "ماذا لو ماتت اللغة العربية؟", url: "https://www.youtube.com/watch?v=PK_Ukr7ul20" },
+                                                { title: "الحرب الباردة على الكينونة العربية: اللغة هوية", url: "https://www.youtube.com/watch?v=pA2nCFF5Lqc" },
+                                            ].map((v, i) => (
+                                                <a
+                                                    key={i}
+                                                    href={v.url}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-all group"
+                                                >
+                                                    <div className="bg-red-500 text-white rounded-lg p-1.5 shrink-0 group-hover:scale-110 transition-transform">
+                                                        <Play className="h-3 w-3 fill-white" />
+                                                    </div>
+                                                    <span className="text-sm font-bold text-slate-600 group-hover:text-red-600 transition-colors text-right">{v.title}</span>
+                                                    <ExternalLink className="h-3.5 w-3.5 text-slate-300 group-hover:text-red-400 transition-colors mr-auto shrink-0" />
+                                                </a>
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
