@@ -40,6 +40,10 @@ class HandleInertiaRequests extends Middleware
 
         return [
             ...parent::share($request),
+            "auth" => [
+                "user" => $request->user(),
+                "isAdmin" => $request->user() && $request->user()->is_admin,
+            ],
             "locale" => "en",
             "availableLocales" => ["en"],
             "isRTL" => false,

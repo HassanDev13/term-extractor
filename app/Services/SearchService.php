@@ -10,14 +10,14 @@ class SearchService
     /**
      * Search for terms and return grouped results.
      */
-    public function searchTerms(string $search, bool $exactMatch = false): array
+    public function searchTerms(string $search, bool $exactMatch = false, bool $smartMode = false): array
     {
         if (empty($search)) {
             return [];
         }
 
         // Get all terms matching the search (case-insensitive)
-        $matchingTerms = Term::query()
+        $query = Term::query()
             ->with(['resourcePage.resource'])
             ->where(function ($q) use ($search, $exactMatch) {
                 if ($exactMatch) {
@@ -27,9 +27,17 @@ class SearchService
                     $q->whereRaw('LOWER(term_en) LIKE ?', ['%' . strtolower($search) . '%'])
                       ->orWhereRaw('LOWER(term_ar) LIKE ?', ['%' . strtolower($search) . '%']);
                 }
-            })
-            ->limit(5)
-            ->get();
+            });
+
+        // Increase limit for smart mode to gather enough candidates across resources
+        if ($smartMode) {
+            $query->limit(1000);
+        } else {
+            // Default strict/small search
+            $query->limit(50); 
+        }
+
+        $matchingTerms = $query->get();
 
         // Group terms by normalized (lowercase) values
         $groupedData = [];
@@ -124,47 +132,46 @@ class SearchService
             foreach ($group['resources'] as $resourceId => &$resource) {
                 $arabicTermDetails = [];
                 $totalCountInResource = $resource['count'];
+
+                // SMART MODE: Limit to random 5 Arabic terms if requested
+                $sourceDetails = $resource['arabic_term_details'];
+                if ($smartMode && count($sourceDetails) > 5) {
+                    $keys = array_keys($sourceDetails);
+                    shuffle($keys);
+                    $randomKeys = array_slice($keys, 0, 5);
+                    $filteredDetails = [];
+                    foreach ($randomKeys as $key) {
+                        $filteredDetails[$key] = $sourceDetails[$key];
+                    }
+                    $sourceDetails = $filteredDetails;
+                }
                 
-                foreach ($resource['arabic_term_details'] as $arDetail) {
+                foreach ($sourceDetails as $arDetail) {
                     // Calculate average confidence
                     $avgConfidence = $arDetail['count'] > 0 
                         ? round($arDetail['confidence_sum'] / $arDetail['count'], 1) 
                         : 0;
-                    
-                    // Calculate frequency percentage (within this resource)
-                    $frequency = $totalCountInResource > 0 
-                        ? round(($arDetail['count'] / $totalCountInResource) * 100) 
-                        : 0;
-                    
-                    // Quality stars (1-5 based on confidence 0-10)
-                    $stars = ceil($avgConfidence / 2);
-                    
-                    // Consistency rating
-                    $consistency = $arDetail['count'] >= 5 ? 'High' : ($arDetail['count'] >= 3 ? 'Medium' : 'Low');
                     
                     // Sort pages
                     sort($arDetail['pages']);
                     
                     // Limit pages to save tokens
                     $pageCount = count($arDetail['pages']);
-                    $displayPages = array_slice($arDetail['pages'], 0, 10);
-                    if ($pageCount > 10) {
-                        $displayPages[] = '... (' . ($pageCount - 10) . ' more)';
+                    $displayPages = array_slice($arDetail['pages'], 0, 5); // Reduce page limit for compact prompt
+                    if ($pageCount > 5) {
+                        $displayPages[] = '...';
                     }
                     
                     $arabicTermDetails[] = [
                         'arabic_term' => $arDetail['arabic_term'],
                         'count' => $arDetail['count'],
-                        // 'term_ids' => $arDetail['term_ids'], // Remove IDs to save tokens
+                        // 'pages' => $displayPages, // Optional: hide pages in smart mode to save space? Keep for now but reduced
                         'pages' => $displayPages,
                         'confidence' => $avgConfidence,
-                        // 'frequency' => $frequency, // AI can calculate or estimate
-                        // 'stars' => $stars,
-                        // 'consistency' => $consistency,
                     ];
                 }
                 
-                // Sort by count descending
+                // Sort by count descending (unless randomized above, but sorting helps readability)
                 usort($arabicTermDetails, function($a, $b) {
                     return $b['count'] - $a['count'];
                 });
@@ -172,15 +179,38 @@ class SearchService
                 // Mark most common
                 if (count($arabicTermDetails) > 1 && $arabicTermDetails[0]['count'] > $arabicTermDetails[1]['count']) {
                     $arabicTermDetails[0]['is_most_common'] = true;
-                } else {
-                    foreach ($arabicTermDetails as &$detail) {
-                        $detail['is_most_common'] = false;
-                    }
                 }
                 
                 $resource['arabic_term_details'] = $arabicTermDetails;
             }
             unset($resource);
+
+            // Calculate global stats for this term (Aggregation across all resources)
+            $globalStats = [];
+            foreach ($group['resources'] as $res) {
+                if (!isset($res['arabic_term_details'])) continue;
+                foreach ($res['arabic_term_details'] as $detail) {
+                    $term = $detail['arabic_term'];
+                    if (!isset($globalStats[$term])) {
+                        $globalStats[$term] = [
+                            'term' => $term,
+                            'total_count' => 0,
+                            'resource_count' => 0,
+                            'resources' => []
+                        ];
+                    }
+                    $globalStats[$term]['total_count'] += $detail['count'];
+                    $globalStats[$term]['resource_count']++;
+                    $globalStats[$term]['resources'][] = $res['resource_name'];
+                }
+            }
+            
+            // Sort by total count desc
+            usort($globalStats, function($a, $b) {
+                return $b['total_count'] - $a['total_count'];
+            });
+            
+            $group['global_stats'] = array_values($globalStats);
             
             // Now convert resources to indexed array
             $group['resources'] = array_values($group['resources']);
@@ -198,6 +228,28 @@ class SearchService
         usort($result, function($a, $b) {
             return $b['total_count'] - $a['total_count'];
         });
+
+        // SAFETY LIMIT: Keep only the top 10 most relevant term groups to avoid token overflow
+        // The model doesn't need 50+ definitions of "term". 10 is plenty.
+        $result = array_slice($result, 0, 10);
+
+        // Further optimization: Limit resources per term and details inside
+        foreach ($result as &$group) {
+            // Keep top 5 resources max
+            $group['resources'] = array_slice($group['resources'], 0, 5);
+            
+            foreach ($group['resources'] as &$res) {
+                // Keep top 3 arabic variations per resource
+                if (isset($res['arabic_term_details'])) {
+                    $res['arabic_term_details'] = array_slice($res['arabic_term_details'], 0, 3);
+                    
+                    // Minimize page numbers in the output
+                    foreach ($res['arabic_term_details'] as &$det) {
+                       $det['pages'] = array_slice($det['pages'], 0, 3);
+                    }
+                }
+            }
+        }
 
         return $result;
     }

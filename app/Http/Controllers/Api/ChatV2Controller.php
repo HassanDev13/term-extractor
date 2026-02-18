@@ -31,28 +31,28 @@ class ChatV2Controller extends Controller
             'messages' => 'required|array',
             'messages.*.role' => 'required|string|in:user,assistant',
             'messages.*.content' => 'nullable|string',
+            'detailed_mode' => 'nullable|boolean',
         ]);
 
         $userMessages = $request->input('messages');
+        $detailedMode = $request->input('detailed_mode', false);
         
         // Handle keyword logic for the last user message
         $lastMessageIndex = count($userMessages) - 1;
         if ($lastMessageIndex >= 0 && $userMessages[$lastMessageIndex]['role'] === 'user') {
             $content = trim($userMessages[$lastMessageIndex]['content']);
-            // If it's a single word (no spaces), treat it as a keyword
+            // If it's a single word (no spaces), treat it as a message to be searched
             if (!str_contains($content, ' ')) {
-                $userMessages[$lastMessageIndex]['content'] = "search exact for this keyword \"{$content}\" and give me nice report";
+                 $userMessages[$lastMessageIndex]['content'] = "Find information about \"{$content}\"";
             }
         }
 
-        return new StreamedResponse(function () use ($userMessages) {
+        return new StreamedResponse(function () use ($userMessages, $detailedMode) {
             // Disable output buffering
             if (ob_get_level()) ob_end_clean();
 
             try {
-                $systemMessage = [
-                    'role' => 'system', 
-                    'content' => 'You are a highly efficient Search Engine and Information Analyst. Your goal is to provide detailed, structured, and accurate search reports based on the term database.
+                $systemContent = 'You are a highly efficient Search Engine and Information Analyst. Your goal is to provide detailed, structured, and accurate search reports based on the term database.
                     
 OPERATIONAL RULES:
 1. RESPONSE FORMAT: Always provide a well-structured "Search Report". Use clear headings (Markdown # and ##), bullet points, and tables. 
@@ -60,10 +60,42 @@ OPERATIONAL RULES:
 3. DATA PRECISION: Always cite the Resource Name and Page Number for every finding.
 4. TONALITY: Be professional and factual. Do not say "Welcome" or use conversational filler. Treat yourself as a Search Engine result page.
 5. TOOLS: 
-   - Use `search_terms` with `exact_match=true` when a specific keyword is provided.
+   - Use `search_terms` to find relevant terms. Always assume the user wants the Smart Search capabilities.
    - Use `get_project_info` for metadata queries.
    - Use `list_resources` for structural queries.
-'
+';
+
+                if ($detailedMode) {
+                    $systemContent .= "
+MODE: UNIFIED DETAILED REPORT
+Follow this EXACT structure for your response:
+
+# تقرير مصطلحي: [English Term]
+
+## 1. ملخص الاستعمال الأكثر شيوعاً
+[Provide a summary of the most used Arabic term and its acceptance level]
+
+## 2. التحليل التفصيلي حسب المصدر
+[List each resource and the term it uses, citing page numbers]
+
+## 3. الملاحظات والفروق الدلالية
+[Explain any differences in meaning or usage contexts between the translations]
+
+Note: Be professional and comprehensive.";
+                } else {
+                    $systemContent .= "
+MODE: ULTRA-CONCISE SUMMARY
+CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels.
+Format:
+**المصطلح:** [Arabic Term] - ([Count in Arabic] مرات في [Sources in Arabic] مصادر)
+[Brief definition in Arabic in 1 sentence]
+**بدائل:** [List 2-3 alternative terms, comma separated]";
+                }
+
+
+                $systemMessage = [
+                    'role' => 'system', 
+                    'content' => $systemContent
                 ];
 
                 // Prepend system message to history
@@ -82,10 +114,7 @@ OPERATIONAL RULES:
                                         'type' => 'string',
                                         'description' => 'The search query for terms (English or Arabic)',
                                     ],
-                                    'exact_match' => [
-                                        'type' => 'boolean',
-                                        'description' => 'Set to true for exact match only, false for partial match (default)',
-                                    ],
+                                    // Removed exact_match and smart_mode from LLM visibility to enforce default behavior
                                 ],
                                 'required' => ['query'],
                             ],
@@ -144,7 +173,13 @@ OPERATIONAL RULES:
 
                         try {
                             if ($functionName === 'search_terms') {
-                                $result = $this->searchService->searchTerms($arguments['query'] ?? '', $arguments['exact_match'] ?? false);
+                                // COMMAND: ALWAYS USE SMART MODE AND LOOSE MATCH
+                                // User requested "keep the main search only the smart one"
+                                $result = $this->searchService->searchTerms(
+                                    $arguments['query'] ?? '', 
+                                    false, // exactMatch = false (loose)
+                                    true   // smartMode = true
+                                );
                             } elseif ($functionName === 'list_resources') {
                                 $result = $this->searchService->listResources();
                             } elseif ($functionName === 'get_project_info') {
@@ -216,6 +251,101 @@ OPERATIONAL RULES:
             'X-Accel-Buffering' => 'no',
             'Cache-Control' => 'no-cache',
             'Connection' => 'keep-alive',
+        ]);
+    }
+
+    public function downloadPdf(Request $request) {
+        $request->validate([
+            'content' => 'required|string',
+            'query' => 'nullable|string',
+        ]);
+        
+        $content = $request->input('content');
+        $query = $request->input('query', 'تقرير مصطلحي');
+        
+        // Convert Markdown to HTML
+        $htmlContent = \Illuminate\Support\Str::markdown($content);
+        
+        // Basic CSS for nice PDF layout with RTL support
+        $css = "
+            <style>
+                body {
+                    font-family: 'Amiri', 'XB Riyaz', sans-serif;
+                    direction: rtl;
+                    text-align: right;
+                    line-height: 1.6;
+                    color: #333;
+                }
+                h1, h2, h3 {
+                    color: #1e3a8a; /* Blue-900 */
+                    border-bottom: 2px solid #e2e8f0;
+                    padding-bottom: 10px;
+                    margin-top: 20px;
+                }
+                h1 { font-size: 24pt; text-align: center; border: none; }
+                h2 { font-size: 18pt; }
+                ul { margin-right: 20px; }
+                li { margin-bottom: 5px; }
+                strong { color: #1d4ed8; } /* Blue-700 */
+                .header {
+                    text-align: center;
+                    border-bottom: 1px solid #ddd;
+                    padding-bottom: 20px;
+                    margin-bottom: 30px;
+                }
+                .footer {
+                    position: fixed;
+                    bottom: 0;
+                    width: 100%;
+                    text-align: center;
+                    font-size: 10pt;
+                    color: #888;
+                    border-top: 1px solid #ddd;
+                    padding-top: 10px;
+                }
+                table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+                th, td { border: 1px solid #ddd; padding: 8px; text-align: right; }
+                th { background-color: #f1f5f9; }
+            </style>
+        ";
+        
+        $html = "
+            <html>
+            <head>$css</head>
+            <body>
+                <div class='header'>
+                    <h1>مشروع التعريب - تقرير مصطلحي</h1>
+                    <p>الموضوع: {$query}</p>
+                    <p>التاريخ: " . date('Y-m-d H:i') . "</p>
+                </div>
+                
+                <div class='content'>
+                    {$htmlContent}
+                </div>
+                
+                <div class='footer'>
+                    GENERATED BY MASHROU AL-TAARIB AI | مشروع التعريب الآلي
+                </div>
+            </body>
+            </html>
+        ";
+        
+        // Initialize mPDF with Arabic configuration
+        $mpdf = new \Mpdf\Mpdf([
+            'mode' => 'utf-8',
+            'format' => 'A4',
+            'default_font_size' => 12,
+            'default_font' => 'xbriyaz', // Best for Arabic usually if available, or auto
+            'autoScriptToLang' => true,
+            'autoLangToFont' => true,
+        ]);
+        
+        $mpdf->SetDirectionality('rtl');
+        $mpdf->WriteHTML($html);
+        
+        return response($mpdf->Output('report.pdf', 'S'), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'attachment; filename="term_report_' . time() . '.pdf"',
         ]);
     }
 }

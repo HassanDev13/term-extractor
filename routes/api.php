@@ -16,3 +16,11 @@ use App\Http\Controllers\Api\ChatController;
 Route::post('/chat', [ChatController::class, 'chat']);
 use App\Http\Controllers\Api\ChatV2Controller;
 Route::post('/chat_v2', [ChatV2Controller::class, 'chat']);
+Route::post('/chat_v2/export_pdf', [ChatV2Controller::class, 'downloadPdf']);
+
+use App\Http\Controllers\Api\TermSuggestionController;
+Route::get('/term_suggestions', [TermSuggestionController::class, 'index']); // Public view
+Route::middleware('auth:sanctum')->group(function () {
+    Route::post('/term_suggestions', [TermSuggestionController::class, 'store']); // Create
+    Route::post('/term_suggestions/{id}/vote', [TermSuggestionController::class, 'vote']); // Vote
+});

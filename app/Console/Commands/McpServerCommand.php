@@ -101,6 +101,10 @@ class McpServerCommand extends Command
                                             'exact_match' => [
                                                 'type' => 'boolean',
                                                 'description' => 'Set to true for exact match only, false for partial match (default)',
+                                            ],
+                                            'smart_mode' => [
+                                                'type' => 'boolean',
+                                                'description' => 'Enable smart mode to get random/diverse sampling of terms per resource instead of all matches.',
                                             ]
                                         ],
                                         'required' => ['query']
@@ -164,7 +168,12 @@ class McpServerCommand extends Command
     {
         $search = $args['query'] ?? '';
         $exactMatch = $args['exact_match'] ?? false;
-        return $this->searchService->searchTerms($search, $exactMatch);
+        $smartMode = $args['smart_mode'] ?? false;
+        
+        // Force loose match if smart mode is on
+        $exactMatch = $smartMode ? false : $exactMatch;
+        
+        return $this->searchService->searchTerms($search, $exactMatch, $smartMode);
     }
 
     private function toolListResources()
