@@ -22,6 +22,9 @@ class ChatV2Controller extends Controller
 
     public function index(): Response
     {
+        if (auth()->check()) {
+            auth()->user()->checkAndResetDailyCredits();
+        }
         return Inertia::render('ChatV2/Index');
     }
 
@@ -44,6 +47,25 @@ class ChatV2Controller extends Controller
             // If it's a single word (no spaces), treat it as a message to be searched
             if (!str_contains($content, ' ')) {
                  $userMessages[$lastMessageIndex]['content'] = "Find information about \"{$content}\"";
+            }
+        }
+
+        // Credit System Logic
+        $user = $request->user();
+        if ($user) {
+            $user->checkAndResetDailyCredits();
+
+            // Check if user has credits
+            if ($user->daily_credits <= 0) {
+                 return response()->json([
+                     'error' => 'لقد استنفدت رصيدك اليومي (20 محاولة). يرجى العودة غداً.'
+                 ], 403);
+            }
+
+            // Deduct credit explicitly and save only if not unlimited
+            if (!$user->is_unlimited) {
+                $user->daily_credits -= 1;
+                $user->save();
             }
         }
 
@@ -72,16 +94,19 @@ Follow this EXACT structure for your response:
 
 # تقرير مصطلحي: [English Term]
 
+**إحصائيات:** ورد هذا المصطلح [Total Count] مرة في [Resource Count] مصدراً.
+**التعريف:** [Brief definition of the English term in Arabic to set context]
+
 ## 1. ملخص الاستعمال الأكثر شيوعاً
-[Provide a summary of the most used Arabic term and its acceptance level]
+[Provide a summary of the most used Arabic term and its acceptance level, and mentioning the total count]
 
 ## 2. التحليل التفصيلي حسب المصدر
-[List each resource and the term it uses, citing page numbers]
+[List each resource and the term it uses. CRITICAL: You MUST format every page number as a clickable link using this format: `[Page X](/resources/{resource_id}/pdf#page={page_number})`. For example: `[ص. 5](/resources/10/pdf#page=5)`]
 
 ## 3. الملاحظات والفروق الدلالية
 [Explain any differences in meaning or usage contexts between the translations]
 
-Note: Be professional and comprehensive.";
+Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {
                     $systemContent .= "
 MODE: ULTRA-CONCISE SUMMARY

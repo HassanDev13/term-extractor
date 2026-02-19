@@ -28,6 +28,13 @@ class UsersTable
                     ->falseIcon('heroicon-o-x-mark')
                     ->trueColor('success')
                     ->falseColor('gray'),
+                IconColumn::make('is_unlimited')
+                    ->label('Unlimited')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-sparkles')
+                    ->falseIcon('heroicon-o-x-mark')
+                    ->trueColor('success')
+                    ->falseColor('gray'),
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),

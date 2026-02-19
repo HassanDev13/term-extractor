@@ -28,6 +28,9 @@ class UserForm
                 Toggle::make('is_admin')
                     ->label('Administrator')
                     ->helperText('Grant admin access to Filament dashboard'),
+                Toggle::make('is_unlimited')
+                    ->label('Unlimited Credits')
+                    ->helperText('Grant unlimited search credits (bypasses daily limit)'),
                 DateTimePicker::make('email_verified_at'),
             ]);
     }

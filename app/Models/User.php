@@ -24,6 +24,9 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'is_admin',
+        'daily_credits',
+        'last_credit_reset_at',
+        'is_unlimited',
     ];
 
     /**
@@ -45,8 +48,11 @@ class User extends Authenticatable implements FilamentUser
     {
         return [
             'email_verified_at' => 'datetime',
+            'last_credit_reset_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'daily_credits' => 'integer',
+            'is_unlimited' => 'boolean',
         ];
     }
 
@@ -64,5 +70,44 @@ class User extends Authenticatable implements FilamentUser
     public function termEdits()
     {
         return $this->hasMany(TermEdit::class);
+    }
+
+    /**
+     * Check and reset the daily credits if needed.
+     */
+    public function checkAndResetDailyCredits()
+    {
+        $now = now();
+        $lastReset = $this->last_credit_reset_at;
+
+        // Ensure daily_credits is integer
+        if ($this->daily_credits === null) {
+            $this->daily_credits = 20;
+        }
+
+        // If unlimited, ensure they have high credits and return
+        if ($this->is_unlimited) {
+            if ($this->daily_credits < 1000) {
+                 $this->daily_credits = 999999;
+                 $this->save();
+            }
+            return;
+        }
+
+        if (!$lastReset) {
+            $this->daily_credits = 20;
+            $this->last_credit_reset_at = $now;
+            $this->save();
+            return;
+        }
+
+        if (!$lastReset || !$lastReset->isSameDay($now)) {
+            \Illuminate\Support\Facades\Log::info("User Model Reset: Resetting credits to 20 for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL') . " Now: " . $now->toDateTimeString());
+            $this->daily_credits = 20;
+            $this->last_credit_reset_at = $now;
+            $this->save();
+        } else {
+             \Illuminate\Support\Facades\Log::info("User Model Check: No need to reset for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL'));
+        }
     }
 }

@@ -159,6 +159,9 @@ export default function LandingSearchPage() {
                             <a href="#contact" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 تواصل معنا
                             </a>
+                            {/* <Link href={route('award')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-amber-600 transition-colors rounded-xl hover:bg-amber-50">
+                                جائزة يوغرطة
+                            </Link> */}
                             <Link href={route('contribute')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 ساهم معنا
                             </Link>
@@ -230,6 +233,14 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     تواصل معنا
                                 </a>
+                                {/* <Link
+                                    href={route('award')}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-amber-50 hover:text-amber-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                                    جائزة يوغرطة
+                                </Link> */}
                                 <Link
                                     href={route('contribute')}
                                     onClick={() => setMobileMenuOpen(false)}
@@ -505,25 +516,25 @@ export default function LandingSearchPage() {
                                     icon: <Bot className="h-6 w-6 text-blue-600" />,
                                     bg: "bg-blue-50",
                                     title: "التوليد بالذكاء الاصطناعي",
-                                    desc: "في حال عدم توفر المصطلح ضمن قاعدة البيانات — كما لاحظنا في مثال \"per default\" — سيتم الاستعانة بالنماذج اللغوية لاقتراح عدة بدائل، مع إتاحة الفرصة لمستهلك المعرفة لاختيار الأنسب أو اقتراح بديل آخر، على أن يُعتمد لاحقاً وفق منهجية الأكثر استعمالاً."
+                                    desc: "الاستعانة بالنماذج اللغوية لاقتراح بدائل للمصطلحات غير المتوفرة، مع إتاحة الخيار للمستخدم لاعتماد الأنسب."
                                 },
                                 {
                                     icon: <Database className="h-6 w-6 text-indigo-600" />,
                                     bg: "bg-indigo-50",
                                     title: "توسيع قاعدة البيانات",
-                                    desc: "العمل على توسيع قاعدة البيانات بشكل تدريجي لتشمل عدداً أكبر من المصطلحات المستمدة من مصادر متنوعة في مجال المعلوماتية، بما يعزز شمولية القاعدة ودقتها."
+                                    desc: "توسيع قاعدة البيانات تدريجياً لتشمل مصادر متنوعة في المعلوماتية، تعزيزاً للشمولية والدقة."
                                 },
                                 {
                                     icon: <Zap className="h-6 w-6 text-emerald-600" />,
                                     bg: "bg-emerald-50",
                                     title: "تطبيقات التصحيح الذكي",
-                                    desc: "تطوير إضافات وتطبيقات تهدف إلى تصحيح المصطلحات آلياً، بحيث في حال استعمال مصطلح غير مناسب، يُقترح التصحيح المناسب فوراً، بما يسهم في توحيد المصطلحات وتحسين جودة الاستخدام."
+                                    desc: "تطوير أدوات للتصحيح الآلي للمصطلحات أثناء الكتابة، لضمان توحيد الاستخدام وتحسين التعبير العلمي."
                                 },
                                 {
                                     icon: <BarChart3 className="h-6 w-6 text-rose-600" />,
                                     bg: "bg-rose-50",
                                     title: "توسيع المجالات العلمية",
-                                    desc: "توسيع نطاق العمل ليشمل مجالات علمية أخرى كالمجال الطبي والهندسي، بما يدعم قابلية تعميم المنهجية على تخصصات مختلفة وتحقيق أثر أوسع."
+                                    desc: "تعميم المنهجية لتشمل مجالات علمية أخرى كالطب والهندسة، لتحقيق أثر معرفي أوسع."
                                 },
                             ].map((item, i) => (
                                 <div key={i} className="bg-white rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
@@ -681,37 +692,7 @@ export default function LandingSearchPage() {
                 </section>
 
                 {/* Join Community Section */}
-                <section id="community" className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white mx-4 md:mx-10 rounded-[3rem] shadow-2xl shadow-blue-900/20 relative overflow-hidden mb-12">
-                    <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
-                         <div className="absolute top-[-20%] right-[-20%] w-[600px] h-[600px] bg-white rounded-full blur-[100px]" />
-                    </div>
-                    
-                    <div className="container mx-auto px-4 text-center relative z-10 space-y-8">
-                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 backdrop-blur-md rounded-full border border-white/20 text-sm font-bold animate-pulse">
-                            <span className="w-2 h-2 bg-green-400 rounded-full"></span>
-                            مجتمع المعرفة
-                        </div>
-                        
-                        <h2 className="text-3xl md:text-6xl font-black tracking-tight leading-tight">
-                            كن جزءاً من الحوار <br />
-                            <span className="text-blue-200">حول مستقبل المصطلح العربي</span>
-                        </h2>
-                        
-                        <p className="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-medium leading-relaxed">
-                            انضم إلى قناتنا على تيليجرام لمتابعة آخر تحديثات المشروع، والنقاشات حول توحيد المصطلحات، والمساهمة في بناء المعجم.
-                        </p>
 
-                        <div className="pt-4">
-                            <a 
-                                href="#contact" 
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 md:px-10 md:py-5 rounded-full font-black text-base md:text-lg hover:bg-blue-50 transition-all shadow-xl shadow-blue-900/20 hover:scale-105 active:scale-95 group"
-                            >
-                                <Mail className="h-5 w-5 md:h-6 md:w-6 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-                                تواصل معنا الآن
-                            </a>
-                        </div>
-                    </div>
-                </section>
 
                 {/* Contact Section - Modernized & Moved */}
                 <section id="contact" className="py-24 relative overflow-hidden bg-slate-50/50">
@@ -794,6 +775,7 @@ export default function LandingSearchPage() {
                                         { label: "رحلة المشروع", href: "#timeline" },
                                         { label: "مجتمع المعرفة", href: "#community" },
                                         { label: "تواصل معنا", href: "#contact" },
+                                        // { label: "جائزة يوغرطة", href: route('award') },
                                         { label: "ساهم معنا", href: route('contribute') },
                                         { label: "شكر وتقدير", href: route('thanks') },
                                     ].map((link, i) => (

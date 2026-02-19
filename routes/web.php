@@ -9,7 +9,14 @@ Route::get("/paper", function () {
     return inertia("ChatV2/Paper");
 })->name("paper");
 
+// Route::get("/award", function () {
+//     return inertia("ChatV2/Award");
+// })->name("award");
+
 Route::get("/search", function (\Illuminate\Http\Request $request) {
+    if ($request->user()) {
+        $request->user()->checkAndResetDailyCredits();
+    }
     return inertia("ChatV2/Results", [
         'q' => $request->query('q')
     ]);
@@ -102,6 +109,11 @@ Route::middleware("auth")->group(function () {
 
 use App\Http\Controllers\Api\ChatController;
 Route::get("/chat", [ChatController::class, "index"])->name("chat.index");
+
+
+// Chat V2 Routes (protected by session auth)
+Route::post('/api/chat_v2', [ChatV2Controller::class, 'chat'])->middleware('auth')->name('chat.v2');
+Route::post('/api/chat_v2/export_pdf', [ChatV2Controller::class, 'downloadPdf'])->middleware('auth')->name('chat.v2.pdf');
 
 use App\Http\Controllers\ContactController;
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');

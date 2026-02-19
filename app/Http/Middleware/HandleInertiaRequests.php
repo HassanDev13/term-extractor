@@ -41,7 +41,7 @@ class HandleInertiaRequests extends Middleware
         return [
             ...parent::share($request),
             "auth" => [
-                "user" => $request->user(),
+                "user" => $request->user() ? $request->user()->fresh() : null,
                 "isAdmin" => $request->user() && $request->user()->is_admin,
             ],
             "locale" => "en",
