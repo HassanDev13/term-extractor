@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
 const paperContent = `
-# مشروع التعريب: توحيد المصطلحات المعلوماتية
+# تعريب: توحيد المصطلحات المعلوماتية
 **معجم عربي قائم على منهجية الأكثر استعمالًا**
 
 **حسان محمد زروق**  
@@ -172,7 +172,7 @@ zerrouk.mohammed.hacene@gmail.com
 export default function Paper() {
     return (
         <>
-            <Head title="ورقة مفاهيمية | مشروع التعريب" />
+            <Head title="ورقة مفاهيمية | تعريب" />
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden" dir="rtl">
                 
                 {/* Header */}
@@ -183,7 +183,7 @@ export default function Paper() {
                                 <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain" />
                             </div>
                             <div>
-                                <h1 className="text-lg font-black text-slate-800 leading-tight">مشروع التعريب</h1>
+                                <h1 className="text-lg font-black text-slate-800 leading-tight">تعريب</h1>
                                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">العودة للرئيسية</p>
                             </div>
                         </Link>

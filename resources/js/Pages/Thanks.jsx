@@ -4,7 +4,7 @@ import { Construction, ArrowRight, Heart } from "lucide-react";
 export default function Thanks() {
     return (
         <>
-            <Head title="شكر وتقدير | مشروع التعريب" />
+            <Head title="شكر وتقدير | تعريب" />
             <div
                 className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4 text-center font-arabic"
                 dir="rtl"

@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { Switch } from "@/Components/ui/switch";
 import { 
@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import ContactForm from "@/Components/ContactForm";
 
 const SHOWCASE = [
     {
@@ -110,90 +111,26 @@ function ShowcaseTable() {
 
 export default function LandingSearchPage() {
     const [query, setQuery] = useState("");
-    const [isSearching, setIsSearching] = useState(false);
-    const [result, setResult] = useState("");
-    const [hasSearched, setHasSearched] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [detailedMode, setDetailedMode] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { auth } = usePage().props;
-    const resultsRef = useRef(null);
 
 
-    const handleSearch = async (e, customQuery = null) => {
+    const handleSearch = (e, customQuery = null) => {
         if (e) e.preventDefault();
         
         const textToSearch = customQuery || query;
-        if (!textToSearch.trim() || loading) return;
+        if (!textToSearch.trim()) return;
 
-        // Ensure UI matches the actual search
-        setQuery(textToSearch);
-        
         setLoading(true);
-        setHasSearched(true);
-        setResult("");
-        setIsSearching(true);
-        
-        // Custom scroll to results if on mobile/small screen
-        setTimeout(() => {
-            resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }, 100);
-
-        try {
-            const response = await fetch("/api/chat_v2", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Accept": "application/x-ndjson",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
-                },
-                body: JSON.stringify({ 
-                    messages: [{ role: "user", content: textToSearch }],
-                    detailed_mode: detailedMode 
-                }),
-            });
-
-            const reader = response.body.getReader();
-            const decoder = new TextDecoder();
-            let accumulatedContent = "";
-
-            while (true) {
-                const { done, value } = await reader.read();
-                if (done) break;
-
-                const text = decoder.decode(value);
-                const lines = text.split("\n");
-
-                for (const line of lines) {
-                    if (!line.trim()) continue;
-                    try {
-                        const json = JSON.parse(line);
-                        if (json.chunk) {
-                            accumulatedContent += json.chunk;
-                            let displayContent = accumulatedContent;
-                            displayContent = displayContent.replace(/<think>[\s\S]*?<\/think>/gi, "");
-                            displayContent = displayContent.replace(/<[\|｜][\s\S]*?[\|｜]>/gu, "");
-                            displayContent = displayContent.replace(/<dsml>[\s\S]*?<\/dsml>/gi, "");
-                            if (displayContent.match(/^<think>/i)) displayContent = "";
-                            displayContent = displayContent.replace(/^Thinking\.\.\.\s*/i, "");
-                            setResult(displayContent.trim());
-                        }
-                    } catch (e) {}
-                }
-            }
-        } catch (error) {
-            setResult("⚠️ حدث خطأ أثناء البحث. يرجى المحاولة مرة أخرى.");
-        } finally {
-            setLoading(false);
-            setIsSearching(false);
-        }
+        router.visit(route('search.results', { q: textToSearch }));
     };
+
+
 
     return (
         <>
-            <Head title="مشروع التعريب | توحيد المصطلحات المعلوماتية" />
+            <Head title="تعريب | توحيد المصطلحات المعلوماتية" />
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden" dir="rtl">
                 
                 {/* Fixed Header */}
@@ -205,18 +142,28 @@ export default function LandingSearchPage() {
                             <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1.5 rounded-xl shadow-sm">
                                 <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                             </div>
-                            <span className="text-sm font-black text-slate-800 tracking-tight">مشروع التعريب</span>
+                            <span className="text-sm font-black text-slate-800 tracking-tight">تعريب</span>
                         </div>
 
                         {/* Desktop links */}
                         <div className="hidden md:flex items-center gap-1">
-                            <a href="#methodology" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50 group">
+                            <a href="#methodology" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 المنهجية
                             </a>
-                            <Link href={route('thanks')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
-                                شكر وتقدير
+                            <a href="#timeline" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                الرحلة
+                            </a>
+                            <a href="#community" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                المجتمع
+                            </a>
+                            <a href="#contact" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                تواصل معنا
+                            </a>
+                            <Link href={route('contribute')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                ساهم معنا
                             </Link>
-                            {auth.user && (
+                            
+                            {auth.user ? (
                                 <>
                                     <div className="w-px h-5 bg-slate-200 mx-1" />
                                     <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-xl border border-blue-100">
@@ -224,9 +171,14 @@ export default function LandingSearchPage() {
                                         <span className="text-blue-700 text-xs font-bold">{auth.user.name}</span>
                                     </div>
                                     <Link href={route('logout')} method="post" as="button" className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
-                                        <LogOut className="h-3.5 w-3.5" /><span>خروج</span>
+                                        <LogOut className="h-3.5 w-3.5" />
                                     </Link>
                                 </>
+                            ) : (
+                                <Link href={route('login')} className="flex items-center gap-1.5 px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
+                                    <User className="h-4 w-4" />
+                                    <span>دخول</span>
+                                </Link>
                             )}
                         </div>
 
@@ -254,20 +206,37 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     المنهجية
                                 </a>
+                                <a
+                                    href="#timeline"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    الرحلة
+                                </a>
+                                <a
+                                    href="#community"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    المجتمع
+                                </a>
+                                <a
+                                    href="#contact"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    تواصل معنا
+                                </a>
                                 <Link
                                     href={route('contribute')}
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
                                 >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    ساهم معنا
-                                </Link>
-                                <Link
-                                    href={route('thanks')}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                >
                                     <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                                    شكر وتقدير
+                                    ساهم معنا
                                 </Link>
                                 {auth.user && (
                                     <>
@@ -363,6 +332,7 @@ export default function LandingSearchPage() {
                             </form>
 
                             {/* Tags + switch row */}
+                            {/* Tags */}
                             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
                                 <div className="flex items-center gap-2 overflow-x-auto pb-1 w-full sm:w-auto scrollbar-none">
                                     <span className="text-slate-400 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap shrink-0">شائعة:</span>
@@ -376,114 +346,13 @@ export default function LandingSearchPage() {
                                         </button>
                                     ))}
                                 </div>
-                                <div className="flex items-center gap-2 bg-white/70 backdrop-blur-sm px-4 py-2 rounded-full border border-slate-200 shadow-sm shrink-0">
-                                    <label htmlFor="detailed-mode" className="text-xs font-bold text-slate-600 cursor-pointer flex items-center gap-1.5">
-                                        <Zap className={`h-3.5 w-3.5 ${detailedMode ? 'text-amber-500 fill-amber-500' : 'text-slate-400'}`} />
-                                        <span>مفصلة</span>
-                                    </label>
-                                    <Switch id="detailed-mode" checked={detailedMode} onCheckedChange={setDetailedMode} className="data-[state=checked]:bg-blue-600" />
-                                </div>
                             </div>
                         </div>
                     </div>
                 </header>
 
                 {/* Results Section */}
-                {hasSearched && (
-                    <section ref={resultsRef} className="bg-white border-y border-slate-200 py-10 md:py-16 px-4 scroll-mt-20">
-                        <div className="max-w-3xl mx-auto space-y-8">
-                            <div className="flex items-center gap-3 border-b border-slate-100 pb-6">
-                                <div className="bg-blue-50 p-2.5 rounded-2xl shrink-0">
-                                    <BarChart3 className="h-5 w-5 text-blue-600" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg md:text-2xl font-black text-slate-800">نتائج تحليل المصطلح</h3>
-                                    <p className="text-slate-400 text-xs md:text-sm font-medium">من معاجم متخصصة · نموذج الأكثر استعمالاً</p>
-                                </div>
-                            </div>
 
-                            <div className="min-h-[400px]">
-                                {result ? (
-                                    <div className="prose prose-slate prose-lg max-w-none leading-relaxed font-arabic text-right animate-in fade-in duration-500" dir="rtl">
-                                        <ReactMarkdown 
-                                            remarkPlugins={[remarkGfm]}
-                                            components={{
-                                                h1: ({node, ...props}) => <h1 className="text-4xl font-black mb-8 pb-6 border-b-4 border-blue-50 text-slate-900" {...props} />,
-                                                h2: ({node, ...props}) => <h2 className="text-2xl font-bold mt-12 mb-6 text-slate-800 flex items-center gap-3" {...props} />,
-                                                h3: ({node, ...props}) => <h3 className="text-xl font-bold mt-10 mb-4 text-slate-700" {...props} />,
-                                                ul: ({node, ...props}) => <ul className="space-y-4 my-8 pr-4 bg-slate-50 p-8 rounded-3xl border border-slate-100 shadow-inner" {...props} />,
-                                                li: ({node, ...props}) => <li className="relative pr-6 before:content-[''] before:absolute before:right-0 before:top-3 before:w-2 before:h-2 before:bg-blue-500 before:rounded-full before:shadow-sm" {...props} />,
-                                                table: ({node, ...props}) => (
-                                                    <div className="my-6 overflow-x-auto rounded-2xl border border-slate-200 shadow-sm">
-                                                        <table className="w-full text-right border-collapse min-w-[400px]" {...props} />
-                                                    </div>
-                                                ),
-                                                thead: ({node, ...props}) => <thead className="bg-slate-50" {...props} />,
-                                                th: ({node, ...props}) => <th className="p-4 text-slate-900 font-bold border-b border-slate-200 text-sm uppercase tracking-wider" {...props} />,
-                                                td: ({node, ...props}) => <td className="p-4 border-b border-slate-100 text-slate-600 text-base" {...props} />,
-                                                strong: ({node, ...props}) => <strong className="text-blue-700 font-black" {...props} />,
-                                                code: ({node, ...props}) => <code className="bg-slate-100 text-blue-600 px-2 py-0.5 rounded-lg border border-slate-200 font-mono text-sm" {...props} />
-                                            }}
-                                        >
-                                            {result}
-                                        </ReactMarkdown>
-                                        
-                                        <div className="flex flex-wrap justify-end gap-2 mt-6 pt-5 border-t border-slate-100">
-                                            <Button
-                                                variant="outline" size="sm"
-                                                onClick={() => navigator.clipboard.writeText(result)}
-                                                className="gap-2 text-slate-500 hover:text-blue-600 hover:border-blue-200 text-xs"
-                                            >
-                                                <FileText className="h-3.5 w-3.5" />
-                                                <span>نسخ النص</span>
-                                            </Button>
-                                            <Button
-                                                variant="outline" size="sm"
-                                                onClick={async () => {
-                                                    try {
-                                                        const response = await fetch('/api/chat_v2/export_pdf', {
-                                                            method: 'POST',
-                                                            headers: { 'Content-Type': 'application/json' },
-                                                            body: JSON.stringify({ content: result, query })
-                                                        });
-                                                        if (response.ok) {
-                                                            const blob = await response.blob();
-                                                            const url = window.URL.createObjectURL(blob);
-                                                            const a = document.createElement('a');
-                                                            a.href = url;
-                                                            a.download = `term_report_${query}.pdf`;
-                                                            document.body.appendChild(a);
-                                                            a.click();
-                                                            a.remove();
-                                                        } else { alert('Failed to generate PDF'); }
-                                                    } catch (e) { console.error(e); alert('Error downloading PDF'); }
-                                                }}
-                                                className="gap-2 text-slate-500 hover:text-red-600 hover:border-red-200 text-xs"
-                                            >
-                                                <FileText className="h-3.5 w-3.5" />
-                                                <span>تحميل PDF</span>
-                                            </Button>
-                                        </div>
-                                        {loading && (
-                                            <div className="flex items-center gap-4 mt-12 p-6 bg-blue-50/50 rounded-2xl border border-blue-100 border-dashed animate-pulse">
-                                                <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
-                                                <span className="text-blue-700 font-bold">جاري تحليل الاستناد المصطلحي وقياس المقبولية...</span>
-                                            </div>
-                                        )}
-                                    </div>
-                                ) : (
-                                    <div className="flex flex-col items-center justify-center py-32 space-y-8">
-                                        <div className="h-24 w-24 border-8 border-slate-100 border-t-blue-600 rounded-full animate-spin" />
-                                        <div className="text-center space-y-2">
-                                            <p className="text-3xl font-black text-slate-900">جاري مسح المعاجم...</p>
-                                            <p className="text-slate-400 font-medium">نقوم بمطابقة المصطلح عبر 28,000 مدخل معجمي</p>
-                                        </div>
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </section>
-                )}
 
 
 
@@ -620,56 +489,7 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
-                {/* Limitations Section */}
-                <section className="py-20 px-4 bg-slate-50 border-y border-slate-100">
-                    <div className="container mx-auto max-w-5xl">
-                        <div className="text-center mb-12 space-y-3">
-                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                                ما الذي <span className="text-amber-600">يُعيقنا</span> حتى الآن؟
-                            </h3>
-                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
-                                الشفافية جزء من منهجيتنا — نشارككم التحديات الحقيقية التي نواجهها.
-                            </p>
-                        </div>
 
-                        {/* Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                            {[
-                                {
-                                    icon: <ShieldAlert className="h-6 w-6 text-amber-600" />,
-                                    bg: "bg-amber-50",
-                                    border: "border-amber-100 hover:border-amber-300",
-                                    title: "دقة الاستخراج",
-                                    desc: "عند استخراج المصطلحات من الكتب المُمسوحة ضوئياً، كانت المخرجات في الغالب صحيحة، غير أن بعض المصطلحات لم تُستخرج بشكل كامل أو دقيق بسبب جودة المسح."
-                                },
-                                {
-                                    icon: <Mail className="h-6 w-6 text-blue-600" />,
-                                    bg: "bg-blue-50",
-                                    border: "border-blue-100 hover:border-blue-300",
-                                    title: "طلبات المعاجم الرقمية",
-                                    desc: "تواصلنا مع عدد من المجامع اللغوية لطلب نسخ رقمية من معاجمها لرفع دقة النتائج، إلا أننا لم نتلقَّ أي رد حتى الآن."
-                                },
-                                {
-                                    icon: <Database className="h-6 w-6 text-indigo-600" />,
-                                    bg: "bg-indigo-50",
-                                    border: "border-indigo-100 hover:border-indigo-300",
-                                    title: "جودة البيانات = جودة النتائج",
-                                    desc: "المشروع يعتمد اعتماداً كبيراً على سلامة البيانات المُدخلة. كلما كانت المصادر أدق وأشمل، زادت قيمة التوصيات وفائدتها للمجامع والباحثين."
-                                },
-                            ].map((item, i) => (
-                                <div key={i} className={`bg-white rounded-3xl p-7 border ${item.border} shadow-sm hover:shadow-lg transition-all`}>
-                                    <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center mb-5`}>
-                                        {item.icon}
-                                    </div>
-                                    <h4 className="text-lg font-black text-slate-800 mb-3">{item.title}</h4>
-                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{item.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-
-                       
-                    </div>
-                </section>
 
                 {/* Future Plans Section */}
                 <section id="future" className="py-20 px-4 bg-slate-50 border-b border-slate-100">
@@ -718,8 +538,10 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
+
+
                 {/* Timeline Section */}
-                <section className="py-20 px-4 bg-slate-50 border-b border-slate-100">
+                <section id="timeline" className="py-20 px-4 bg-slate-50 border-b border-slate-100">
                     <div className="container mx-auto max-w-3xl">
                         <div className="text-center mb-14 space-y-3">
                             <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
@@ -859,7 +681,7 @@ export default function LandingSearchPage() {
                 </section>
 
                 {/* Join Community Section */}
-                <section className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white mx-4 md:mx-10 rounded-[3rem] shadow-2xl shadow-blue-900/20 relative overflow-hidden mb-12">
+                <section id="community" className="py-20 bg-gradient-to-br from-blue-600 to-indigo-700 text-white mx-4 md:mx-10 rounded-[3rem] shadow-2xl shadow-blue-900/20 relative overflow-hidden mb-12">
                     <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none">
                          <div className="absolute top-[-20%] right-[-20%] w-[600px] h-[600px] bg-white rounded-full blur-[100px]" />
                     </div>
@@ -881,19 +703,63 @@ export default function LandingSearchPage() {
 
                         <div className="pt-4">
                             <a 
-                                href="https://t.me/hacene_dev" 
-                                target="_blank" 
-                                rel="noopener noreferrer"
+                                href="#contact" 
                                 className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-white text-blue-600 px-8 py-4 md:px-10 md:py-5 rounded-full font-black text-base md:text-lg hover:bg-blue-50 transition-all shadow-xl shadow-blue-900/20 hover:scale-105 active:scale-95 group"
                             >
-                                <Send className="h-5 w-5 md:h-6 md:w-6 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
-                                انضم للقناة الآن
+                                <Mail className="h-5 w-5 md:h-6 md:w-6 group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
+                                تواصل معنا الآن
                             </a>
                         </div>
                     </div>
                 </section>
 
-                {/* Footer Section */}
+                {/* Contact Section - Modernized & Moved */}
+                <section id="contact" className="py-24 relative overflow-hidden bg-slate-50/50">
+                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
+                    
+                    <div className="container mx-auto px-4 max-w-6xl">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+                            
+                            {/* Text Content */}
+                            <div className="space-y-8 order-2 lg:order-1 text-right">
+                                <div className="space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-xs font-bold border border-blue-100 w-fit">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                                        تواصل معنا
+                                    </div>
+                                    <h2 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                                        لديك استفسار أو
+                                        <span className="block mt-2 text-transparent bg-clip-text bg-gradient-to-br from-blue-600 to-violet-600">فكرة مميزة؟</span>
+                                    </h2>
+                                    <p className="text-slate-500 text-lg leading-relaxed max-w-md ml-auto">
+                                        نحن هنا للاستماع. سواء كان سؤالاً حول المشروع، اقتراحاً للتحسين، أو رغبة في المساهمة، لا تتردد في مراسلتنا.
+                                    </p>
+                                </div>
+
+                                <div className="flex flex-col gap-4">
+                                    <a href="mailto:contact@example.com" className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group">
+                                        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
+                                            <Mail className="h-6 w-6" />
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">البريد الإلكتروني</p>
+                                            <p className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">contact@example.com</p>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+
+                            {/* Contact Form Card */}
+                            <div className="order-1 lg:order-2 bg-white rounded-[2.5rem] p-8 md:p-10 shadow-2xl shadow-slate-200/50 border border-slate-100 relative overflow-hidden">
+                                <div className="relative z-10">
+                                    <ContactForm />
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
                 {/* Footer Section */}
                 <footer className="bg-slate-950 text-slate-300 border-t border-slate-800/50 relative overflow-hidden" dir="rtl">
                     {/* Decorative background blobs */}
@@ -910,21 +776,13 @@ export default function LandingSearchPage() {
                                         <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-2xl text-white tracking-tight">مشروع التعريب</h3>
+                                        <h3 className="font-black text-2xl text-white tracking-tight">تعريب</h3>
                                         <p className="text-[11px] text-blue-400 font-bold tracking-widest uppercase opacity-90 text-right">مبادرة لتوحيد المصطلحات</p>
                                     </div>
                                 </div>
                                 <p className="text-slate-400/90 text-base leading-relaxed font-medium max-w-md">
                                     مشروع بحثي مفتوح المصدر يسعى لسد الفجوة بين التوحيد المصطلحي والقبولية الاستعمالية في حقل المعلوماتية العربية، مدعوم بالذكاء الاصطناعي.
                                 </p>
-                                <div className="flex items-center gap-3 pt-2">
-                                    <a href="https://t.me/hacene_dev" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600/20 flex items-center justify-center text-slate-400 hover:text-blue-400 transition-all border border-white/5 hover:border-blue-500/30 group">
-                                        <Send className="h-4 w-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
-                                    </a>
-                                    <a href="mailto:zerrouk.mohammed.hacene@gmail.com" className="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600/20 flex items-center justify-center text-slate-400 hover:text-blue-400 transition-all border border-white/5 hover:border-blue-500/30">
-                                        <Mail className="h-4 w-4" />
-                                    </a>
-                                </div>
                             </div>
 
                             {/* Links Column */}
@@ -933,9 +791,11 @@ export default function LandingSearchPage() {
                                 <ul className="space-y-3">
                                     {[
                                         { label: "المنهجية العلمية", href: "#methodology" },
-                                        { label: "شكر وتقدير", href: route('thanks') },
+                                        { label: "رحلة المشروع", href: "#timeline" },
+                                        { label: "مجتمع المعرفة", href: "#community" },
+                                        { label: "تواصل معنا", href: "#contact" },
                                         { label: "ساهم معنا", href: route('contribute') },
-                                        { label: "مجتمع المعرفة", href: "https://t.me/hacene_dev" },
+                                        { label: "شكر وتقدير", href: route('thanks') },
                                     ].map((link, i) => (
                                         <li key={i}>
                                             <a href={link.href} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium group">
@@ -949,21 +809,10 @@ export default function LandingSearchPage() {
 
                             {/* Contact/Info Column */}
                             <div className="md:col-span-3 space-y-6">
-                                <h4 className="font-bold text-white text-lg">معلومات التواصل</h4>
-                                <div className="space-y-4">
-                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-colors">
-                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">المطور</p>
-                                        <p className="font-bold text-white text-sm">حسان محمد زروق</p>
-                                        <p className="text-slate-400 text-xs mt-1">مهندس برمجيات</p>
-                                    </div>
-                                    <a
-                                        href="mailto:zerrouk.mohammed.hacene@gmail.com"
-                                        className="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors text-xs font-medium break-all"
-                                    >
-                                        <Mail className="h-3.5 w-3.5 shrink-0" />
-                                        zerrouk.mohammed.hacene@gmail.com
-                                    </a>
-                                </div>
+                                <h4 className="font-bold text-white text-lg">تواصل معنا</h4>
+                                <p className="text-slate-400 text-sm leading-relaxed">
+                                    نسعد باستقبال استفساراتكم ومقترحاتكم لتطوير هذا المشروع.
+                                </p>
                             </div>
                         </div>
 

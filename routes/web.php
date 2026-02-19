@@ -9,6 +9,12 @@ Route::get("/paper", function () {
     return inertia("ChatV2/Paper");
 })->name("paper");
 
+Route::get("/search", function (\Illuminate\Http\Request $request) {
+    return inertia("ChatV2/Results", [
+        'q' => $request->query('q')
+    ]);
+})->middleware('auth')->name("search.results");
+
 Route::get("/thanks", function () {
     return inertia("Thanks");
 })->name("thanks");
@@ -96,3 +102,6 @@ Route::middleware("auth")->group(function () {
 
 use App\Http\Controllers\Api\ChatController;
 Route::get("/chat", [ChatController::class, "index"])->name("chat.index");
+
+use App\Http\Controllers\ContactController;
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
