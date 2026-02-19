@@ -12,6 +12,11 @@ Route::get("/paper", function () {
 Route::get("/thanks", function () {
     return inertia("Thanks");
 })->name("thanks");
+
+Route::get("/contribute", function () {
+    return inertia("Contribute");
+})->name("contribute");
+
 Route::get("/classic", [TermController::class, "index"])->name("terms.index");
 
 // Redirect old /terms route to root for backward compatibility

@@ -6,7 +6,7 @@ import {
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
-    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -254,6 +254,14 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     المنهجية
                                 </a>
+                                <Link
+                                    href={route('contribute')}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    ساهم معنا
+                                </Link>
                                 <Link
                                     href={route('thanks')}
                                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
@@ -710,10 +718,61 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
-                {/* Testimonial Section */}
+                {/* Timeline Section */}
                 <section className="py-20 px-4 bg-slate-50 border-b border-slate-100">
+                    <div className="container mx-auto max-w-3xl">
+                        <div className="text-center mb-14 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                سنة من <span className="text-blue-600">العمل</span>
+                            </h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                                هكذا بدأت الرحلة: سؤالٌ صغير، ورؤية تتسع، ومشروع يسعى لأن يعيد للمصطلح العربي مكانته في فضاء العلم والتقنية.
+                            </p>
+                        </div>
+
+                        {/* Timeline — single column, RTL */}
+                        <div className="relative" dir="rtl">
+                            {/* Vertical line on the right */}
+                            <div className="absolute right-5 top-0 bottom-0 w-0.5 bg-gradient-to-b from-blue-300 via-indigo-200 to-slate-100" />
+
+                            <div className="space-y-6">
+                                {[
+                                    { date: "جانفي – مارس 2025", phase: "البداية", dot: "bg-blue-500", badge: "bg-blue-50 text-blue-700 border-blue-100", title: "ولادة الفكرة", desc: "لم تكن البداية مشروعًا بقدر ما كانت سؤالًا مقلقًا يتردد بإلحاح: ما موقع اللغة الأم في صناعة المعرفة؟ وكيف يمكن لأمة أن تنتج علمًا وهي تفكر بمصطلحات مستعارة؟ من هنا تشكّلت النواة الأولى، لا كردّ فعل عاطفي، بل كمحاولة جادة لفهم العلاقة العميقة بين اللغة والإنتاج العلمي، وبين المصطلح والقدرة على الابتكار." },
+                                    { date: "04 أفريل 2025", phase: "إعلان نية", dot: "bg-indigo-500", badge: "bg-indigo-50 text-indigo-700 border-indigo-100", title: "المبادرة الأولى", desc: "وُلدت الورقة المفاهيمية بعنوان «تعريب المصطلحات التقنية»، ليس كنص نظري فقط، بل كإعلان نية. عُرضت على عدد من الدكاترة والمتخصصين، وخضعت للنقاش والمراجعة، لتتحول من فكرة فردية إلى مشروع قابل للنقد والبناء." },
+                                    { date: "أفريل – أوت 2025", phase: "بحث معمق", dot: "bg-violet-500", badge: "bg-violet-50 text-violet-700 border-violet-100", title: "تعميق الرؤية", desc: "بدأت مرحلة الغوص في إشكالية المصطلح: كيف يتشكل؟ كيف يُفرض؟ وكيف يؤثر في بنية التفكير العلمي؟ تمت مراجعة الأدبيات، وتتبع التجارب اللغوية المقارنة، وتحليل أثر الازدواجية اللغوية في البيئة الأكاديمية." },
+                                    { date: "سبتمبر – ديسمبر 2025", phase: "تأسيس", dot: "bg-emerald-500", badge: "bg-emerald-50 text-emerald-700 border-emerald-100", title: "من الفكرة إلى البناء", desc: "أُعيدت صياغة الورقة المفاهيمية لتصدر في نسخة ثانية أكثر نضجًا واتساقًا. وفي خطوة عملية، تم استخراج ما يقارب 28 ألف مصطلح من خمسة معاجم متخصصة في المعلوماتية، لتكوين قاعدة معرفية صلبة. كما حظي المشروع بتمويل مجتمعي قدره 300 دولار، لم يكن رقمًا كبيرًا بقدر ما كان رسالة ثقة بأن الفكرة تستحق أن تُستكمل." },
+                                    { date: "جانفي – مارس 2026", phase: "تفعيل", dot: "bg-amber-500", badge: "bg-amber-50 text-amber-700 border-amber-100", title: "التقنية في خدمة اللغة", desc: "انتقل المشروع من التأصيل النظري إلى التفعيل العملي، عبر تطوير محرك بحث مدعوم بتقنيات الذكاء الاصطناعي، يربط المصطلح بسياقه، ويُيسر الوصول إليه، ويمنح المستخدم تجربة بحث دقيقة وفعالة." },
+                                    { date: "04 أفريل 2026", phase: "انطلاق", dot: "bg-rose-500", badge: "bg-rose-50 text-rose-700 border-rose-100", title: "عام من التأسيس", desc: "في الذكرى الأولى لانطلاق المشروع، تم نشر النسخة الثانية من الورقة المفاهيمية، إلى جانب الإطلاق الرسمي لمحرك البحث. لم يكن ذلك مجرد احتفاء زمني، بل إعلان انتقال من مرحلة التأسيس إلى مرحلة التأثير." },
+                                ].map((item, i) => (
+                                    <div key={i} className="relative flex items-start gap-5 pr-14">
+                                        {/* Number dot — sits on the line */}
+                                        <div className={`absolute right-0 top-0 w-10 h-10 rounded-xl ${item.dot} flex items-center justify-center shadow-md z-10`}>
+                                            <span className="text-white font-black text-sm">{i + 1}</span>
+                                        </div>
+
+                                        {/* Card */}
+                                        <div className="flex-1 bg-white rounded-2xl border border-slate-100 hover:border-slate-200 hover:shadow-md transition-all p-5">
+                                            <div className="flex items-center gap-2 mb-2 flex-wrap">
+                                                <span className={`text-xs font-black px-2.5 py-1 rounded-full border ${item.badge}`}>{item.phase}</span>
+                                                <span className="text-xs text-slate-400 font-medium">{item.date}</span>
+                                            </div>
+                                            <h4 className="font-black text-slate-800 text-base mb-1.5">{item.title}</h4>
+                                            <p className="text-slate-500 text-sm leading-relaxed font-medium">{item.desc}</p>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+
+                {/* Testimonial Section */}
+                <section className="py-20 px-4 bg-slate-50 border-b border-slate-100 overflow-hidden">
                     <div className="container mx-auto max-w-5xl">
-                        <div className="text-center mb-12 space-y-3">
+
+                        {/* Header */}
+                        <div className="text-center mb-14 space-y-3">
                             <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
                                 ماذا قالوا عن <span className="text-blue-600">المشروع؟</span>
                             </h3>
@@ -722,44 +781,46 @@ export default function LandingSearchPage() {
                             </p>
                         </div>
 
-                        {/* Quote card */}
-                        <div className="bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
-                            <div className="grid grid-cols-1 md:grid-cols-[280px_1fr]">
+                        {/* Card — editorial layout */}
+                        <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl shadow-slate-900/10 border border-slate-100">
+                            <div className="grid grid-cols-1 md:grid-cols-[340px_1fr]">
 
-                                {/* Left — person */}
-                                <div className="bg-gradient-to-br from-blue-600 to-indigo-700 p-8 flex flex-col items-center justify-center text-center text-white gap-4">
-                                    <div className="relative">
-                                        <div className="w-24 h-24 rounded-2xl overflow-hidden border-4 border-white/20 shadow-xl">
-                                            <img src="/images/mokhtar.jpg" alt="د.مختار الغوث" className="w-full h-full object-cover" />
-                                        </div>
-                                        <div className="absolute -bottom-2 -right-2 bg-white rounded-full p-1 shadow">
-                                            <div className="bg-blue-600 rounded-full p-1">
-                                                <Quote className="h-3 w-3 text-white" />
-                                            </div>
-                                        </div>
+                                {/* Left — big image panel */}
+                                <div className="relative min-h-[320px] md:min-h-0">
+                                    <img
+                                        src="/images/mokhtar.jpg"
+                                        alt="د.مختار الغوث"
+                                        className="absolute inset-0 w-full h-full object-cover object-top"
+                                    />
+                                    {/* Gradient overlay */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                                    {/* Name on image */}
+                                    <div className="absolute bottom-0 right-0 left-0 p-6 text-white" dir="rtl">
+                                        <p className="font-black text-xl leading-tight drop-shadow">د. مختار الغوث</p>
+                                        <p className="text-white/70 text-xs font-medium mt-1">لغوي موريتاني · بروفيسور في جامعة طيبة</p>
+                                        <a
+                                            href="https://ar.wikipedia.org/wiki/%D9%85%D8%AE%D8%AA%D8%A7%D8%B1_%D8%A7%D9%84%D8%BA%D9%88%D8%AB"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="inline-flex items-center gap-1 mt-2 text-[11px] font-bold text-white/60 hover:text-white transition-colors"
+                                        >
+                                            <ExternalLink className="h-2.5 w-2.5" />
+                                            ويكيبيديا
+                                        </a>
                                     </div>
-                                    <div>
-                                        <p className="font-black text-lg leading-tight">د. مختار الغوث</p>
-                                        <p className="text-blue-200 text-xs font-medium mt-1 leading-relaxed">لغوي موريتاني · بروفيسور في جامعة طيبة، المدينة المنورة</p>
-                                    </div>
-                                    <a
-                                        href="https://ar.wikipedia.org/wiki/%D9%85%D8%AE%D8%AA%D8%A7%D8%B1_%D8%A7%D9%84%D8%BA%D9%88%D8%AB"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="flex items-center gap-1.5 text-xs text-blue-200 hover:text-white transition-colors border border-white/20 px-3 py-1.5 rounded-full hover:border-white/40"
-                                    >
-                                        <ExternalLink className="h-3 w-3" />
-                                        ويكيبيديا
-                                    </a>
                                 </div>
 
                                 {/* Right — quote + videos */}
-                                <div className="p-8 flex flex-col gap-6">
+                                <div className="p-8 md:p-10 flex flex-col gap-8 justify-between">
+
                                     {/* Quote */}
-                                    <div className="relative">
-                                        <Quote className="absolute top-0 right-0 h-8 w-8 text-blue-100 -translate-y-1" />
-                                        <blockquote className="text-slate-700 text-base md:text-lg leading-loose font-medium pr-8" dir="rtl">
-                                            قرأت الأوراق وسررت بها كثيرًا، وأرجو الله أن يكتب لك التوفيق والنجاح. فكرتها جميلة، ولكنها تحتاج إلى فريق جاد ومخلص ومصابر، وإذا كتب له النجاح، فسوف تكون فيه خدمة جليلة للعربية.
+                                    <div className="relative" dir="rtl">
+                                        <span className="block text-[90px] leading-none text-blue-100 font-serif select-none -mb-6 -mr-2">"</span>
+                                        <blockquote className="text-slate-700 text-base md:text-lg leading-loose font-medium">
+                                            قرأت الأوراق وسررت بها كثيرًا، وأرجو الله أن يكتب لك التوفيق والنجاح.{" "}
+                                            <mark className="bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-md font-bold not-italic">فكرتها جميلة</mark>
+                                            ، ولكنها تحتاج إلى فريق جاد ومخلص ومصابر، وإذا كتب له النجاح، فسوف تكون فيه{" "}
+                                            <mark className="bg-amber-50 text-amber-700 px-1.5 py-0.5 rounded-md font-bold not-italic">خدمة جليلة للعربية</mark>.
                                         </blockquote>
                                     </div>
 
@@ -768,7 +829,7 @@ export default function LandingSearchPage() {
 
                                     {/* Videos */}
                                     <div>
-                                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">محاضرات مختارة</p>
+                                        <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-3 text-right" dir="rtl">محاضرات مختارة</p>
                                         <div className="space-y-2">
                                             {[
                                                 { title: "العودة إلى الهوية العربية", url: "https://youtu.be/MwqxPOtJJ7k" },
@@ -780,13 +841,13 @@ export default function LandingSearchPage() {
                                                     href={v.url}
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-white border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-all group"
+                                                    className="flex items-center gap-3 px-4 py-3 rounded-xl bg-slate-50 border border-slate-100 hover:border-red-200 hover:bg-red-50 transition-all group"
                                                 >
                                                     <div className="bg-red-500 text-white rounded-lg p-1.5 shrink-0 group-hover:scale-110 transition-transform">
                                                         <Play className="h-3 w-3 fill-white" />
                                                     </div>
-                                                    <span className="text-sm font-bold text-slate-600 group-hover:text-red-600 transition-colors text-right">{v.title}</span>
-                                                    <ExternalLink className="h-3.5 w-3.5 text-slate-300 group-hover:text-red-400 transition-colors mr-auto shrink-0" />
+                                                    <span className="text-sm font-bold text-slate-600 group-hover:text-red-600 transition-colors text-right flex-1" dir="rtl">{v.title}</span>
+                                                    <ExternalLink className="h-3.5 w-3.5 text-slate-300 group-hover:text-red-400 transition-colors shrink-0" />
                                                 </a>
                                             ))}
                                         </div>
@@ -833,28 +894,99 @@ export default function LandingSearchPage() {
                 </section>
 
                 {/* Footer Section */}
-                <footer className="py-20 border-t border-slate-200 bg-white">
-                    <div className="container mx-auto px-4 text-center space-y-8">
-                        <div className="flex flex-col items-center gap-4">
-                            <div className="bg-white p-2 rounded-2xl shadow-sm border border-slate-100 mb-2">
-                                <img src="/images/logo.png" alt="Logo" className="h-12 w-12 object-contain" />
+                {/* Footer Section */}
+                <footer className="bg-slate-950 text-slate-300 border-t border-slate-800/50 relative overflow-hidden" dir="rtl">
+                    {/* Decorative background blobs */}
+                    <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-900/10 blur-[120px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2 mix-blend-screen" />
+                    <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-900/10 blur-[100px] rounded-full pointer-events-none translate-y-1/2 -translate-x-1/2 mix-blend-screen" />
+
+                    <div className="container mx-auto px-6 py-16 md:py-20 max-w-6xl relative z-10">
+                        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 bg-transparent">
+                            
+                            {/* Brand Column */}
+                            <div className="md:col-span-5 space-y-6">
+                                <div className="flex items-center gap-3">
+                                    <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-2.5 rounded-xl shadow-lg shadow-blue-900/20 ring-1 ring-white/10">
+                                        <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
+                                    </div>
+                                    <div>
+                                        <h3 className="font-black text-2xl text-white tracking-tight">مشروع التعريب</h3>
+                                        <p className="text-[11px] text-blue-400 font-bold tracking-widest uppercase opacity-90 text-right">مبادرة لتوحيد المصطلحات</p>
+                                    </div>
+                                </div>
+                                <p className="text-slate-400/90 text-base leading-relaxed font-medium max-w-md">
+                                    مشروع بحثي مفتوح المصدر يسعى لسد الفجوة بين التوحيد المصطلحي والقبولية الاستعمالية في حقل المعلوماتية العربية، مدعوم بالذكاء الاصطناعي.
+                                </p>
+                                <div className="flex items-center gap-3 pt-2">
+                                    <a href="https://t.me/hacene_dev" target="_blank" className="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600/20 flex items-center justify-center text-slate-400 hover:text-blue-400 transition-all border border-white/5 hover:border-blue-500/30 group">
+                                        <Send className="h-4 w-4 group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                                    </a>
+                                    <a href="mailto:zerrouk.mohammed.hacene@gmail.com" className="w-10 h-10 rounded-full bg-white/5 hover:bg-blue-600/20 flex items-center justify-center text-slate-400 hover:text-blue-400 transition-all border border-white/5 hover:border-blue-500/30">
+                                        <Mail className="h-4 w-4" />
+                                    </a>
+                                </div>
                             </div>
-                            <h4 className="text-2xl font-black text-slate-800">مشروع التعريب</h4>
-                            <p className="text-slate-400 text-sm max-w-md mx-auto font-medium">
-                                مشروع بحثي يسعى لسد الفجوة بين التوحيد المصطلحي والقبولية الاستعمالية في حقل المعلوماتية.
-                            </p>
+
+                            {/* Links Column */}
+                            <div className="md:col-span-3 md:col-start-7 space-y-6">
+                                <h4 className="font-bold text-white text-lg">روابط سريعة</h4>
+                                <ul className="space-y-3">
+                                    {[
+                                        { label: "المنهجية العلمية", href: "#methodology" },
+                                        { label: "شكر وتقدير", href: route('thanks') },
+                                        { label: "ساهم معنا", href: route('contribute') },
+                                        { label: "مجتمع المعرفة", href: "https://t.me/hacene_dev" },
+                                    ].map((link, i) => (
+                                        <li key={i}>
+                                            <a href={link.href} className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors text-sm font-medium group">
+                                                <span className="w-1 h-1 rounded-full bg-slate-600 group-hover:bg-blue-400 transition-colors" />
+                                                <span className="group-hover:translate-x-1 transition-transform">{link.label}</span>
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            {/* Contact/Info Column */}
+                            <div className="md:col-span-3 space-y-6">
+                                <h4 className="font-bold text-white text-lg">معلومات التواصل</h4>
+                                <div className="space-y-4">
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 hover:border-white/10 transition-colors">
+                                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">المطور</p>
+                                        <p className="font-bold text-white text-sm">حسان محمد زروق</p>
+                                        <p className="text-slate-400 text-xs mt-1">مهندس برمجيات</p>
+                                    </div>
+                                    <a
+                                        href="mailto:zerrouk.mohammed.hacene@gmail.com"
+                                        className="flex items-center gap-2 text-slate-400 hover:text-blue-400 transition-colors text-xs font-medium break-all"
+                                    >
+                                        <Mail className="h-3.5 w-3.5 shrink-0" />
+                                        zerrouk.mohammed.hacene@gmail.com
+                                    </a>
+                                </div>
+                            </div>
                         </div>
-                        
-                        <div className="flex flex-col items-center gap-2 pt-8 border-t border-slate-50">
-                            <p className="font-bold text-slate-800">حسان محمد زروق</p>
-                            <p className="text-slate-400 text-sm">مهندس برمجيات | zerrouk.mohammed.hacene@gmail.com</p>
-                            <div className="flex items-center gap-4 mt-3">
-                                <Link href={route('thanks')} className="text-xs font-bold text-slate-400 hover:text-blue-600 transition-colors">شكر وتقدير</Link>
+
+                        {/* Separator */}
+                        <div className="h-px bg-gradient-to-r from-transparent via-slate-800 to-transparent my-10 opacity-70" />
+
+                        {/* Bottom Bar */}
+                        <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
+                            <p className="flex items-center gap-1.5">
+                                <span>© 2026 مشروع التعريب.</span>
+                                <span className="hidden sm:inline text-slate-700">|</span>
+                                <span>جميع الحقوق محفوظة.</span>
+                            </p>
+                            <div className="flex items-center gap-1.5 bg-slate-900/50 px-3 py-1.5 rounded-full border border-slate-800">
+                                <span>صُنع بـ</span>
+                                <span className="text-red-500 animate-pulse">❤️</span>
+                                <span>من أجل اللغة العربية</span>
                             </div>
-                            <p className="text-[10px] text-slate-300 font-black tracking-widest mt-4">© 2026 MASHROU AL-TAARIB - BETA VERSION</p>
                         </div>
                     </div>
                 </footer>
+
+
 
                 <style dangerouslySetInnerHTML={{ __html: `
                     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@200;300;400;500;700;800;900&display=swap');
