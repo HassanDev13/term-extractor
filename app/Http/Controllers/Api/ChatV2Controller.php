@@ -95,12 +95,12 @@ Follow this EXACT structure for your response:
 
 # تقرير مصطلحي: [English Term]
 
-**إحصائيات:** ورد هذا المصطلح [USE `total_count` FROM DATA] مرة في [USE `resource_count` FROM DATA] مصدراً. 
-(CRITICAL MATH CHECK: Look at the top-level `resource_count` field in the JSON data, do not calculate this yourself!)
+**إحصائيات:** تم العثور على هذا المصطلح في [USE `resource_count` FROM DATA] مصادر. 
+(CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources!)
 **التعريف:** [Brief definition of the English term in Arabic to set context]
 
 ## 1. ملخص الاستعمال الأكثر شيوعاً
-[Provide a summary of the most used Arabic term and its acceptance level, and mentioning the total count]
+[Provide a summary of the most used Arabic term and its acceptance level. Do not mention total frequency numbers, focus on the variety of sources.]
 
 ## 2. التحليل التفصيلي حسب المصدر
 [List each resource and the term it uses. CRITICAL: You MUST format every page number as a clickable link using this format: `[Page X](/resources/{resource_id}/pdf#page={page_number})`. For example: `[ص. 5](/resources/10/pdf#page=5)`]
@@ -114,7 +114,7 @@ Note: Be professional and comprehensive. Ensure every cited page has a link.";
 MODE: ULTRA-CONCISE SUMMARY
 CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels.
 Format:
-**المصطلح:** [Arabic Term] - ([Count in Arabic] مرات في [Sources in Arabic] مصادر)
+**المصطلح:** [Arabic Term] - (موجود في [Use `resource_count` from data] مصادر)
 [Brief definition in Arabic in 1 sentence]
 **بدائل:** [List 2-3 alternative terms, comma separated]";
                 }
