@@ -82,7 +82,7 @@ class User extends Authenticatable implements FilamentUser
 
         // Ensure daily_credits is integer
         if ($this->daily_credits === null) {
-            $this->daily_credits = 20;
+            $this->daily_credits = 10;
         }
 
         // If unlimited, ensure they have high credits and return
@@ -95,15 +95,15 @@ class User extends Authenticatable implements FilamentUser
         }
 
         if (!$lastReset) {
-            $this->daily_credits = 20;
+            $this->daily_credits = 10;
             $this->last_credit_reset_at = $now;
             $this->save();
             return;
         }
 
         if (!$lastReset || !$lastReset->isSameDay($now)) {
-            \Illuminate\Support\Facades\Log::info("User Model Reset: Resetting credits to 20 for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL') . " Now: " . $now->toDateTimeString());
-            $this->daily_credits = 20;
+            \Illuminate\Support\Facades\Log::info("User Model Reset: Resetting credits to 10 for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL') . " Now: " . $now->toDateTimeString());
+            $this->daily_credits = 10;
             $this->last_credit_reset_at = $now;
             $this->save();
         } else {

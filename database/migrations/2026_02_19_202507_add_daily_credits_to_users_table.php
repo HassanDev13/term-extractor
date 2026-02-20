@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('daily_credits')->default(20)->after('password');
+            $table->integer('daily_credits')->default(10)->after('password');
             $table->timestamp('last_credit_reset_at')->nullable()->after('daily_credits');
         });
     }

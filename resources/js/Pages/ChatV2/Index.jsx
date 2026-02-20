@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Head, Link, usePage, router } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { Switch } from "@/Components/ui/switch";
@@ -115,6 +115,32 @@ export default function LandingSearchPage() {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const { auth } = usePage().props;
 
+    useEffect(() => {
+        const script = document.createElement('script');
+        script.src = 'https://storage.ko-fi.com/cdn/scripts/overlay-widget.js';
+        script.async = true;
+        
+        script.onload = () => {
+            if (window.kofiWidgetOverlay) {
+                window.kofiWidgetOverlay.draw('hacene', {
+                    'type': 'floating-chat',
+                    'floating-chat.donateButton.text': 'ادعمنا',
+                    'floating-chat.donateButton.background-color': '#4f46e5', // Matches the theme perfectly
+                    'floating-chat.donateButton.text-color': '#fff'
+                });
+            }
+        };
+
+        document.body.appendChild(script);
+
+        return () => {
+            if (document.body.contains(script)) {
+                document.body.removeChild(script);
+            }
+            const kofiElements = document.querySelectorAll('iframe[src*="ko-fi"], [id^="kofi-"]');
+            kofiElements.forEach(el => el.remove());
+        };
+    }, []);
 
     const handleSearch = (e, customQuery = null) => {
         if (e) e.preventDefault();
@@ -162,9 +188,7 @@ export default function LandingSearchPage() {
                             {/* <Link href={route('award')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-amber-600 transition-colors rounded-xl hover:bg-amber-50">
                                 جائزة يوغرطة
                             </Link> */}
-                            <Link href={route('contribute')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
-                                ساهم معنا
-                            </Link>
+
                             
                             {auth.user ? (
                                 <>
@@ -241,14 +265,7 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
                                     جائزة يوغرطة
                                 </Link> */}
-                                <Link
-                                    href={route('contribute')}
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
-                                    ساهم معنا
-                                </Link>
+
                                 {auth.user && (
                                     <>
                                         <div className="h-px bg-slate-100 mx-2 my-1" />
@@ -691,10 +708,45 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
-                {/* Join Community Section */}
-
-
-                {/* Contact Section - Modernized & Moved */}
+                {/* Support Project - Ko-Fi Section */}
+                <section id="community" className="py-20 px-4 bg-slate-50 border-b border-slate-100 relative overflow-hidden">
+                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-200 to-transparent" />
+                    <div className="container mx-auto max-w-5xl relative z-10 text-center">
+                        <div className="bg-gradient-to-br from-indigo-600 via-blue-600 to-blue-700 rounded-[2.5rem] p-10 md:p-14 shadow-2xl shadow-blue-900/20 overflow-hidden relative border border-white/10">
+                            {/* Decorative blobs */}
+                            <div className="absolute top-0 left-0 w-[400px] h-[400px] bg-white/10 blur-[80px] rounded-full mix-blend-screen pointer-events-none -translate-x-1/2 -translate-y-1/2" />
+                            <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-indigo-400/20 blur-[60px] rounded-full mix-blend-screen pointer-events-none translate-x-1/2 translate-y-1/2" />
+                            
+                            <div className="relative z-10 space-y-6">
+                                
+                                
+                                <h3 className="text-3xl md:text-4xl font-black text-white tracking-tight">
+                                    ادعم مشروع التعريب 
+                                </h3>
+                                
+                                <p className="text-blue-100 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
+                                    يهدف هذا المشروع إلى سد الفجوة بين المصطلحات العلمية وقبولها الفعلي. 
+                                    مساهمتك تساعدنا في تغطية تكاليف الذكاء الاصطناعي، الخوادم، وتطوير قواعد بيانات أوسع لحماية الهوية اللغوية في عصر التقنية.
+                                </p>
+                                
+                                <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
+                                    <a 
+                                        href="https://ko-fi.com/hacene" 
+                                        target="_blank" 
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-3 bg-white text-slate-800 px-8 py-4 rounded-full font-black hover:bg-slate-50 transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 active:scale-95 text-lg w-full sm:w-auto justify-center group"
+                                    >
+                                        <svg className="w-6 h-6 text-[#FF5E5B] group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+                                            <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.061-4.3-.037-.046-.045-.086-.045-.086-.154-.487-.09-1.261.343-1.611l.092-.064c.334-.207 1.055-.224 1.454.004l.033.024c.319.263 1.636 1.54 1.954 1.83.21-.212 1.604-1.503 1.928-1.78l.068-.052c.451-.274 1.258-.292 1.631-.05l.078.06c.404.372.502 1.155.305 1.625l-.039.083c-.092.148-.27.279-.27.279v-.006zm7.842 2.059c-1.077 1.07-2.736.8-2.736.8v-3.829c.854 0 2.613-.23 3.321.465.748.747.491 2.476-.585 2.564z" />
+                                        </svg>
+                                        <span>اشترِ لنا قهوة ☕</span>
+                                    </a>
+                                </div>
+                                <p className="text-white/70 text-sm font-medium mt-4">ندعم جميع بطاقات الدفع عبر منصة Ko-fi الآمنة</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>                {/* Contact Section - Modernized & Moved */}
                 <section id="contact" className="py-24 relative overflow-hidden bg-slate-50/50">
                     <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-slate-200 to-transparent" />
                     
@@ -775,8 +827,7 @@ export default function LandingSearchPage() {
                                         { label: "رحلة المشروع", href: "#timeline" },
                                         { label: "مجتمع المعرفة", href: "#community" },
                                         { label: "تواصل معنا", href: "#contact" },
-                                        // { label: "جائزة يوغرطة", href: route('award') },
-                                        { label: "ساهم معنا", href: route('contribute') },
+
                                         { label: "شكر وتقدير", href: route('thanks') },
                                     ].map((link, i) => (
                                         <li key={i}>

@@ -295,7 +295,7 @@ export default function Award() {
                                         { label: "مجتمع المعرفة", href: "/#community" },
                                         { label: "تواصل معنا", href: "/#contact" },
                                         { label: "جائزة يوغرطة", href: route('award') },
-                                        { label: "ساهم معنا", href: route('contribute') },
+
                                         { label: "شكر وتقدير", href: route('thanks') },
                                     ].map((link, i) => (
                                         <li key={i}>
