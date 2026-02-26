@@ -38,14 +38,18 @@ export default function Results({ q }) {
         setError(null);
         
         try {
+            // Read updated X-XSRF-TOKEN from cookies to prevent 419 errors after login navigations
+            const getXsrfToken = () => {
+                const match = document.cookie.match(new RegExp('(^|;\\s*)(XSRF-TOKEN)=([^;]*)'));
+                return match ? decodeURIComponent(match[3]) : '';
+            };
+
             const response = await fetch("/api/chat_v2", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Accept": "application/x-ndjson",
-                    "X-CSRF-TOKEN": document
-                        .querySelector('meta[name="csrf-token"]')
-                        .getAttribute("content"),
+                    "X-XSRF-TOKEN": getXsrfToken(),
                 },
                 body: JSON.stringify({ 
                     messages: [{ role: "user", content: textToSearch }],

@@ -16,6 +16,38 @@ class SearchService
             return [];
         }
 
+        $result = $this->performSearch($search, $exactMatch, $smartMode);
+        
+        // If no results and it's a composition search of multiple words
+        if (empty($result) && str_contains(trim($search), ' ')) {
+            $words = preg_split('/\s+/', trim($search));
+            $compositionResults = [];
+            
+            foreach ($words as $word) {
+                if (mb_strlen($word) > 2) {
+                    $wordRes = $this->performSearch($word, $exactMatch, $smartMode);
+                    if (!empty($wordRes)) {
+                        $compositionResults[$word] = $wordRes;
+                    }
+                }
+            }
+            
+            if (!empty($compositionResults)) {
+                return [
+                    'is_composition_fallback' => true,
+                    'original_query' => $search,
+                    'message' => 'The exact full phrase was not found in the database. These are the results for each individual word.',
+                    'word_results' => $compositionResults
+                ];
+            }
+        }
+
+        return $result;
+    }
+
+    private function performSearch(string $search, bool $exactMatch, bool $smartMode): array
+    {
+
         // Get all terms matching the search (case-insensitive)
         $query = Term::query()
             ->with(['resourcePage.resource'])

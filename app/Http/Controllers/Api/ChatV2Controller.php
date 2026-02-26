@@ -86,17 +86,19 @@ OPERATIONAL RULES:
    - Use `search_terms` to find relevant terms. Always assume the user wants the Smart Search capabilities.
    - Use `get_project_info` for metadata queries.
    - Use `list_resources` for structural queries.
+7. 0 RESULTS FALLBACK: If `search_terms` returns an empty array `[]` or no database results, YOU MUST inform the user that there are NO results found in the database. Then, YOU MUST provide a professional definition, explanation, and translation of the term based ONLY on your own internal knowledge. Clearly state that this information is from your own knowledge and not the database.
+8. COMPOSITION SEARCH FALLBACK: If `search_terms` returns `is_composition_fallback: true` (a multi-word phrase was not found as a whole, but its individual words were), YOU MUST inform the user of this. Then synthesis the combined meaning of the phrase based on the individual word results provided to you.
 ';
 
                 if ($detailedMode) {
                     $systemContent .= "
 MODE: UNIFIED DETAILED REPORT
-Follow this EXACT structure for your response:
+Follow this EXACT structure for your response (If 0 database results or composition fallback, adapt this structure reasonably while retaining professional formatting):
 
 # تقرير مصطلحي: [English Term]
 
 **إحصائيات:** تم العثور على هذا المصطلح في [USE `resource_count` FROM DATA] مصادر. 
-(CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources!)
+(CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources! If 0 results, put 0 and explain from your knowledge base contextually.)
 **التعريف:** [Brief definition of the English term in Arabic to set context]
 
 ## 1. ملخص الاستعمال الأكثر شيوعاً
@@ -112,10 +114,10 @@ Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {
                     $systemContent .= "
 MODE: ULTRA-CONCISE SUMMARY
-CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels.
+CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels (If 0 database results or composition fallback, adapt this nicely).
 Format:
-**المصطلح:** [Arabic Term] - (موجود في [Use `resource_count` from data] مصادر)
-[Brief definition in Arabic in 1 sentence]
+**المصطلح:** [Arabic Term] - (موجود في [Use `resource_count` from data, or 0] مصادر)
+[Brief definition in Arabic in 1 sentence. If 0 results, explain from knowledge. If composition, synthesize meaning.]
 **بدائل:** [List 2-3 alternative terms, comma separated]";
                 }
 
