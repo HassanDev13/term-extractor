@@ -105,7 +105,9 @@ Follow this EXACT structure for your response (If 0 database results or composit
 [Provide a summary of the most used Arabic term and its acceptance level. Do not mention total frequency numbers, focus on the variety of sources.]
 
 ## 2. التحليل التفصيلي حسب المصدر
-[List each resource and the term it uses. CRITICAL: You MUST format every page number as a clickable link using this format: `[Page X](/resources/{resource_id}/pdf#page={page_number})`. For example: `[ص. 5](/resources/10/pdf#page=5)`]
+[List each resource and the term it uses. CRITICAL: You MUST format every page number as a standard markdown clickable link EXACTLY using this format: `[ص. X](/resources/{resource_id}/pdf#page={page_number})`. 
+Example of CORRECT syntax: `[ص. 5](/resources/10/pdf#page=5)`
+Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do this!]
 
 ## 3. الملاحظات والفروق الدلالية
 [Explain any differences in meaning or usage contexts between the translations]
