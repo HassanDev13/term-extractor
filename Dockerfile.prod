@@ -1,26 +1,34 @@
 # ===============================
-# Stage 1: Composer dependencies
+# Stage 1: Build frontend assets
 # ===============================
-FROM composer:2 AS builder
-
+FROM node:20-alpine AS frontend
 WORKDIR /app
-
-# Copy composer files only to install dependencies
-COPY composer.json composer.lock ./
-
-# Install PHP dependencies (no dev)
-RUN composer install --no-dev --optimize-autoloader
+COPY package*.json ./
+RUN npm install
+COPY . .
+RUN npm run build
 
 # ===============================
-# Stage 2: Runtime
+# Stage 2: Composer dependencies
+# ===============================
+FROM composer:2 AS vendor
+WORKDIR /app
+COPY composer.json composer.lock ./
+# Ignore platform requirements during install for speed
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+
+# ===============================
+# Stage 3: Runtime
 # ===============================
 FROM php:8.2-fpm-alpine
 
 # Set working directory
-WORKDIR /var/www
+WORKDIR /var/www/html
 
-# Install basic tools + PHP extensions + OCR & PDF tools
+# Install Nginx, Supervisor, and required PHP extensions + OCR & PDF tools
 RUN apk add --no-cache \
+    nginx \
+    supervisor \
     bash \
     git \
     libpng-dev \
@@ -34,9 +42,11 @@ RUN apk add --no-cache \
     autoconf \
     g++ \
     make \
+    linux-headers \
     && docker-php-ext-install pdo_mysql zip gd opcache \
     && pecl install redis \
-    && docker-php-ext-enable redis
+    && docker-php-ext-enable redis \
+    && apk del autoconf g++ make linux-headers
 
 # Configure PHP for production
 RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
@@ -44,12 +54,30 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "opcache.max_accelerated_files=20000" >> /usr/local/etc/php/conf.d/opcache.ini \
     && echo "opcache.validate_timestamps=0" >> /usr/local/etc/php/conf.d/opcache.ini
 
-# Copy Laravel app & dependencies
-COPY --from=builder /app /var/www
+# Create directories
+RUN mkdir -p /run/nginx
+
+# Copy app code
 COPY . .
 
-# Expose port 9000 for php-fpm
-EXPOSE 9000
+# Copy vendor from Stage 2
+COPY --from=vendor /app/vendor ./vendor
 
-# Start PHP-FPM
-CMD ["php-fpm"]
+# Copy frontend build from Stage 1
+COPY --from=frontend /app/public/build ./public/build
+
+# Set permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Copy Nginx configuration
+COPY docker/nginx.conf /etc/nginx/nginx.conf
+
+# Copy Supervisor configuration
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
+# Expose port 80 (since Nginx runs on port 80 now)
+EXPOSE 80
+
+# Start Supervisord which manages Nginx, PHP-FPM, and Queue Worker
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
