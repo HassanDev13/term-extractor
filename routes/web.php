@@ -13,6 +13,10 @@ Route::get("/paper", function () {
 //     return inertia("ChatV2/Award");
 // })->name("award");
 
+Route::get("/changelog", function () {
+    return inertia("ChatV2/Changelog");
+})->name("changelog");
+
 Route::get("/search", function (\Illuminate\Http\Request $request) {
     if ($request->user()) {
         $request->user()->checkAndResetDailyCredits();

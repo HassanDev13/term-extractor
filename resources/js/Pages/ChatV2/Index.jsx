@@ -6,7 +6,8 @@ import {
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
-    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users,
+    Rocket, Target, Calendar, Building2
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -185,6 +186,9 @@ export default function LandingSearchPage() {
                             <a href="#contact" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 تواصل معنا
                             </a>
+                            <Link href={route('changelog')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                سجل التحديثات
+                            </Link>
                             {/* <Link href={route('award')} className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-amber-600 transition-colors rounded-xl hover:bg-amber-50">
                                 جائزة يوغرطة
                             </Link> */}
@@ -257,6 +261,14 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     تواصل معنا
                                 </a>
+                                <Link
+                                    href={route('changelog')}
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    سجل التحديثات
+                                </Link>
                                 {/* <Link
                                     href={route('award')}
                                     onClick={() => setMobileMenuOpen(false)}
@@ -519,52 +531,7 @@ export default function LandingSearchPage() {
 
 
 
-                {/* Future Plans Section */}
-                <section id="future" className="py-20 px-4 bg-slate-50 border-b border-slate-100">
-                    <div className="container mx-auto max-w-5xl">
-                        <div className="text-center mb-12 space-y-3">
-                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">آفاق البحث المستقبلية</h3>
-                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">خطواتنا القادمة نحو بناء معجم عربي ذكي وشامل.</p>
-                        </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {[
-                                {
-                                    icon: <Bot className="h-6 w-6 text-blue-600" />,
-                                    bg: "bg-blue-50",
-                                    title: "التوليد بالذكاء الاصطناعي",
-                                    desc: "الاستعانة بالنماذج اللغوية لاقتراح بدائل للمصطلحات غير المتوفرة، مع إتاحة الخيار للمستخدم لاعتماد الأنسب."
-                                },
-                                {
-                                    icon: <Database className="h-6 w-6 text-indigo-600" />,
-                                    bg: "bg-indigo-50",
-                                    title: "توسيع قاعدة البيانات",
-                                    desc: "توسيع قاعدة البيانات تدريجياً لتشمل مصادر متنوعة في المعلوماتية، تعزيزاً للشمولية والدقة."
-                                },
-                                {
-                                    icon: <Zap className="h-6 w-6 text-emerald-600" />,
-                                    bg: "bg-emerald-50",
-                                    title: "تطبيقات التصحيح الذكي",
-                                    desc: "تطوير أدوات للتصحيح الآلي للمصطلحات أثناء الكتابة، لضمان توحيد الاستخدام وتحسين التعبير العلمي."
-                                },
-                                {
-                                    icon: <BarChart3 className="h-6 w-6 text-rose-600" />,
-                                    bg: "bg-rose-50",
-                                    title: "توسيع المجالات العلمية",
-                                    desc: "تعميم المنهجية لتشمل مجالات علمية أخرى كالطب والهندسة، لتحقيق أثر معرفي أوسع."
-                                },
-                            ].map((item, i) => (
-                                <div key={i} className="bg-white rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
-                                    <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center mb-5 group-hover:scale-110 transition-transform`}>
-                                        {item.icon}
-                                    </div>
-                                    <h4 className="text-lg font-black text-slate-800 mb-3">{item.title}</h4>
-                                    <p className="text-slate-500 text-sm leading-relaxed font-medium">{item.desc}</p>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                </section>
 
 
 
@@ -704,6 +671,68 @@ export default function LandingSearchPage() {
                                     </div>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+                </section>
+
+                {/* Institutional Support Section */}
+                <section className="py-24 px-4 bg-slate-50 border-b border-slate-100 overflow-hidden relative">
+                    {/* Background accent */}
+                    <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-50/50 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
+                    
+                    <div className="container mx-auto max-w-6xl relative z-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-12 lg:gap-16 items-center" dir="rtl">
+                            
+                            {/* Text Content */}
+                            <div className="space-y-8 text-right order-2 lg:order-1">
+                                <div className="space-y-4">
+                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-bold border border-indigo-100 w-fit">
+                                        <Building2 className="h-4 w-4" />
+                                        دعم أكاديمي ورؤية مشتركة
+                                    </div>
+                                    <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
+                                        خطوات واثقة نحو <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">أرض الواقع</span>
+                                    </h3>
+                                    <p className="text-slate-600 text-lg leading-relaxed font-medium">
+                                        في سعينا للخروج بالمشروع من تواجده الرقمي إلى أرض الواقع، توجت مساعينا بزيارة <strong className="text-indigo-700 font-black">المجلس الأعلى للغة العربية</strong> يوم 16 ديسمبر 2025.
+                                    </p>
+                                    <p className="text-slate-600 text-lg leading-relaxed font-medium">
+                                        تشرفنا بعرض المشروع على كل من البروفيسور صالح بلعيد، الدكتور كبير بن عيسى، والدكتورة حاج سليمان، مستفيدين من توجيهاتهم ونصائحهم القيمة حول المشروع وتوجهاته المستقبلية.
+                                    </p>
+                                </div>
+
+                                <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+                                    <h4 className="flex items-center gap-2 font-black text-slate-800 mb-3 justify-start">
+                                        تطلعاتنا المستقبلية
+                                        <Target className="h-5 w-5 text-indigo-600" />
+                                    </h4>
+                                    <p className="text-slate-600 text-sm leading-relaxed font-medium text-right">
+                                        نطمح لزيارة مختلف المجامع العربية بهدف التعريف بالمشروع وطلب الدعم في مساعينا الهادفة لتوحيد المصطلحات في مجال المعلوماتية، عبر <strong className="text-indigo-600">منهجية الأكثر إستعمالا</strong> لحفظ الهوية اللغوية ومواكبة الحداثة.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            {/* Image Showcase */}
+                            <div className="order-1 lg:order-2 relative">
+                                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-[2.5rem] transform -rotate-3 scale-105 opacity-15 blur-xl" />
+                                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-indigo-900/10 border-4 border-white bg-slate-100 aspect-[4/5] sm:aspect-auto sm:h-[600px] w-full group">
+                                    <img 
+                                        src="/images/majliss.jpg" 
+                                        alt="زيارة المجلس الأعلى للغة العربية" 
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                                    />
+                                    {/* Overlay Gradient (bottom up) */}
+                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent pointer-events-none" />
+                                    <div className="absolute bottom-6 right-6 left-6 text-white text-right pointer-events-none" dir="rtl">
+                                        <p className="font-black text-xl drop-shadow-md">المجلس الأعلى للغة العربية</p>
+                                        <p className="text-white/80 text-sm font-bold mt-1.5 flex items-center gap-1.5">
+                                            <Calendar className="h-4 w-4" />
+                                            16 ديسمبر 2025
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </section>
