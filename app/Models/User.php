@@ -27,6 +27,9 @@ class User extends Authenticatable implements FilamentUser
         'daily_credits',
         'last_credit_reset_at',
         'is_unlimited',
+        'linkedin_url',
+        'speciality_id',
+        'status',
     ];
 
     /**
@@ -109,5 +112,13 @@ class User extends Authenticatable implements FilamentUser
         } else {
              \Illuminate\Support\Facades\Log::info("User Model Check: No need to reset for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL'));
         }
+    }
+
+    /**
+     * Get the speciality associated with the user.
+     */
+    public function speciality()
+    {
+        return $this->belongsTo(Speciality::class);
     }
 }

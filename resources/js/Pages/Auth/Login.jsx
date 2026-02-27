@@ -141,9 +141,9 @@ export default function Login() {
                         <div className="text-center">
                             <p className="text-sm font-medium text-slate-500">
                                 ليس لديك حساب؟{' '}
-                                <span className="text-slate-400 cursor-not-allowed">
-                                    التسجيل مغلق حالياً
-                                </span>
+                                <Link href={route('register')} className="text-blue-600 hover:text-blue-700 font-bold hover:underline transition-all">
+                                    سجل الآن
+                                </Link>
                             </p>
                         </div>
                     </div>

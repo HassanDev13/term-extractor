@@ -21,6 +21,24 @@ class UsersTable
                 TextColumn::make('email')
                     ->label('Email address')
                     ->searchable(),
+                \Filament\Tables\Columns\TextColumn::make('speciality.name')
+                    ->label('Speciality')
+                    ->searchable()
+                    ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('status')
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'approved' => 'success',
+                        'rejected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->searchable()
+                    ->sortable(),
+                \Filament\Tables\Columns\TextColumn::make('linkedin_url')
+                    ->label('LinkedIn')
+                    ->url(fn ($record) => $record->linkedin_url, true)
+                    ->toggleable(isToggledHiddenByDefault: true),
                 IconColumn::make('is_admin')
                     ->label('Admin')
                     ->boolean()

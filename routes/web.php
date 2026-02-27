@@ -20,7 +20,7 @@ Route::get("/search", function (\Illuminate\Http\Request $request) {
     return inertia("ChatV2/Results", [
         'q' => $request->query('q')
     ]);
-})->middleware('auth')->name("search.results");
+})->middleware(['auth', 'approved'])->name("search.results");
 
 Route::get("/thanks", function () {
     return inertia("Thanks");
@@ -40,7 +40,17 @@ use App\Http\Controllers\AuthController;
 
 Route::get("/login", [AuthController::class, "showLogin"])->name("login");
 Route::post("/login", [AuthController::class, "login"]);
+Route::get("/register", [AuthController::class, "showRegister"])->name("register");
+Route::post("/register", [AuthController::class, "register"]);
 Route::post("/logout", [AuthController::class, "logout"])->name("logout");
+
+// Waiting approval route
+Route::get("/waiting-approval", function (\Illuminate\Http\Request $request) {
+    if ($request->user() && ($request->user()->status === 'approved' || $request->user()->is_admin)) {
+        return redirect('/');
+    }
+    return inertia("Auth/Waiting");
+})->middleware('auth')->name('waiting');
 
 // Locale switching route
 Route::post("/locale/{locale}", function ($locale) {
@@ -112,8 +122,8 @@ Route::get("/chat", [ChatController::class, "index"])->name("chat.index");
 
 
 // Chat V2 Routes (protected by session auth)
-Route::post('/api/chat_v2', [ChatV2Controller::class, 'chat'])->middleware('auth')->name('chat.v2');
-Route::post('/api/chat_v2/export_pdf', [ChatV2Controller::class, 'downloadPdf'])->middleware('auth')->name('chat.v2.pdf');
+Route::post('/api/chat_v2', [ChatV2Controller::class, 'chat'])->middleware(['auth', 'approved'])->name('chat.v2');
+Route::post('/api/chat_v2/export_pdf', [ChatV2Controller::class, 'downloadPdf'])->middleware(['auth', 'approved'])->name('chat.v2.pdf');
 
 use App\Http\Controllers\ContactController;
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');

@@ -31,6 +31,20 @@ class UserForm
                 Toggle::make('is_unlimited')
                     ->label('Unlimited Credits')
                     ->helperText('Grant unlimited search credits (bypasses daily limit)'),
+                \Filament\Forms\Components\Select::make('speciality_id')
+                    ->relationship('speciality', 'name')
+                    ->label('Speciality'),
+                \Filament\Forms\Components\TextInput::make('linkedin_url')
+                    ->url()
+                    ->label('LinkedIn URL'),
+                \Filament\Forms\Components\Select::make('status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'approved' => 'Approved',
+                        'rejected' => 'Rejected',
+                    ])
+                    ->default('pending')
+                    ->required(),
                 DateTimePicker::make('email_verified_at'),
             ]);
     }
