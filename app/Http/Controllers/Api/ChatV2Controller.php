@@ -112,6 +112,9 @@ Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do th
 ## 3. التحليل اللغوي والدلالي (Linguistic and Semantic Analysis)
 [Provide a deep linguistic and semantic description for the most used term. Discuss its linguistic roots, morphology (e.g., verb weights, derivation like 'افتعل'), and the semantic nuances that make it an appropriate translation for the English term, similar to how Arabic language academies analyze terms.]
 
+## 4. تقييم وانتقاد الترجمة (Criticism and Evaluation)
+[Provide a detailed, objective evaluation and criticism (إنتقاد) of the most used Arabic translation. Discuss its shortcomings, whether it truly captures the technical essence of the English Computer Science term, any potential confusion it might cause, and if there are better or more precise alternatives, even if less commonly used.]
+
 Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {
                     $systemContent .= "
