@@ -101,33 +101,33 @@ Follow this EXACT structure for your response (If 0 database results or composit
 (CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources! If 0 results, put 0 and explain from your knowledge base contextually.)
 **التعريف:** [Brief definition of the English term in Arabic to set context]
 
-## 1. ملخص الاستعمال الأكثر شيوعاً
-[Provide a summary of the most used Arabic term and its acceptance level. Do not mention total frequency numbers, focus on the variety of sources.]
-
-## 2. التحليل التفصيلي حسب المصدر
-[List each resource and the term it uses. CRITICAL: You MUST format every page number as a standard markdown clickable link EXACTLY using this format: `[ص. X](/resources/{resource_id}/pdf#page={page_number})`. 
-Example of CORRECT syntax: `[ص. 5](/resources/10/pdf#page=5)`
-Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do this!]
-
-## 3. التحليل اللغوي والدلالي (Linguistic and Semantic Analysis)
-[Provide a deep linguistic and semantic description for the most used term. Discuss its linguistic roots, morphology (e.g., verb weights, derivation like 'افتعل'), and the semantic nuances that make it an appropriate translation for the English term, similar to how Arabic language academies analyze terms.]
-
-## 4. تقييم وانتقاد الترجمة (Criticism and Evaluation)
-[Provide a detailed, objective evaluation and criticism (إنتقاد) of the most used Arabic translation. Discuss its shortcomings, whether it truly captures the technical essence of the English Computer Science term, any potential confusion it might cause, and if there are better or more precise alternatives, even if less commonly used.]
-
-## 5. الإحصائيات المرئية (Visual Statistics)
-You MUST generate a visual chart to show the frequency of the top Arabic translations. USE THIS EXACT FORMAT to render a beautiful chart using `recharts` in our React frontend. Always provide it as a JSON code block marked with `recharts`.
+## 1. الإحصائيات المرئية (Visual Statistics)
+You MUST generate a visual chart to show the frequency of the top Arabic translations FIRST. YOU MUST WRAP the JSON data inside a markdown code block starting with ` ```recharts ` and ending with ` ``` `.
 
 ```recharts
 {
   \"type\": \"bar\",
   \"title\": \"توزيع انتشار التراجم\",
   \"data\": [
-    {\"name\": \"[Arabic Term 1]\", \"value\": [total_count]},
-    {\"name\": \"[Arabic Term 2]\", \"value\": [total_count]}
+    {\"name\": \"[Arabic Term 1]\", \"value\": [total_count]}
   ]
 }
 ```
+**CRITICAL:** DO NOT FORGET the ```recharts and ``` tags around the JSON!
+
+## 2. ملخص الاستعمال الأكثر شيوعاً
+[Provide a summary of the most used Arabic term and its acceptance level. Do not mention total frequency numbers, focus on the variety of sources.]
+
+## 3. التحليل التفصيلي حسب المصدر
+[List each resource and the term it uses. CRITICAL: You MUST format every page number as a standard markdown clickable link EXACTLY using this format: `[ص. X](/resources/{resource_id}/pdf#page={page_number})`. 
+Example of CORRECT syntax: `[ص. 5](/resources/10/pdf#page=5)`
+Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do this!]
+
+## 4. التحليل اللغوي والدلالي (Linguistic and Semantic Analysis)
+[Provide a deep linguistic and semantic description for the most used term. Discuss its linguistic roots, morphology (e.g., verb weights, derivation like 'افتعل'), and the semantic nuances that make it an appropriate translation for the English term, similar to how Arabic language academies analyze terms.]
+
+## 5. تقييم وانتقاد الترجمة (Criticism and Evaluation)
+[Provide a detailed, objective evaluation and criticism (إنتقاد) of the most used Arabic translation. Discuss its shortcomings, whether it truly captures the technical essence of the English Computer Science term, any potential confusion it might cause, and if there are better or more precise alternatives, even if less commonly used.]
 
 Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {

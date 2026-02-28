@@ -26,6 +26,56 @@ export default function Results({ q }) {
     const [isCopied, setIsCopied] = useState(false);
     const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
+    const extractChartContent = (text) => {
+        if (!text) return { chartData: null, cleanText: '' };
+        try {
+            const match = text.match(/\{[\s\S]{0,300}?"type"\s*:\s*"(?:bar|pie)"/i);
+            if (match) {
+                const startIndex = match.index;
+                let openBraces = 0;
+                let closeBraces = 0;
+                let endIndex = -1;
+                
+                for (let i = startIndex; i < text.length; i++) {
+                    if (text[i] === '{') openBraces++;
+                    if (text[i] === '}') closeBraces++;
+                    if (openBraces > 0 && openBraces === closeBraces) {
+                        endIndex = i;
+                        break;
+                    }
+                }
+                
+                if (endIndex !== -1) {
+                    const validJsonStr = text.substring(startIndex, endIndex + 1);
+                    const parsed = JSON.parse(validJsonStr);
+                    if (parsed.type === 'bar' || parsed.type === 'pie') {
+                        let beforeText = text.substring(0, startIndex);
+                        let afterText = text.substring(endIndex + 1);
+                        
+                        beforeText = beforeText.replace(/```(?:recharts|json)?\s*$/i, '');
+                        beforeText = beforeText.replace(/#*\s*\d+\.\s*الإحصائيات المرئية[^\n]*\s*$/i, '');
+                        afterText = afterText.replace(/^\s*```\n*/i, '');
+                        
+                        return { 
+                            chartData: parsed, 
+                            cleanText: (beforeText + '\n\n' + afterText).trim() 
+                        };
+                    }
+                } else {
+                    let partialText = text.substring(0, startIndex);
+                    partialText = partialText.replace(/```(?:recharts|json)?\s*$/i, '');
+                    partialText = partialText.replace(/#*\s*\d+\.\s*الإحصائيات المرئية[^\n]*\s*$/i, '');
+                    return { chartData: null, cleanText: partialText.trim() };
+                }
+            }
+        } catch (e) {
+            // Let it fall through
+        }
+        return { chartData: null, cleanText: text };
+    };
+
+    const { chartData, cleanText } = extractChartContent(result);
+
     useEffect(() => {
         if (q && !initialSearchDone.current) {
             initialSearchDone.current = true;
@@ -237,6 +287,42 @@ export default function Results({ q }) {
                         
                         {result ? (
                             <div className="relative z-10 prose prose-sm md:prose-lg max-w-none leading-loose font-arabic text-right animate-in fade-in duration-700 slide-in-from-bottom-4" dir="rtl">
+                                
+                                {chartData && (
+                                    <div className="mb-12 border-b border-slate-100 pb-10">
+                                        <h2 className="text-xl md:text-2xl font-bold mb-6 text-slate-800 flex items-center gap-2 bg-slate-50 p-3 rounded-xl w-fit">
+                                            <BarChart3 className="w-6 h-6 text-blue-500" />
+                                            {chartData.title || "الإحصائيات المرئية"}
+                                        </h2>
+                                        <div className="h-72 md:h-96 w-full bg-white p-4 rounded-2xl border border-slate-200 shadow-sm overflow-hidden" dir="ltr">
+                                            <ResponsiveContainer width="100%" height="100%">
+                                                {chartData.type === 'bar' ? (
+                                                    <BarChart data={chartData.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                        <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                                                            {chartData.data.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#2563eb' : '#93c5fd'} />
+                                                            ))}
+                                                        </Bar>
+                                                    </BarChart>
+                                                ) : (
+                                                    <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                                                        <Pie data={chartData.data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={100} fill="#3b82f6" label>
+                                                            {chartData.data.map((entry, index) => (
+                                                                <Cell key={`cell-${index}`} fill={['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'][index % 5]} />
+                                                            ))}
+                                                        </Pie>
+                                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                        <Legend />
+                                                    </PieChart>
+                                                )}
+                                            </ResponsiveContainer>
+                                        </div>
+                                    </div>
+                                )}
+
                                 <ReactMarkdown 
                                     remarkPlugins={[remarkGfm]}
                                     components={{
@@ -255,53 +341,12 @@ export default function Results({ q }) {
                                         th: ({node, ...props}) => <th className="p-3 md:p-4 text-slate-900 font-bold border-b border-slate-200 text-[10px] md:text-xs uppercase tracking-wider" {...props} />,
                                         td: ({node, ...props}) => <td className="p-3 md:p-4 border-b border-slate-100 text-slate-600 text-xs md:text-sm font-medium" {...props} />,
                                         strong: ({node, ...props}) => <strong className="text-blue-700 font-black bg-blue-50/50 px-1 rounded" {...props} />,
-                                        code: ({node, inline, className, children, ...props}) => {
-                                            const match = /language-(\w+)/.exec(className || '');
-                                            if (!inline && match && match[1] === 'recharts') {
-                                                try {
-                                                    const data = JSON.parse(String(children).replace(/\n$/, ''));
-                                                    return (
-                                                        <div className="h-64 md:h-80 w-full my-8 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm" dir="ltr">
-                                                            <ResponsiveContainer width="100%" height="100%">
-                                                                {data.type === 'bar' ? (
-                                                                    <BarChart data={data.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                                                                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                                                                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
-                                                                        <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                                                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
-                                                                            {data.data.map((entry, index) => (
-                                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#2563eb' : '#93c5fd'} />
-                                                                            ))}
-                                                                        </Bar>
-                                                                    </BarChart>
-                                                                ) : data.type === 'pie' ? (
-                                                                    <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
-                                                                        <Pie data={data.data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#3b82f6" label>
-                                                                            {data.data.map((entry, index) => (
-                                                                                <Cell key={`cell-${index}`} fill={['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'][index % 5]} />
-                                                                            ))}
-                                                                        </Pie>
-                                                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
-                                                                        <Legend />
-                                                                    </PieChart>
-                                                                ) : (
-                                                                    <div>نوع الرسم البياني غير مدعوم</div>
-                                                                )}
-                                                            </ResponsiveContainer>
-                                                            {data.title && <div className="text-center mt-2 text-sm font-bold text-slate-500">{data.title}</div>}
-                                                        </div>
-                                                    );
-                                                } catch (e) {
-                                                    console.error("Chart parse error:", e);
-                                                }
-                                            }
-                                            return <code className="bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded border border-slate-200 font-mono text-sm font-bold" {...props}>{children}</code>;
-                                        },
+                                        code: ({node, ...props}) => <code className="bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded border border-slate-200 font-mono text-sm font-bold" {...props} />,
                                         blockquote: ({node, ...props}) => <blockquote className="border-r-4 border-blue-400 pl-4 py-2 my-6 bg-blue-50/30 rounded-r-none rounded-l-xl pr-6 text-slate-600 italic font-medium" {...props} />,
                                         a: ({node, ...props}) => <a className="text-blue-600 hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 transition-colors font-bold" target="_blank" rel="noopener noreferrer" {...props} />
                                     }}
                                 >
-                                    {result}
+                                    {cleanText}
                                 </ReactMarkdown>
                                 
                                 <div className="flex flex-wrap justify-end gap-3 mt-12 pt-8 border-t border-slate-100">
