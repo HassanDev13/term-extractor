@@ -115,6 +115,20 @@ Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do th
 ## 4. تقييم وانتقاد الترجمة (Criticism and Evaluation)
 [Provide a detailed, objective evaluation and criticism (إنتقاد) of the most used Arabic translation. Discuss its shortcomings, whether it truly captures the technical essence of the English Computer Science term, any potential confusion it might cause, and if there are better or more precise alternatives, even if less commonly used.]
 
+## 5. الإحصائيات المرئية (Visual Statistics)
+You MUST generate a visual chart to show the frequency of the top Arabic translations. USE THIS EXACT FORMAT to render a beautiful chart using `recharts` in our React frontend. Always provide it as a JSON code block marked with `recharts`.
+
+```recharts
+{
+  \"type\": \"bar\",
+  \"title\": \"توزيع انتشار التراجم\",
+  \"data\": [
+    {\"name\": \"[Arabic Term 1]\", \"value\": [total_count]},
+    {\"name\": \"[Arabic Term 2]\", \"value\": [total_count]}
+  ]
+}
+```
+
 Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {
                     $systemContent .= "

@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 
 export default function Results({ q }) {
     const [query, setQuery] = useState(q || "");
@@ -254,7 +255,48 @@ export default function Results({ q }) {
                                         th: ({node, ...props}) => <th className="p-3 md:p-4 text-slate-900 font-bold border-b border-slate-200 text-[10px] md:text-xs uppercase tracking-wider" {...props} />,
                                         td: ({node, ...props}) => <td className="p-3 md:p-4 border-b border-slate-100 text-slate-600 text-xs md:text-sm font-medium" {...props} />,
                                         strong: ({node, ...props}) => <strong className="text-blue-700 font-black bg-blue-50/50 px-1 rounded" {...props} />,
-                                        code: ({node, ...props}) => <code className="bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded border border-slate-200 font-mono text-sm font-bold" {...props} />,
+                                        code: ({node, inline, className, children, ...props}) => {
+                                            const match = /language-(\w+)/.exec(className || '');
+                                            if (!inline && match && match[1] === 'recharts') {
+                                                try {
+                                                    const data = JSON.parse(String(children).replace(/\n$/, ''));
+                                                    return (
+                                                        <div className="h-64 md:h-80 w-full my-8 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm" dir="ltr">
+                                                            <ResponsiveContainer width="100%" height="100%">
+                                                                {data.type === 'bar' ? (
+                                                                    <BarChart data={data.data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+                                                                        <XAxis dataKey="name" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                                        <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                                                                        <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                                        <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
+                                                                            {data.data.map((entry, index) => (
+                                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#2563eb' : '#93c5fd'} />
+                                                                            ))}
+                                                                        </Bar>
+                                                                    </BarChart>
+                                                                ) : data.type === 'pie' ? (
+                                                                    <PieChart margin={{ top: 0, right: 0, left: 0, bottom: 0 }}>
+                                                                        <Pie data={data.data} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} fill="#3b82f6" label>
+                                                                            {data.data.map((entry, index) => (
+                                                                                <Cell key={`cell-${index}`} fill={['#2563eb', '#3b82f6', '#60a5fa', '#93c5fd', '#bfdbfe'][index % 5]} />
+                                                                            ))}
+                                                                        </Pie>
+                                                                        <Tooltip contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
+                                                                        <Legend />
+                                                                    </PieChart>
+                                                                ) : (
+                                                                    <div>نوع الرسم البياني غير مدعوم</div>
+                                                                )}
+                                                            </ResponsiveContainer>
+                                                            {data.title && <div className="text-center mt-2 text-sm font-bold text-slate-500">{data.title}</div>}
+                                                        </div>
+                                                    );
+                                                } catch (e) {
+                                                    console.error("Chart parse error:", e);
+                                                }
+                                            }
+                                            return <code className="bg-slate-100 text-pink-600 px-1.5 py-0.5 rounded border border-slate-200 font-mono text-sm font-bold" {...props}>{children}</code>;
+                                        },
                                         blockquote: ({node, ...props}) => <blockquote className="border-r-4 border-blue-400 pl-4 py-2 my-6 bg-blue-50/30 rounded-r-none rounded-l-xl pr-6 text-slate-600 italic font-medium" {...props} />,
                                         a: ({node, ...props}) => <a className="text-blue-600 hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 transition-colors font-bold" target="_blank" rel="noopener noreferrer" {...props} />
                                     }}
