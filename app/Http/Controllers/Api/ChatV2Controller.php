@@ -365,7 +365,13 @@ Format:
             </html>
         ";
         
-        // Initialize mPDF with Arabic configuration
+        // Ensure temp directory exists
+        $tempDir = storage_path('app/mpdf_temp');
+        if (!file_exists($tempDir)) {
+            mkdir($tempDir, 0777, true);
+        }
+
+        // Initialize mPDF with Arabic configuration and explicit writable tempDir
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
@@ -373,6 +379,7 @@ Format:
             'default_font' => 'xbriyaz', // Best for Arabic usually if available, or auto
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
+            'tempDir' => $tempDir,
         ]);
         
         $mpdf->SetDirectionality('rtl');
