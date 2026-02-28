@@ -1,13 +1,13 @@
 <x-filament-panels::page>
     @if ($form = $this->getForm())
-        <x-filament-panels::form wire:submit="import">
+        <form wire:submit="import">
             {{ $form }}
 
-            <x-filament-panels::form.actions
-                :actions="$this->getCachedFormActions()"
+            <x-filament::actions
+                :actions="$this->getFormActions()"
                 :full-width="$this->hasFullWidthFormActions()"
             />
-        </x-filament-panels::form>
+        </form>
     @endif
 
     @if ($this->hasErrors())
@@ -45,6 +45,3 @@
     </script>
     @endscript
 </x-filament-panels::page>
-```
-
-Now I need to add the ImportTerms page to the Filament navigation. Let me check the current Filament provider:

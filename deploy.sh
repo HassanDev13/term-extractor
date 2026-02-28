@@ -13,7 +13,7 @@ if [ ! -f .env.prod ]; then
 fi
 # Build and deploy services
 echo "🐳 Building and starting Docker services..."
-docker-compose -f docker-compose.prod.yml up -d --build
+docker compose --env-file .env.prod -f docker-compose.prod.yml up -d --build
 
 
 
@@ -23,19 +23,20 @@ sleep 10
 
 # Run migrations
 echo "🗄️  Running database migrations..."
-docker exec laravel_app php artisan migrate --force
+docker exec -u www-data laravel_app php artisan migrate --force
 
 # Optimize Laravel
 echo "⚡ Optimizing Laravel..."
-docker exec laravel_app php artisan config:cache
-docker exec laravel_app php artisan route:cache
-docker exec laravel_app php artisan view:cache
-docker exec laravel_app php artisan optimize
+docker exec -u www-data laravel_app php artisan view:clear
+docker exec -u www-data laravel_app php artisan config:cache
+docker exec -u www-data laravel_app php artisan route:cache
+docker exec -u www-data laravel_app php artisan view:cache
+docker exec -u www-data laravel_app php artisan optimize
 
 echo "✅ Deployment complete!"
 echo ""
 echo "🌐 Access your application at:"
-echo "   Main App: localhost:8000"
+echo "   Main App: localhost:8001"
 echo "   PHPMyAdmin: http://localhost:8080"
 echo ""
-echo "📝 Note: Configure your host Nginx reverse proxy to forward traffic to localhost:8000"
+echo "📝 Note: Configure your host Nginx reverse proxy to forward traffic to localhost:8001"

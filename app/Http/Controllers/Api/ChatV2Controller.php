@@ -74,7 +74,7 @@ class ChatV2Controller extends Controller
             if (ob_get_level()) ob_end_clean();
 
             try {
-                $systemContent = 'You are a highly efficient Search Engine and Information Analyst. Your goal is to provide detailed, structured, and accurate search reports based on the term database.
+                $systemContent = 'You are a highly efficient Search Engine and Information Analyst specialized in Computer Science terminology. Your goal is to provide detailed, structured, and accurate search reports based on the term database, which contains specialized Computer Science terms and their Arabic translations.
                     
 OPERATIONAL RULES:
 1. RESPONSE FORMAT: Always provide a well-structured "Search Report". Use clear headings (Markdown # and ##), bullet points, and tables. 
@@ -109,18 +109,19 @@ Follow this EXACT structure for your response (If 0 database results or composit
 Example of CORRECT syntax: `[ص. 5](/resources/10/pdf#page=5)`
 Example of INCORRECT syntax: `(/resources/10/pdf#page=5)[ص. 5]` — NEVER do this!]
 
-## 3. الملاحظات والفروق الدلالية
-[Explain any differences in meaning or usage contexts between the translations]
+## 3. التحليل اللغوي والدلالي (Linguistic and Semantic Analysis)
+[Provide a deep linguistic and semantic description for the most used term. Discuss its linguistic roots, morphology (e.g., verb weights, derivation like 'افتعل'), and the semantic nuances that make it an appropriate translation for the English term, similar to how Arabic language academies analyze terms.]
 
 Note: Be professional and comprehensive. Ensure every cited page has a link.";
                 } else {
                     $systemContent .= "
 MODE: ULTRA-CONCISE SUMMARY
-CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels (If 0 database results or composition fallback, adapt this nicely).
+CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels, no tables, and no deep linguistic details. Be extremely brief.
+
 Format:
-**المصطلح:** [Arabic Term] - (موجود في [Use `resource_count` from data, or 0] مصادر)
-[Brief definition in Arabic in 1 sentence. If 0 results, explain from knowledge. If composition, synthesize meaning.]
-**بدائل:** [List 2-3 alternative terms, comma separated]";
+**المصطلح:** [Most Used Arabic Term] - (موجود في [Use `resource_count` from data, or 0] مصادر)
+[Brief description in Arabic in 1 concise sentence. Do not go into deep details.]
+**بدائل:** [List 2-3 alternative terms from the data if available, comma separated]";
                 }
 
 

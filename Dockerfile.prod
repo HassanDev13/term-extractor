@@ -15,7 +15,7 @@ FROM composer:2 AS vendor
 WORKDIR /app
 COPY composer.json composer.lock ./
 # Ignore platform requirements during install for speed
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs
+RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --ignore-platform-reqs --no-scripts
 
 # ===============================
 # Stage 3: Runtime
@@ -35,8 +35,8 @@ RUN apk add --no-cache \
     libjpeg-turbo-dev \
     libzip-dev \
     tesseract-ocr \
-    tesseract-ocr-ara \
-    tesseract-ocr-eng \
+    tesseract-ocr-data-ara \
+    tesseract-ocr-data-eng \
     poppler-utils \
     imagemagick \
     autoconf \
@@ -58,17 +58,15 @@ RUN echo "opcache.enable=1" >> /usr/local/etc/php/conf.d/opcache.ini \
 RUN mkdir -p /run/nginx
 
 # Copy app code
-COPY . .
+COPY --chown=www-data:www-data . .
 
 # Copy vendor from Stage 2
-COPY --from=vendor /app/vendor ./vendor
+COPY --chown=www-data:www-data --from=vendor /app/vendor ./vendor
 
 # Copy frontend build from Stage 1
-COPY --from=frontend /app/public/build ./public/build
+COPY --chown=www-data:www-data --from=frontend /app/public/build ./public/build
 
-# Set permissions
-RUN chown -R www-data:www-data /var/www/html \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+RUN chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Copy Nginx configuration
 COPY docker/nginx.conf /etc/nginx/nginx.conf
