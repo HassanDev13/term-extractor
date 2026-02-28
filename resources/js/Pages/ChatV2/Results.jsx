@@ -6,7 +6,7 @@ import {
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
-    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle, Check, Download
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -22,6 +22,8 @@ export default function Results({ q }) {
     
     // Local state for credits to update immediately without waiting for page reload
     const [credits, setCredits] = useState(auth.user?.daily_credits ?? 0);
+    const [isCopied, setIsCopied] = useState(false);
+    const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
 
     useEffect(() => {
         if (q && !initialSearchDone.current) {
@@ -263,37 +265,61 @@ export default function Results({ q }) {
                                 <div className="flex flex-wrap justify-end gap-3 mt-12 pt-8 border-t border-slate-100">
                                     <Button
                                         variant="outline"
-                                        onClick={() => navigator.clipboard.writeText(result)}
-                                        className="gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 rounded-xl font-bold"
+                                        onClick={() => {
+                                            navigator.clipboard.writeText(result);
+                                            setIsCopied(true);
+                                            setTimeout(() => setIsCopied(false), 2000);
+                                        }}
+                                        className="gap-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 hover:border-blue-200 rounded-xl font-bold min-w-[120px]"
                                     >
-                                        <FileText className="h-4 w-4" />
-                                        <span>نسخ النص</span>
+                                        {isCopied ? <Check className="h-4 w-4 text-green-500" /> : <FileText className="h-4 w-4" />}
+                                        <span className={isCopied ? "text-green-500" : ""}>{isCopied ? "تم النسخ" : "نسخ النص"}</span>
                                     </Button>
                                     <Button
                                         variant="outline"
-                                            onClick={async () => {
-                                                try {
-                                                    const response = await fetch('/api/chat_v2/export_pdf', {
-                                                        method: 'POST',
-                                                        headers: { 'Content-Type': 'application/json' },
-                                                        body: JSON.stringify({ content: result, query })
-                                                    });
-                                                    if (response.ok) {
-                                                        const blob = await response.blob();
-                                                        const url = window.URL.createObjectURL(blob);
-                                                        const a = document.createElement('a');
-                                                        a.href = url;
-                                                        a.download = `term_report_${query}.pdf`;
-                                                        document.body.appendChild(a);
-                                                        a.click();
-                                                        a.remove();
-                                                    } else { alert('Failed to generate PDF'); }
-                                                } catch (e) { console.error(e); alert('Error downloading PDF'); }
-                                            }}
-                                        className="gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 rounded-xl font-bold"
+                                        disabled={isDownloadingPdf}
+                                        onClick={async () => {
+                                            try {
+                                                setIsDownloadingPdf(true);
+                                                const getXsrfToken = () => {
+                                                    const match = document.cookie.match(new RegExp('(^|;\\s*)(XSRF-TOKEN)=([^;]*)'));
+                                                    return match ? decodeURIComponent(match[3]) : '';
+                                                };
+                                                const response = await fetch('/api/chat_v2/export_pdf', {
+                                                    method: 'POST',
+                                                    headers: { 
+                                                        'Content-Type': 'application/json',
+                                                        'X-XSRF-TOKEN': getXsrfToken()
+                                                    },
+                                                    body: JSON.stringify({ content: result, query })
+                                                });
+                                                if (response.ok) {
+                                                    const blob = await response.blob();
+                                                    const url = window.URL.createObjectURL(blob);
+                                                    const a = document.createElement('a');
+                                                    a.href = url;
+                                                    a.download = `تقرير_${query.replace(/\s+/g, '_')}.pdf`;
+                                                    document.body.appendChild(a);
+                                                    a.click();
+                                                    a.remove();
+                                                } else { 
+                                                    alert('حدث خطأ أثناء إنشاء ملف PDF'); 
+                                                }
+                                            } catch (e) { 
+                                                console.error(e); 
+                                                alert('حدث خطأ أثناء التحميل'); 
+                                            } finally {
+                                                setIsDownloadingPdf(false);
+                                            }
+                                        }}
+                                        className="gap-2 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 rounded-xl font-bold min-w-[120px]"
                                     >
-                                        <FileText className="h-4 w-4" />
-                                        <span>تحميل PDF</span>
+                                        {isDownloadingPdf ? (
+                                            <Loader2 className="h-4 w-4 animate-spin text-red-500" />
+                                        ) : (
+                                            <Download className="h-4 w-4" />
+                                        )}
+                                        <span className={isDownloadingPdf ? "text-red-500" : ""}>{isDownloadingPdf ? "جاري التحميل..." : "تحميل PDF"}</span>
                                     </Button>
                                 </div>
                             </div>
