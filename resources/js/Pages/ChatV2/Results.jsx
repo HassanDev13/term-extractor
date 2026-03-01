@@ -364,7 +364,18 @@ export default function Results({ q, initialChartData }) {
                                     {cleanText}
                                 </ReactMarkdown>
                                 
-                                <div className="flex flex-wrap justify-end gap-3 mt-12 pt-8 border-t border-slate-100">
+                                {!loading && (
+                                    <>
+                                        <div className="mt-8 mb-4 p-4 bg-amber-50 rounded-xl border border-amber-200/60 flex items-start gap-3 animate-in fade-in duration-500">
+                                            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
+                                            <p className="text-sm font-medium text-amber-800/80 leading-relaxed">
+                                                <strong>تنويه:</strong> الترجمات والإحصائيات المعروضة مستخرجة آلياً وقد تتضمن بعض الأخطاء. يُرجى مراجعة السياق الأصلي للكلمة. نحن نعمل بشكل مستمر على تدقيق وتنقيح قواعد بياناتنا للوصول إلى أعلى درجات الدقة.
+                                            </p>
+                                        </div>
+                                    </>
+                                )}
+                                
+                                <div className="flex flex-wrap justify-end gap-3 mt-8 pt-8 border-t border-slate-100">
                                     <Button
                                         variant="outline"
                                         onClick={() => {

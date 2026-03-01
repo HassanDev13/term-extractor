@@ -369,7 +369,7 @@ Format:
         $css = "
             <style>
                 body {
-                    font-family: 'Amiri', 'XB Riyaz', sans-serif;
+                    font-family: 'Tajawal', sans-serif;
                     direction: rtl;
                     text-align: right;
                     line-height: 1.6;
@@ -420,6 +420,10 @@ Format:
                 
                 <div class='content'>
                     {$htmlContent}
+                    
+                    <div style='margin-top: 40px; padding: 15px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 11pt; color: #92400e;'>
+                        <strong>تنويه:</strong> الترجمات والإحصائيات المعروضة مستخرجة آلياً وقد تتضمن بعض الأخطاء السابقة للتدقيق. يُرجى مراجعة السياق الأصلي للكلمة. نحن نعمل بشكل مستمر على تدقيق وتنقيح قواعد بياناتنا للوصول إلى أعلى درجات الدقة بالتعاون مع المجتمع.
+                    </div>
                 </div>
                 
                 <div class='footer'>
@@ -436,14 +440,31 @@ Format:
         }
 
         // Initialize mPDF with Arabic configuration and explicit writable tempDir
+        $defaultConfig = (new \Mpdf\Config\ConfigVariables())->getDefaults();
+        $fontDirs = $defaultConfig['fontDir'];
+
+        $defaultFontConfig = (new \Mpdf\Config\FontVariables())->getDefaults();
+        $fontData = $defaultFontConfig['fontdata'];
+
         $mpdf = new \Mpdf\Mpdf([
             'mode' => 'utf-8',
             'format' => 'A4',
             'default_font_size' => 12,
-            'default_font' => 'xbriyaz', // Best for Arabic usually if available, or auto
+            'default_font' => 'tajawal', // Default to Tajawal
             'autoScriptToLang' => true,
             'autoLangToFont' => true,
             'tempDir' => $tempDir,
+            'fontDir' => array_merge($fontDirs, [
+                storage_path('fonts'), // Path where Tajawal files were downloaded
+            ]),
+            'fontdata' => $fontData + [
+                'tajawal' => [
+                    'R' => 'Tajawal-Regular.ttf',
+                    'B' => 'Tajawal-Bold.ttf',
+                    'useOTL' => 0xFF,
+                    'useKashida' => 75,
+                ]
+            ]
         ]);
         
         $mpdf->SetDirectionality('rtl');
