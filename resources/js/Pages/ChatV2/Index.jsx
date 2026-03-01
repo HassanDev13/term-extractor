@@ -396,22 +396,7 @@ export default function LandingSearchPage() {
 
 
 
-                {/* Showcase Section */}
-                <section className="py-20 px-4 bg-slate-50 border-b border-slate-100">
-                    <div className="container mx-auto max-w-5xl">
-                        <div className="text-center mb-12 space-y-3">
-                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                                نتائج <span className="text-blue-600">حقيقية</span> من الأداة
-                            </h3>
-                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
-                                عينة من مصطلحات جرى البحث عنها فعلياً — اضغط على أي صف لعرض الإجابة الكاملة.
-                            </p>
-                        </div>
 
-                        {/* Table */}
-                        <ShowcaseTable />
-                    </div>
-                </section>
 
                 {/* Methodology Section */}
 
@@ -675,67 +660,6 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
-                {/* Institutional Support Section */}
-                <section className="py-24 px-4 bg-slate-50 border-b border-slate-100 overflow-hidden relative">
-                    {/* Background accent */}
-                    <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-indigo-50/50 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 -translate-x-1/2" />
-                    
-                    <div className="container mx-auto max-w-6xl relative z-10">
-                        <div className="grid grid-cols-1 lg:grid-cols-[1fr_500px] gap-12 lg:gap-16 items-center" dir="rtl">
-                            
-                            {/* Text Content */}
-                            <div className="space-y-8 text-right order-2 lg:order-1">
-                                <div className="space-y-4">
-                                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-indigo-50 text-indigo-700 text-sm font-bold border border-indigo-100 w-fit">
-                                        <Building2 className="h-4 w-4" />
-                                        دعم أكاديمي ورؤية مشتركة
-                                    </div>
-                                    <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                                        خطوات واثقة نحو <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-blue-600">أرض الواقع</span>
-                                    </h3>
-                                    <p className="text-slate-600 text-lg leading-relaxed font-medium">
-                                        في سعينا للخروج بالمشروع من تواجده الرقمي إلى أرض الواقع، توجت مساعينا بزيارة <strong className="text-indigo-700 font-black">المجلس الأعلى للغة العربية</strong> يوم 16 ديسمبر 2025.
-                                    </p>
-                                    <p className="text-slate-600 text-lg leading-relaxed font-medium">
-                                        تشرفنا بعرض المشروع على كل من البروفيسور صالح بلعيد، الدكتور كبير بن عيسى، والدكتورة حاج سليمان، مستفيدين من توجيهاتهم ونصائحهم القيمة حول المشروع وتوجهاته المستقبلية.
-                                    </p>
-                                </div>
-
-                                <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
-                                    <h4 className="flex items-center gap-2 font-black text-slate-800 mb-3 justify-start">
-                                        تطلعاتنا المستقبلية
-                                        <Target className="h-5 w-5 text-indigo-600" />
-                                    </h4>
-                                    <p className="text-slate-600 text-sm leading-relaxed font-medium text-right">
-                                        نطمح لزيارة مختلف المجامع العربية بهدف التعريف بالمشروع وطلب الدعم في مساعينا الهادفة لتوحيد المصطلحات في مجال المعلوماتية، عبر <strong className="text-indigo-600">منهجية الأكثر إستعمالا</strong> لحفظ الهوية اللغوية ومواكبة الحداثة.
-                                    </p>
-                                </div>
-                            </div>
-                            
-                            {/* Image Showcase */}
-                            <div className="order-1 lg:order-2 relative">
-                                <div className="absolute inset-0 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-[2.5rem] transform -rotate-3 scale-105 opacity-15 blur-xl" />
-                                <div className="relative rounded-[2.5rem] overflow-hidden shadow-2xl shadow-indigo-900/10 border-4 border-white bg-slate-100 aspect-[4/5] sm:aspect-auto sm:h-[600px] w-full group">
-                                    <img 
-                                        src="/images/majliss.jpg" 
-                                        alt="زيارة المجلس الأعلى للغة العربية" 
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                                    />
-                                    {/* Overlay Gradient (bottom up) */}
-                                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent pointer-events-none" />
-                                    <div className="absolute bottom-6 right-6 left-6 text-white text-right pointer-events-none" dir="rtl">
-                                        <p className="font-black text-xl drop-shadow-md">المجلس الأعلى للغة العربية</p>
-                                        <p className="text-white/80 text-sm font-bold mt-1.5 flex items-center gap-1.5">
-                                            <Calendar className="h-4 w-4" />
-                                            16 ديسمبر 2025
-                                        </p>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </section>
 
                 {/* Support Project - Ko-Fi Section */}
                 <section id="community" className="py-20 px-4 bg-slate-50 border-b border-slate-100 relative overflow-hidden">
@@ -768,7 +692,7 @@ export default function LandingSearchPage() {
                                         <svg className="w-6 h-6 text-[#FF5E5B] group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
                                             <path d="M23.881 8.948c-.773-4.085-4.859-4.593-4.859-4.593H.723c-.604 0-.679.798-.679.798s-.082 7.324-.022 11.822c.164 2.424 2.586 2.672 2.586 2.672s8.267-.023 11.966-.049c2.438-.426 2.683-2.566 2.658-3.734 4.352.24 7.422-2.831 6.649-6.916zm-11.062 3.511c-1.246 1.453-4.011 3.976-4.011 3.976s-.121.119-.31.023c-.076-.057-.108-.09-.108-.09-.443-.441-3.368-3.049-4.061-4.3-.037-.046-.045-.086-.045-.086-.154-.487-.09-1.261.343-1.611l.092-.064c.334-.207 1.055-.224 1.454.004l.033.024c.319.263 1.636 1.54 1.954 1.83.21-.212 1.604-1.503 1.928-1.78l.068-.052c.451-.274 1.258-.292 1.631-.05l.078.06c.404.372.502 1.155.305 1.625l-.039.083c-.092.148-.27.279-.27.279v-.006zm7.842 2.059c-1.077 1.07-2.736.8-2.736.8v-3.829c.854 0 2.613-.23 3.321.465.748.747.491 2.476-.585 2.564z" />
                                         </svg>
-                                        <span>اشترِ لنا قهوة ☕</span>
+                                        <span>ادعمنا</span>
                                     </a>
                                 </div>
                                 <p className="text-white/70 text-sm font-medium mt-4">ندعم جميع بطاقات الدفع عبر منصة Ko-fi الآمنة</p>
@@ -796,18 +720,6 @@ export default function LandingSearchPage() {
                                     <p className="text-slate-500 text-lg leading-relaxed max-w-md ml-auto">
                                         نحن هنا للاستماع. سواء كان سؤالاً حول المشروع، اقتراحاً للتحسين، أو رغبة في المساهمة، لا تتردد في مراسلتنا.
                                     </p>
-                                </div>
-
-                                <div className="flex flex-col gap-4">
-                                    <a href="mailto:contact@example.com" className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100 transition-all group">
-                                        <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-                                            <Mail className="h-6 w-6" />
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-0.5">البريد الإلكتروني</p>
-                                            <p className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">contact@example.com</p>
-                                        </div>
-                                    </a>
                                 </div>
                             </div>
 

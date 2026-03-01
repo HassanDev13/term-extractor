@@ -476,7 +476,7 @@ export default function Results({ q, initialChartData }) {
                             </Link>
 
                             <div className="w-px h-4 bg-slate-200"></div>
-                            <a href="mailto:contact@taarib.com" className="h-8 px-3 flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all group">
+                            <a href="/#contact" className="h-8 px-3 flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-all group">
                                 <Mail className="h-3.5 w-3.5 group-hover:scale-110 transition-transform" />
                                 <span>تواصل معنا</span>
                             </a>
