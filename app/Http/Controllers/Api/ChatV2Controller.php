@@ -54,19 +54,31 @@ class ChatV2Controller extends Controller
                         }
                     }
 
+                    $tiedTerms = [];
                     foreach ($topGroup['global_stats'] as $stat) {
+                        $isMax = $stat['resource_count'] === $maxCount;
+                        if ($isMax) {
+                            $tiedTerms[] = $stat['term'];
+                        }
                         $chartDataRows[] = [
                             'name' => $stat['term'],
                             'value' => $stat['resource_count'],
-                            'isMax' => $stat['resource_count'] === $maxCount
+                            'isMax' => $isMax
                         ];
                     }
                     
-                    $dominantTerm = $topGroup['global_stats'][0]['term'];
+                    if (count($tiedTerms) > 1) {
+                        // Limit to first 3 to avoid super long title
+                        $displayTies = array_slice($tiedTerms, 0, 3);
+                        $titleAppend = 'تعادل بين: ' . implode(' و ', $displayTies) . (count($tiedTerms) > 3 ? '...' : '') . ' (انظر التقرير للترجيح)';
+                    } else {
+                        $dominantTerm = $tiedTerms[0] ?? $topGroup['global_stats'][0]['term'];
+                        $titleAppend = 'الأغلبية لـ: ' . $dominantTerm;
+                    }
                     
                     $initialChartData = [
                         'type' => 'bar',
-                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ') - الأغلبية لـ: ' . $dominantTerm,
+                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ') - ' . $titleAppend,
                         'data' => array_slice($chartDataRows, 0, 10)
                     ];
                 }
@@ -139,7 +151,7 @@ OPERATIONAL RULES:
    - Use `list_resources` for structural queries.
 7. 0 RESULTS FALLBACK: If `search_terms` returns an empty array `[]` or no database results, YOU MUST inform the user that there are NO results found in the database. Then, YOU MUST provide a professional definition, explanation, and translation of the term based ONLY on your own internal knowledge. Clearly state that this information is from your own knowledge and not the database.
 8. COMPOSITION SEARCH FALLBACK: If `search_terms` returns `is_composition_fallback: true` (a multi-word phrase was not found as a whole, but its individual words were), YOU MUST inform the user of this. Then synthesis the combined meaning of the phrase based on the individual word results provided to you.
-9. TIE-BREAKER LOGIC: If two or more Arabic translations have the EXACT same `resource_count` and `total_count` in the database results, YOU MUST use your own internal knowledge of Arabic Computer Science terminology to decide and declare which one is linguistically and technically the "most appropriate/best" translation. Explain your reasoning briefly.
+9. TIE-BREAKER LOGIC (CRITICAL): If you observe from the JSON data that two or more Arabic translations have the EXACT same `resource_count` and `total_count` (a tie), you CANNOT just randomly pick one. YOU MUST explicitly mention that there is a tie between them in the database, and then use your own internal knowledge as an Arabic Computer Science Linguist to decide and declare which one is logically and linguistically the "most appropriate/best" translation. You MUST fully explain the reasoning for your choice in the report.
 ';
 
                 if ($detailedMode) {
