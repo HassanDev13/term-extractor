@@ -180,9 +180,7 @@ export default function LandingSearchPage() {
                             <a href="#timeline" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 الرحلة
                             </a>
-                            <a href="#community" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
-                                المجتمع
-                            </a>
+
                             <a href="#contact" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 تواصل معنا
                             </a>
@@ -245,14 +243,7 @@ export default function LandingSearchPage() {
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     الرحلة
                                 </a>
-                                <a
-                                    href="#community"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    المجتمع
-                                </a>
+
                                 <a
                                     href="#contact"
                                     onClick={() => setMobileMenuOpen(false)}
@@ -766,7 +757,6 @@ export default function LandingSearchPage() {
                                     {[
                                         { label: "المنهجية العلمية", href: "#methodology" },
                                         { label: "رحلة المشروع", href: "#timeline" },
-                                        { label: "مجتمع المعرفة", href: "#community" },
                                         { label: "تواصل معنا", href: "#contact" },
 
                                         { label: "شكر وتقدير", href: route('thanks') },
