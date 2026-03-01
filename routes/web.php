@@ -17,14 +17,7 @@ Route::get("/changelog", function () {
     return inertia("ChatV2/Changelog");
 })->name("changelog");
 
-Route::get("/search", function (\Illuminate\Http\Request $request) {
-    if ($request->user()) {
-        $request->user()->checkAndResetDailyCredits();
-    }
-    return inertia("ChatV2/Results", [
-        'q' => $request->query('q')
-    ]);
-})->middleware(['auth', 'approved'])->name("search.results");
+Route::get("/search", [ChatV2Controller::class, "search"])->middleware(['auth', 'approved'])->name("search.results");
 
 Route::get("/thanks", function () {
     return inertia("Thanks");

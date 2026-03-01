@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Head, Link, usePage } from "@inertiajs/react";
+import { Head, Link, usePage, router } from "@inertiajs/react";
 import { Button } from "@/Components/ui/button";
 import { Switch } from "@/Components/ui/switch";
 import { 
@@ -12,14 +12,14 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, PieChart, Pie, Legend } from 'recharts';
 
-export default function Results({ q }) {
+export default function Results({ q, initialChartData }) {
     const [query, setQuery] = useState(q || "");
     const [result, setResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [detailedMode, setDetailedMode] = useState(false);
     const { auth } = usePage().props;
-    const initialSearchDone = useRef(false);
+    const initialSearchDone = useRef(null);
     
     // Local state for credits to update immediately without waiting for page reload
     const [credits, setCredits] = useState(auth.user?.daily_credits ?? 0);
@@ -74,21 +74,25 @@ export default function Results({ q }) {
         return { chartData: null, cleanText: text };
     };
 
-    const { chartData, cleanText } = extractChartContent(result);
+    const { chartData: extractedChartData, cleanText } = extractChartContent(result);
+    // Use the backend-provided chart if available, otherwise fallback to extracted (if AI generated it)
+    const chartData = initialChartData || extractedChartData;
 
     useEffect(() => {
-        if (q && !initialSearchDone.current) {
-            initialSearchDone.current = true;
+        if (q && initialSearchDone.current !== q) {
+            initialSearchDone.current = q;
             performSearch(q);
         }
     }, [q]);
 
-    const performSearch = async (textToSearch) => {
+    const performSearch = async (textToSearch, modeOverride = undefined) => {
         if (!textToSearch.trim() || loading) return;
 
         setLoading(true);
         setResult("");
         setError(null);
+        
+        const isDetailed = modeOverride !== undefined ? modeOverride : detailedMode;
         
         try {
             // Read updated X-XSRF-TOKEN from cookies to prevent 419 errors after login navigations
@@ -106,7 +110,7 @@ export default function Results({ q }) {
                 },
                 body: JSON.stringify({ 
                     messages: [{ role: "user", content: textToSearch }],
-                    detailed_mode: detailedMode 
+                    detailed_mode: isDetailed 
                 }),
             });
 
@@ -138,16 +142,21 @@ export default function Results({ q }) {
                     if (!line.trim()) continue;
                     try {
                         const json = JSON.parse(line);
-                        if (json.chunk) {
-                            accumulatedContent += json.chunk;
-                            let displayContent = accumulatedContent;
-                            displayContent = displayContent.replace(/<think>[\s\S]*?<\/think>/gi, "");
-                            displayContent = displayContent.replace(/<[\|｜][\s\S]*?[\|｜]>/gu, "");
-                            displayContent = displayContent.replace(/<dsml>[\s\S]*?<\/dsml>/gi, "");
-                            if (displayContent.match(/^<think>/i)) displayContent = "";
-                            displayContent = displayContent.replace(/^Thinking\.\.\.\s*/i, "");
-                            setResult(displayContent.trim());
-                        }
+                            if (json.chunk) {
+                                accumulatedContent += json.chunk;
+                                let displayContent = accumulatedContent;
+                                displayContent = displayContent.replace(/<think>[\s\S]*?<\/think>/gi, "");
+                                displayContent = displayContent.replace(/<[\|｜].*?[\|｜]>/gu, "");
+                                displayContent = displayContent.replace(/<[\/]?([\|｜]DSML[\|｜])[^>]*>/gi, "");
+                                displayContent = displayContent.replace(/<dsml>[\s\S]*?<\/dsml>/gi, "");
+                                displayContent = displayContent.replace(/Let me try a different approach to search for this term\./gi, "");
+                                displayContent = displayContent.replace(/Let me search for this term\./gi, "");
+                                displayContent = displayContent.replace(/Let me look up this term\./gi, "");
+                                if (displayContent.match(/^<think>/i)) displayContent = "";
+                                displayContent = displayContent.replace(/^Thinking\.\.\.\s*/i, "");
+                                displayContent = displayContent.trim().replace(/^_+/g, '').trim(); 
+                                setResult(displayContent);
+                            }
                     } catch (e) {}
                 }
             }
@@ -166,13 +175,13 @@ export default function Results({ q }) {
     const handleSearchSubmit = (e) => {
         e.preventDefault();
         
-        // Update URL if changed
-        const currentParams = new URLSearchParams(window.location.search);
-        if (currentParams.get('q') !== query) {
-            window.history.pushState({}, '', `/search?q=${encodeURIComponent(query)}`);
-        }
-        
-        performSearch(query);
+        if (!query.trim() || loading) return;
+
+        // Perform an Inertia visit to fetch new props (like initialChartData) from backend
+        router.get(`/search`, { q: query }, {
+            preserveState: true,
+            preserveScroll: true
+        });
     };
 
     return (
@@ -269,14 +278,20 @@ export default function Results({ q }) {
                         </div>
 
                          <div 
-                                onClick={() => setDetailedMode(!detailedMode)}
+                                onClick={() => {
+                                    const newMode = !detailedMode;
+                                    setDetailedMode(newMode);
+                                    if (query) {
+                                        performSearch(query, newMode);
+                                    }
+                                }}
                                 className="flex items-center gap-1.5 md:gap-2 bg-white px-2.5 py-1.5 md:px-3 md:py-2 rounded-xl border border-slate-200 shadow-sm cursor-pointer select-none hover:bg-slate-50 transition-colors shrink-0"
                             >
                                 <span className="text-[10px] md:text-xs font-bold text-slate-600 flex items-center gap-1 md:gap-1.5">
                                     <FileText className={`h-3 w-3 md:h-3.5 md:w-3.5 ${detailedMode ? 'text-blue-500' : 'text-slate-400'}`} />
                                     <span>وضع تفصيلي</span>
                                 </span>
-                                <Switch checked={detailedMode} onCheckedChange={setDetailedMode} className="scale-[0.65] md:scale-75 data-[state=checked]:bg-blue-600 pointer-events-none origin-left rtl:origin-right" />
+                                <Switch checked={detailedMode} readOnly className="scale-[0.65] md:scale-75 data-[state=checked]:bg-blue-600 pointer-events-none origin-left rtl:origin-right" />
                         </div>
                      </div>
 
