@@ -45,16 +45,28 @@ class ChatV2Controller extends Controller
                 
                 if (isset($topGroup['global_stats']) && count($topGroup['global_stats']) > 0) {
                     $chartDataRows = [];
+                    $maxCount = 0;
+                    
+                    // Find max count to flag the most agreed-upon term
+                    foreach ($topGroup['global_stats'] as $stat) {
+                        if ($stat['resource_count'] > $maxCount) {
+                            $maxCount = $stat['resource_count'];
+                        }
+                    }
+
                     foreach ($topGroup['global_stats'] as $stat) {
                         $chartDataRows[] = [
                             'name' => $stat['term'],
-                            'value' => $stat['total_count']
+                            'value' => $stat['resource_count'],
+                            'isMax' => $stat['resource_count'] === $maxCount
                         ];
                     }
                     
+                    $dominantTerm = $topGroup['global_stats'][0]['term'];
+                    
                     $initialChartData = [
                         'type' => 'bar',
-                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ')',
+                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ') - الأغلبية لـ: ' . $dominantTerm,
                         'data' => array_slice($chartDataRows, 0, 10)
                     ];
                 }
@@ -127,6 +139,7 @@ OPERATIONAL RULES:
    - Use `list_resources` for structural queries.
 7. 0 RESULTS FALLBACK: If `search_terms` returns an empty array `[]` or no database results, YOU MUST inform the user that there are NO results found in the database. Then, YOU MUST provide a professional definition, explanation, and translation of the term based ONLY on your own internal knowledge. Clearly state that this information is from your own knowledge and not the database.
 8. COMPOSITION SEARCH FALLBACK: If `search_terms` returns `is_composition_fallback: true` (a multi-word phrase was not found as a whole, but its individual words were), YOU MUST inform the user of this. Then synthesis the combined meaning of the phrase based on the individual word results provided to you.
+9. TIE-BREAKER LOGIC: If two or more Arabic translations have the EXACT same `resource_count` and `total_count` in the database results, YOU MUST use your own internal knowledge of Arabic Computer Science terminology to decide and declare which one is linguistically and technically the "most appropriate/best" translation. Explain your reasoning briefly.
 ';
 
                 if ($detailedMode) {

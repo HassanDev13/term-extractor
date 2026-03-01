@@ -237,9 +237,12 @@ class SearchService
                 }
             }
             
-            // Sort by total count desc
+            // Sort by resource count desc, then total count desc
             usort($globalStats, function($a, $b) {
-                return $b['total_count'] - $a['total_count'];
+                if ($b['resource_count'] === $a['resource_count']) {
+                    return $b['total_count'] - $a['total_count'];
+                }
+                return $b['resource_count'] - $a['resource_count'];
             });
             
             $group['global_stats'] = array_values($globalStats);

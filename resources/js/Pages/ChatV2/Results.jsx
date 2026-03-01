@@ -318,7 +318,7 @@ export default function Results({ q, initialChartData }) {
                                                         <Tooltip cursor={{ fill: '#f1f5f9' }} contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }} />
                                                         <Bar dataKey="value" fill="#3b82f6" radius={[4, 4, 0, 0]}>
                                                             {chartData.data.map((entry, index) => (
-                                                                <Cell key={`cell-${index}`} fill={index === 0 ? '#2563eb' : '#93c5fd'} />
+                                                                <Cell key={`cell-${index}`} fill={entry.isMax ? '#ef4444' : '#60a5fa'} />
                                                             ))}
                                                         </Bar>
                                                     </BarChart>
