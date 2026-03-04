@@ -25,7 +25,17 @@ class ChatV2Controller extends Controller
         if (auth()->check()) {
             auth()->user()->checkAndResetDailyCredits();
         }
-        return Inertia::render('ChatV2/Index');
+
+        // Fetch landing page statistics
+        $stats = [
+            'terms_count' => \App\Models\Term::distinct('term_en')->count('term_en'),
+            'resources_count' => \App\Models\Resource::count(),
+            'users_count' => \App\Models\User::count(),
+        ];
+
+        return Inertia::render('ChatV2/Index', [
+            'stats' => $stats
+        ]);
     }
 
     public function search(Request $request): Response
@@ -161,8 +171,8 @@ Follow this EXACT structure for your response (If 0 database results or composit
 
 # تقرير مصطلحي: [English Term]
 
-**إحصائيات:** تم العثور على هذا المصطلح في [USE `resource_count` FROM DATA] مصادر. 
-(CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources! If 0 results, put 0 and explain from your knowledge base contextually.)
+**إحصائيات:** [IF resource_count > 0: 'تم العثور على هذا المصطلح في [USE `resource_count` FROM DATA] مصادر.' ELSE: 'لـم نجد هـذا المصطلح فـي مصادرنا المعتمدة، ولكن اقترحنا هذه الترجمة بناءً على سياق الكلمة.']
+(CRITICAL INSTRUCTION: Look at the top-level `resource_count` field in the JSON data. DO NOT calculate counts yourself. DO NOT mention how many times the term appeared in total, ONLY mention the number of sources/resources! Follow the IF condition above strictly.)
 **التعريف:** [Brief definition of the English term in Arabic to set context]
 
 ## 1. ملخص الاستعمال الأكثر شيوعاً
@@ -186,7 +196,7 @@ MODE: ULTRA-CONCISE SUMMARY
 CRITICAL: Output ONLY these 3 lines in ARABIC. No English labels, no tables, and no deep linguistic details. Be extremely brief.
 
 Format:
-**المصطلح:** [Most Used Arabic Term] - (موجود في [Use `resource_count` from data, or 0] مصادر)
+**المصطلح:** [Most Used Arabic Term] - [IF resource_count > 0: '(موجود في [Use `resource_count` from data] مصادر)' ELSE: '(لـم نجد هـذا المصطلح فـي مصادرنا المعتمدة)']
 [Brief description in Arabic in 1 concise sentence. Do not go into deep details.]
 **بدائل:** [List 2-3 alternative terms from the data if available, comma separated]";
                 }
@@ -422,7 +432,7 @@ Format:
                     {$htmlContent}
                     
                     <div style='margin-top: 40px; padding: 15px; background-color: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; font-size: 11pt; color: #92400e;'>
-                        <strong>تنويه:</strong> الترجمات والإحصائيات المعروضة مستخرجة آلياً وقد تتضمن بعض الأخطاء السابقة للتدقيق. يُرجى مراجعة السياق الأصلي للكلمة. نحن نعمل بشكل مستمر على تدقيق وتنقيح قواعد بياناتنا للوصول إلى أعلى درجات الدقة بالتعاون مع المجتمع.
+                        <strong>تنويه:</strong> المخرجات المعروضة مستخرجة آلياً وقد تتضمن بعض الأخطاء. يُرجى مراجعة المصادر للتأكد. نحن نعمل بشكل مستمر على تدقيق وتنقيح قواعد بياناتنا للوصول إلى أعلى درجات الدقة.
                     </div>
                 </div>
                 

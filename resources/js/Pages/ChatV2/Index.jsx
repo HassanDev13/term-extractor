@@ -110,11 +110,61 @@ function ShowcaseTable() {
     );
 }
 
+function FAQAccordion() {
+    const [open, setOpen] = useState(null);
+    const faqs = [
+        {
+            q: "ما هي المراجع أو الكتب المعتمدة في قاعدة البيانات؟",
+            a: "بما أننا في المرحلة الأولى من المشروع، ولضمان أقصى درجات الدقة والموثوقية لقاعدة البيانات، فإننا نعتمد حالياً فقط على المعاجم المعتمدة والصادرة عن مجامع اللغة العربية والجهات الرسمية.\n\nيمكنك الاطلاع على القائمة الكاملة للمراجع المستخدمة وتحميلها عبر مستودعنا المفتوح على منصة جيت هاب من خلال هذا الرابط:\n [مستودع المراجع (HassanDev13/terminology-books)](https://github.com/HassanDev13/terminology-books)."
+        },
+        {
+            q: "كيف يتم تحديد 'المصطلح الأكثر استعمالاً'؟",
+            a: "يقوم نظامنا بإحصاء تكرار كل ترجمة عبر المراجع المعتمدة، ويُرجِّح المصطلح الذي ورد في أكبر عدد من المصادر المستقلة (وليس عدد مرات التكرار الكلي)، مما يعطي مؤشراً حقيقياً حول الإجماع الفعلي على المصطلح بدلاً من تنظير فردي أو مؤسساتي."
+        },
+        {
+            q: "هل نتائج البحث دقيقة وموثوقة بنسبة 100%؟",
+            a: "يتم استخراج النتائج آلياً باستخدام تقنيات الذكاء الاصطناعي المتقدمة من مراجع موثوقة. ورغم الدقة العالية التي يوفرها النظام، فإننا ننوه دائماً باحتمالية وجود أخطاء في الاستخراج الآلي أو انحرافات بسبب سياق الكلمة، وندعو لمراجعة الصفحة وتدقيق المصدر الموثق في حال الشك."
+        },
+        {
+            q: "كيف يمكنني المساهمة في تطوير هذا المشروع؟",
+            a: "نرحب دوماً بمساهمات المجتمع اللغوي والتقني! يمكنك مشاركة اقتراحاتك حول مصطلحات جديدة، أو الإبلاغ عن أخطاء عبر نموذج التواصل أسفله. كما يمكنك زيارة المستودع والمساهمة في إضافة مراجع تقنية معتمدة جديدة ليقوم الذكاء الاصطناعي بضمها لقاعدة البيانات."
+        }
+    ];
+
+    return (
+        <div className="space-y-4 font-arabic" dir="rtl">
+            {faqs.map((faq, i) => (
+                <div key={i} className={`bg-white rounded-2xl border ${open === i ? 'border-blue-200 shadow-md ring-2 ring-blue-50' : 'border-slate-100 shadow-sm'} overflow-hidden hover:border-blue-200 transition-all duration-300`}>
+                    <button
+                        onClick={() => setOpen(open === i ? null : i)}
+                        className="w-full text-right px-6 py-5 flex items-center justify-between gap-4 group"
+                    >
+                        <h4 className={`font-bold transition-colors ${open === i ? 'text-blue-700' : 'text-slate-800 group-hover:text-blue-600'}`}>{faq.q}</h4>
+                        <div className={`shrink-0 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 ${open === i ? 'bg-blue-600 text-white rotate-180' : 'bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600'}`}>
+                            <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                        </div>
+                    </button>
+                    {open === i && (
+                        <div className="px-6 pb-6 text-slate-600 text-sm md:text-base leading-loose border-t border-slate-50/70 pt-4 prose prose-sm prose-slate max-w-none text-right animate-in fade-in slide-in-from-top-2 duration-300">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}
+                                components={{
+                                    a: ({node, ...props}) => <a className="text-blue-600 font-bold hover:text-blue-800 underline decoration-blue-300 hover:decoration-blue-600 transition-colors" target="_blank" rel="noopener noreferrer" {...props} />,
+                                    p: ({node, ...props}) => <p className="mb-0 leading-relaxed" {...props} />
+                                }}
+                            >{faq.a}</ReactMarkdown>
+                        </div>
+                    )}
+                </div>
+            ))}
+        </div>
+    );
+}
+
 export default function LandingSearchPage() {
     const [query, setQuery] = useState("");
     const [loading, setLoading] = useState(false);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const { auth } = usePage().props;
+    const { auth, stats } = usePage().props;
 
     useEffect(() => {
         const script = document.createElement('script');
@@ -174,11 +224,11 @@ export default function LandingSearchPage() {
 
                         {/* Desktop links */}
                         <div className="hidden md:flex items-center gap-1">
-                            <a href="#methodology" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
-                                المنهجية
-                            </a>
                             <a href="#timeline" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
                                 الرحلة
+                            </a>
+                            <a href="#faq" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
+                                الأسئلة الشائعة
                             </a>
 
                             <a href="#contact" className="relative px-4 py-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors rounded-xl hover:bg-blue-50">
@@ -228,20 +278,20 @@ export default function LandingSearchPage() {
                         <div className="absolute top-[72px] left-4 right-4 max-w-4xl mx-auto bg-white/95 backdrop-blur-2xl border border-slate-200/80 rounded-2xl shadow-xl shadow-slate-900/10 overflow-hidden">
                             <div className="p-2 space-y-0.5">
                                 <a
-                                    href="#methodology"
-                                    onClick={() => setMobileMenuOpen(false)}
-                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
-                                >
-                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-                                    المنهجية
-                                </a>
-                                <a
                                     href="#timeline"
                                     onClick={() => setMobileMenuOpen(false)}
                                     className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
                                 >
                                     <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
                                     الرحلة
+                                </a>
+                                <a
+                                    href="#faq"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                    className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                                >
+                                    <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
+                                    الأسئلة الشائعة
                                 </a>
 
                                 <a
@@ -307,13 +357,6 @@ export default function LandingSearchPage() {
                                     <FileText className="h-4 w-4" />
                                     <span>تصفح الورقة المفاهيمية</span>
                                 </a>
-                                <a 
-                                    href="#methodology"
-                                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white text-slate-600 px-6 py-3.5 rounded-full font-bold border border-slate-200 hover:border-blue-200 hover:text-blue-600 transition-colors active:scale-95 text-sm"
-                                >
-                                    <span>استكشاف المنهجية</span>
-                                    <ArrowLeft className="h-4 w-4" />
-                                </a>
                             </div>
                         </div>
 
@@ -362,153 +405,58 @@ export default function LandingSearchPage() {
                                 </div>
                             </form>
 
-                            {/* Tags + switch row */}
-                            {/* Tags */}
-                            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mt-4 gap-3">
-                                <div className="flex items-center gap-2 overflow-x-auto pb-1 w-full sm:w-auto scrollbar-none">
-                                    <span className="text-slate-400 text-[11px] font-bold uppercase tracking-widest whitespace-nowrap shrink-0">شائعة:</span>
-                                    {["array", "automation", "code", "client"].map(tag => (
-                                        <button
-                                            key={tag}
-                                            onClick={() => handleSearch(null, tag)}
-                                            className="px-3 py-1 bg-white border border-slate-100 rounded-full text-xs font-bold text-slate-500 hover:border-blue-400 hover:text-blue-600 transition-all shadow-sm active:scale-95 whitespace-nowrap"
-                                        >
-                                            {tag}
-                                        </button>
-                                    ))}
-                                </div>
+                            {/* Tags Section */}
+                            <div className="mt-6 flex flex-wrap items-center justify-center gap-2 md:gap-2.5 max-w-2xl mx-auto">
+                                <span className="text-slate-400 text-[11px] font-black uppercase tracking-widest shrink-0 ml-1 w-full sm:w-auto text-center sm:text-right mb-1 sm:mb-0">مصطلحات شائعة:</span>
+                                {[
+                                    "algorithm", "array", "automation", "backend", "cache", "client", "cloud", "code", "compiler", 
+                                    "configuration", "database", "debugging", "encryption", "file", "font", "frontend", "hardware", 
+                                    "iteration", "kernel", "logic", "malware", "network", "node", "per default", "query", "router", 
+                                    "server", "syntax", "tester", "variable"
+                                ].map((tag, index) => (
+                                    <button
+                                        key={tag}
+                                        onClick={() => handleSearch(null, tag)}
+                                        className={`px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold transition-all active:scale-95
+                                            ${index % 4 === 0 ? 'bg-blue-50 text-blue-700 border border-blue-100 hover:bg-blue-100 hover:border-blue-300' :
+                                              index % 4 === 1 ? 'bg-indigo-50 text-indigo-700 border border-indigo-100 hover:bg-indigo-100 hover:border-indigo-300' :
+                                              index % 4 === 2 ? 'bg-violet-50 text-violet-700 border border-violet-100 hover:bg-violet-100 hover:border-violet-300' :
+                                              'bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:text-slate-900 hover:border-slate-300'}
+                                        `}
+                                    >
+                                        {tag}
+                                    </button>
+                                ))}
                             </div>
                         </div>
                     </div>
                 </header>
 
-                {/* Results Section */}
-
-
-
-
-
-
-                {/* Methodology Section */}
-
-                <section id="methodology" className="py-20 px-4 bg-slate-50 border-y border-slate-100">
-                    <div className="container mx-auto max-w-5xl">
-                        <div className="text-center mb-14 space-y-3">
-                           
-                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
-                                كيف نختار <span className="text-blue-600">المصطلح الأنسب؟</span>
-                            </h3>
-                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
-                                نعتمد على مبدأ بسيط: <strong className="text-slate-700">الأكثر استعمالاً هو الأصح</strong>. نقيس الاستخدام الفعلي عبر مصادر متعددة ونختار الفائز.
-                            </p>
+                {/* Statistics Section */}
+                {stats && (
+                    <section className="py-12 px-8 bg-white relative z-20 -mt-10 mx-4 md:mx-auto max-w-4xl rounded-3xl shadow-2xl shadow-slate-200/50 border border-slate-100/80 flex flex-col md:flex-row items-center justify-around gap-8 md:gap-4 backdrop-blur-xl">
+                        <div className="flex flex-col items-center gap-2.5 text-center group">
+                            <span className="text-4xl md:text-5xl font-black text-blue-600 tracking-tighter transition-transform group-hover:scale-110">
+                                {stats.terms_count > 0 ? '+' : ''}{stats.terms_count.toLocaleString('en-US')}
+                            </span>
+                            <span className="text-sm md:text-base font-extrabold text-slate-500">مصطلح فريد مدمج</span>
                         </div>
-
-                        {/* 3 Steps */}
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-14">
-                            {[
-                                {
-                                    step: "01",
-                                    icon: <BookOpen className="h-6 w-6 text-blue-600" />,
-                                    bg: "bg-blue-50",
-                                    title: "جمع المصادر",
-                                    desc: "نستخرج المصطلحات من معاجم متخصصة ومصادر رقمية متنوعة تمثل الاستخدام الحقيقي."
-                                },
-                                {
-                                    step: "02",
-                                    icon: <BarChart3 className="h-6 w-6 text-indigo-600" />,
-                                    bg: "bg-indigo-50",
-                                    title: "قياس التكرار",
-                                    desc: "نحسب كم مرة ظهر كل مقابل عربي عبر المصادر المختلفة ونرتبها تنازلياً."
-                                },
-                                {
-                                    step: "03",
-                                    icon: <CheckCircle2 className="h-6 w-6 text-emerald-600" />,
-                                    bg: "bg-emerald-50",
-                                    title: "اختيار الأكثر استعمالاً",
-                                    desc: "المصطلح الذي يحظى بأعلى نسبة استخدام فعلي هو المُوصى به — لا رأي لجنة، بل بيانات."
-                                }
-                            ].map((item, i) => (
-                                <div key={i} className="relative bg-white rounded-3xl p-7 border border-slate-100 hover:border-blue-200 hover:shadow-lg transition-all group">
-                                    <div className="absolute top-5 left-5 text-6xl font-black text-slate-100 select-none group-hover:text-blue-50 transition-colors">{item.step}</div>
-                                    <div className="relative z-10 space-y-4">
-                                        <div className={`${item.bg} w-12 h-12 rounded-2xl flex items-center justify-center`}>
-                                            {item.icon}
-                                        </div>
-                                        <h4 className="text-xl font-black text-slate-800">{item.title}</h4>
-                                        <p className="text-slate-500 leading-relaxed text-sm font-medium">{item.desc}</p>
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="w-full md:w-px h-px md:h-20 bg-slate-100"></div>
+                        <div className="flex flex-col items-center gap-2.5 text-center group">
+                            <span className="text-4xl md:text-5xl font-black text-indigo-600 tracking-tighter transition-transform group-hover:scale-110">
+                                {stats.resources_count > 0 ? '+' : ''}{stats.resources_count.toLocaleString('en-US')}
+                            </span>
+                            <span className="text-sm md:text-base font-extrabold text-slate-500">مصدر مرجعي معتمد</span>
                         </div>
-
-                        {/* Live Example */}
-                        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-8 md:p-10 relative overflow-hidden">
-                            <div className="absolute inset-0 opacity-10 pointer-events-none">
-                                <div className="absolute top-[-20%] right-[-10%] w-[400px] h-[400px] bg-white rounded-full blur-[80px]" />
-                            </div>
-                            <div className="relative z-10">
-                                <div className="flex items-center gap-3 mb-6">
-                                    <div className="bg-white/20 p-2 rounded-xl">
-                                        <TrendingUp className="h-5 w-5 text-white" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-black text-lg">مثال تطبيقي: كلمة <span className="text-blue-200 font-mono">Automation</span></h4>
-                                        <p className="text-blue-200 text-xs">5 نتائج في 3 مصادر مختلفة</p>
-                                    </div>
-                                </div>
-
-                                {/* Term bars */}
-                                <div className="space-y-4 mb-8">
-                                    {[
-                                        { term: "أتمتة",           count: 4, sources: 3, pct: 80, winner: true },
-                                        { term: "تشغيل أوتوماتي", count: 1, sources: 1, pct: 20, winner: false },
-                                    ].map((row, i) => (
-                                        <div key={i} className="space-y-1.5">
-                                            <div className="flex items-center justify-between gap-2">
-                                                <span className="font-bold text-sm" style={{color: row.winner ? '#86efac' : '#fca5a5'}}>{row.term}</span>
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-xs text-blue-200">{row.count} مرات · {row.sources} مصادر</span>
-                                                    {row.winner && <span className="text-[10px] font-black bg-white/20 text-white px-2 py-0.5 rounded-full">✓ مُختار</span>}
-                                                </div>
-                                            </div>
-                                            <div className="bg-white/10 rounded-full h-2.5 overflow-hidden">
-                                                <div className={`h-full rounded-full ${row.winner ? 'bg-white/80' : 'bg-white/30'}`} style={{ width: `${row.pct}%` }} />
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                {/* Sources breakdown */}
-                                <div className="border-t border-white/20 pt-6 space-y-3">
-                                    <p className="text-blue-200 text-xs font-bold uppercase tracking-widest mb-3">تفصيل المصادر</p>
-                                    {[
-                                        { src: "معجم البيانات والذكاء الاصطناعي — السعودية",   term: "أتمتة",                  count: 3, confidence: 10 },
-                                        { src: "قائمة المصطلحات المعلوماتية — سوريا 2017",     term: "أتمتة",                  count: 1, confidence: 10 },
-                                        { src: "معجم الحاسبات، مجمع اللغة العربية — مصر 2012", term: "تشغيل أوتوماتي (أوتمة)", count: 1, confidence: 9  },
-                                    ].map((s, i) => (
-                                        <div key={i} className="flex items-start justify-between gap-4 bg-white/10 rounded-2xl px-4 py-3">
-                                            <div className="flex-1 min-w-0">
-                                                <p className="text-white text-xs font-bold leading-snug">{s.src}</p>
-                                                <p className="text-blue-200 text-xs mt-0.5">المصطلح: <span className="font-bold text-white">{s.term}</span> · {s.count} {s.count === 1 ? 'مرة' : 'مرات'}</p>
-                                            </div>
-                                            <div className="shrink-0 text-right">
-                                                <div className="text-xs font-black text-white">{s.confidence}/10</div>
-                                                <div className="text-[10px] text-blue-200">ثقة</div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <p className="text-blue-200 text-xs mt-6 italic">النتيجة: «أتمتة» هي الأكثر استعمالاً في المصادر المدروسة، فهي المُوصى بها.</p>
-                            </div>
+                        <div className="w-full md:w-px h-px md:h-20 bg-slate-100"></div>
+                        <div className="flex flex-col items-center gap-2.5 text-center group">
+                            <span className="text-4xl md:text-5xl font-black text-violet-600 tracking-tighter transition-transform group-hover:scale-110">
+                                {stats.users_count > 0 ? '+' : ''}{stats.users_count.toLocaleString('en-US')}
+                            </span>
+                            <span className="text-sm md:text-base font-extrabold text-slate-500">باحث ومستخدم مسجل</span>
                         </div>
-                    </div>
-                </section>
-
-
-
-
-
+                    </section>
+                )}
 
 
                 {/* Timeline Section */}
@@ -559,6 +507,21 @@ export default function LandingSearchPage() {
                     </div>
                 </section>
 
+
+                {/* FAQ Section */}
+                <section id="faq" className="py-20 px-4 bg-slate-50/50 border-b border-slate-100">
+                    <div className="container mx-auto max-w-3xl">
+                        <div className="text-center mb-14 space-y-3">
+                            <h3 className="text-3xl md:text-5xl font-black text-slate-900 tracking-tight">
+                                الأسئلة <span className="text-blue-600">الشائعة</span>
+                            </h3>
+                            <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto font-medium">
+                                إجابات على أبرز التساؤلات حول مشروع تعريب والمراجع المعتمدة فيه.
+                            </p>
+                        </div>
+                        <FAQAccordion />
+                    </div>
+                </section>
 
                 {/* Testimonial Section */}
                 <section className="py-20 px-4 bg-slate-50 border-b border-slate-100 overflow-hidden">
@@ -755,8 +718,8 @@ export default function LandingSearchPage() {
                                 <h4 className="font-bold text-white text-lg">روابط سريعة</h4>
                                 <ul className="space-y-3">
                                     {[
-                                        { label: "المنهجية العلمية", href: "#methodology" },
                                         { label: "رحلة المشروع", href: "#timeline" },
+                                        { label: "الأسئلة الشائعة", href: "#faq" },
                                         { label: "تواصل معنا", href: "#contact" },
 
                                         { label: "شكر وتقدير", href: route('thanks') },
