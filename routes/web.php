@@ -122,5 +122,8 @@ Route::get("/chat", [ChatController::class, "index"])->name("chat.index");
 Route::post('/api/chat_v2', [ChatV2Controller::class, 'chat'])->middleware(['auth', 'approved'])->name('chat.v2');
 Route::post('/api/chat_v2/export_pdf', [ChatV2Controller::class, 'downloadPdf'])->middleware(['auth', 'approved'])->name('chat.v2.pdf');
 
+use App\Http\Controllers\TermSearchFeedbackController;
+Route::post('/api/chat_v2/feedback', [TermSearchFeedbackController::class, 'store'])->middleware(['auth', 'approved'])->name('chat.v2.feedback');
+
 use App\Http\Controllers\ContactController;
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');

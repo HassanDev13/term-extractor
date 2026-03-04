@@ -6,7 +6,7 @@ import {
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
-    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle, Check, Download
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle, Check, Download, ThumbsUp, ThumbsDown
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -25,6 +25,12 @@ export default function Results({ q, initialChartData }) {
     const [credits, setCredits] = useState(auth.user?.daily_credits ?? 0);
     const [isCopied, setIsCopied] = useState(false);
     const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
+
+    // Feedback State
+    const [feedbackStatus, setFeedbackStatus] = useState(null); // 'idle', 'voted_up', 'voted_down'
+    const [feedbackText, setFeedbackText] = useState("");
+    const [isSubmittingFeedback, setIsSubmittingFeedback] = useState(false);
+    const [feedbackSuccess, setFeedbackSuccess] = useState(false);
 
     const extractChartContent = (text) => {
         if (!text) return { chartData: null, cleanText: '' };
@@ -92,6 +98,9 @@ export default function Results({ q, initialChartData }) {
         setLoading(true);
         setResult("");
         setError(null);
+        setFeedbackStatus('idle');
+        setFeedbackSuccess(false);
+        setFeedbackText("");
         
         const isDetailed = modeOverride !== undefined ? modeOverride : detailedMode;
         
@@ -170,6 +179,39 @@ export default function Results({ q, initialChartData }) {
             }
         } finally {
             setLoading(false);
+        }
+    };
+
+    const submitFeedback = async (isPositive, fastText = null) => {
+        setIsSubmittingFeedback(true);
+        const textToSubmit = fastText !== null ? fastText : feedbackText;
+
+        try {
+            const getXsrfToken = () => {
+                const match = document.cookie.match(new RegExp('(^|;\\s*)(XSRF-TOKEN)=([^;]*)'));
+                return match ? decodeURIComponent(match[3]) : '';
+            };
+
+            const response = await fetch('/api/chat_v2/feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-XSRF-TOKEN': getXsrfToken()
+                },
+                body: JSON.stringify({
+                    term: query,
+                    is_positive: isPositive,
+                    feedback_text: textToSubmit
+                })
+            });
+
+            if (response.ok) {
+                setFeedbackSuccess(true);
+            }
+        } catch (e) {
+             console.error('Feedback error:', e);
+        } finally {
+            setIsSubmittingFeedback(false);
         }
     };
 
@@ -376,6 +418,88 @@ export default function Results({ q, initialChartData }) {
                                     </>
                                 )}
                                 
+                                {/* Feedback Section */}
+                                {!loading && result && (
+                                    <div className="mt-8 border border-slate-200 rounded-2xl p-6 bg-white shadow-sm flex flex-col items-center animate-in fade-in slide-in-from-bottom-2 duration-500">
+                                        {feedbackStatus === null || feedbackStatus === 'idle' ? (
+                                            <>
+                                                <h4 className="font-bold text-slate-700 mb-4 text-center">هل كانت هذه النتيجة مفيدة؟</h4>
+                                                <div className="flex items-center gap-4">
+                                                    <Button 
+                                                        variant="outline" 
+                                                        className="gap-2 rounded-xl text-slate-600 hover:text-green-600 hover:bg-green-50 hover:border-green-200 w-32 h-12"
+                                                        onClick={() => {
+                                                            setFeedbackStatus('voted_up');
+                                                            submitFeedback(true);
+                                                        }}
+                                                    >
+                                                        <ThumbsUp className="w-5 h-5" />
+                                                        <span className="font-bold text-sm">نعم، مفيدة</span>
+                                                    </Button>
+                                                    <Button 
+                                                        variant="outline" 
+                                                        className="gap-2 rounded-xl text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 w-32 h-12"
+                                                        onClick={() => setFeedbackStatus('voted_down')}
+                                                    >
+                                                        <ThumbsDown className="w-5 h-5" />
+                                                        <span className="font-bold text-sm">غير دقيقة</span>
+                                                    </Button>
+                                                </div>
+                                            </>
+                                        ) : feedbackStatus === 'voted_up' && feedbackSuccess ? (
+                                            <div className="flex flex-col items-center text-green-600 gap-2">
+                                                <CheckCircle2 className="w-8 h-8 animate-bounce" />
+                                                <span className="font-bold">شكراً! تقييمك يساعد في تحسين جودة قاعدة البيانات.</span>
+                                            </div>
+                                        ) : feedbackStatus === 'voted_down' && !feedbackSuccess ? (
+                                            <div className="w-full max-w-md animate-in fade-in slide-in-from-top-2">
+                                                <h4 className="font-bold text-slate-700 mb-3 text-center">نأسف لذلك، كيف يمكننا التحسين؟</h4>
+                                                <div className="flex flex-wrap gap-2 mb-4 justify-center">
+                                                    {["ترجمة غير دقيقة", "لدي اقتراح أفضل"].map((tag, i) => (
+                                                        <button 
+                                                            key={i}
+                                                            onClick={() => {
+                                                                setFeedbackText(tag);
+                                                            }}
+                                                            className="text-xs font-bold px-3 py-1.5 rounded-full bg-slate-100 text-slate-600 hover:bg-slate-200 transition-colors"
+                                                        >
+                                                            {tag}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <textarea 
+                                                    className="w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm font-arabic outline-none focus:border-red-300 resize-none h-24 mb-3"
+                                                    placeholder="أخبرنا بتفاصيل أكثر أو اقترح ترجمتك (اختياري)..."
+                                                    value={feedbackText}
+                                                    onChange={e => setFeedbackText(e.target.value)}
+                                                    dir="rtl"
+                                                ></textarea>
+                                                <div className="flex items-center gap-2">
+                                                    <Button 
+                                                        onClick={() => submitFeedback(false)}
+                                                        disabled={isSubmittingFeedback}
+                                                        className="flex-1 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-bold"
+                                                    >
+                                                        {isSubmittingFeedback ? <Loader2 className="w-4 h-4 animate-spin" /> : "إرسال الملاحظة"}
+                                                    </Button>
+                                                    <Button 
+                                                        variant="ghost" 
+                                                        onClick={() => setFeedbackStatus('idle')}
+                                                        className="text-slate-500 hover:bg-slate-100 rounded-xl font-bold"
+                                                    >
+                                                        إلغاء
+                                                    </Button>
+                                                </div>
+                                            </div>
+                                        ) : feedbackStatus === 'voted_down' && feedbackSuccess ? (
+                                            <div className="flex flex-col items-center text-slate-600 gap-2">
+                                                <CheckCircle2 className="w-8 h-8 text-green-500" />
+                                                <span className="font-bold">تم إرسال ملاحظتك، شكراً لمساهمتك!</span>
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                )}
+
                                 <div className="flex flex-wrap justify-end gap-3 mt-8 pt-8 border-t border-slate-100">
                                     <Button
                                         variant="outline"
