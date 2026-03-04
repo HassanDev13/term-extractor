@@ -2,7 +2,7 @@ import { Head, Link, useForm } from '@inertiajs/react';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
-import { User, LogIn, Mail, Lock, ArrowLeft, Loader2, Link as LinkIcon, Briefcase } from 'lucide-react';
+import { User, LogIn, Mail, Lock, ArrowLeft, Loader2, Link as LinkIcon, Briefcase, Calendar, Info } from 'lucide-react';
 
 export default function Register({ specialities }) {
     const { data, setData, post, processing, errors } = useForm({
@@ -12,6 +12,8 @@ export default function Register({ specialities }) {
         password_confirmation: '',
         linkedin_url: '',
         speciality_id: '',
+        years_of_experience: '',
+        about_me: '',
     });
 
     const handleSubmit = (e) => {
@@ -23,10 +25,10 @@ export default function Register({ specialities }) {
         <>
             <Head title="عضوية جديدة" />
             
-            <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-white" dir="rtl">
+            <div className="h-screen grid grid-cols-1 lg:grid-cols-2 bg-white overflow-hidden" dir="rtl">
                 
                 {/* Right Side - Visual/Brand */}
-                <div className="hidden lg:flex flex-col justify-between bg-slate-900 relative overflow-hidden p-12 text-white">
+                <div className="hidden lg:flex flex-col justify-between bg-slate-900 relative p-12 text-white h-full overflow-hidden">
                     {/* Background Gradients */}
                     <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/20 blur-[120px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/2" />
                     <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-indigo-600/20 blur-[100px] rounded-full pointer-events-none translate-y-1/2 -translate-x-1/2" />
@@ -37,7 +39,7 @@ export default function Register({ specialities }) {
                             <div className="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/10">
                                 <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                             </div>
-                            <span className="font-black text-xl tracking-tight">تعريب</span>
+                            <span className="font-black text-xl tracking-tight">taarib</span>
                         </Link>
                     </div>
 
@@ -51,20 +53,20 @@ export default function Register({ specialities }) {
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4 text-sm text-slate-500 font-medium">
-                        <span>© 2026 تعريب</span>
+                        <span>© 2026 taarib</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700" />
                         <span>جميع الحقوق محفوظة</span>
                     </div>
                 </div>
 
                 {/* Left Side - Form */}
-                <div className="flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-y-auto w-full">
+                <div className="flex flex-col items-center justify-start p-6 sm:p-12 relative overflow-y-auto h-full w-full">
                     <Link href="/" className="absolute top-6 left-6 flex items-center gap-2 text-slate-500 hover:text-slate-900 transition-colors text-sm font-bold bg-slate-50 hover:bg-slate-100 px-4 py-2 rounded-full z-10">
                         <ArrowLeft className="h-4 w-4" />
                         <span>العودة للرئيسية</span>
                     </Link>
 
-                    <div className="w-full max-w-md space-y-8 mt-12 mb-12 lg:my-auto">
+                    <div className="w-full max-w-md space-y-8 mt-16 mb-8 lg:mt-auto lg:mb-auto">
                         <div className="text-center space-y-2">
                             <h1 className="text-3xl font-black text-slate-900">حساب جديد</h1>
                             <p className="text-slate-500 font-medium">الرجاء إدخال بياناتك للمتابعة</p>
@@ -175,6 +177,41 @@ export default function Register({ specialities }) {
                                     <Briefcase className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
                                 </div>
                                 {errors.speciality_id && <p className="text-red-500 text-xs font-medium">{errors.speciality_id}</p>}
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="years_of_experience" className="text-sm font-bold text-slate-700">سنوات الخبرة</Label>
+                                <div className="relative">
+                                    <Input
+                                        id="years_of_experience"
+                                        type="number"
+                                        min="0"
+                                        max="100"
+                                        value={data.years_of_experience}
+                                        onChange={(e) => setData('years_of_experience', e.target.value)}
+                                        className="h-12 pr-11 pl-4 rounded-xl border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-blue-500/20 text-start"
+                                        placeholder="مثال: 5"
+                                        required
+                                    />
+                                    <Calendar className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400 pointer-events-none" />
+                                </div>
+                                {errors.years_of_experience && <p className="text-red-500 text-xs font-medium">{errors.years_of_experience}</p>}
+                            </div>
+
+                            <div className="space-y-1.5">
+                                <Label htmlFor="about_me" className="text-sm font-bold text-slate-700">نبذة تعريفية</Label>
+                                <div className="relative">
+                                    <textarea
+                                        id="about_me"
+                                        value={data.about_me}
+                                        onChange={(e) => setData('about_me', e.target.value)}
+                                        className="w-full min-h-[100px] pr-11 pl-4 py-3 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-500/20 text-start outline-none transition-all resize-none font-medium text-sm"
+                                        placeholder="أخبرنا قليلاً عن خبرتك ومجال اهتمامك التقني..."
+                                        required
+                                    />
+                                    <Info className="absolute right-4 top-4 h-5 w-5 text-slate-400 pointer-events-none" />
+                                </div>
+                                {errors.about_me && <p className="text-red-500 text-xs font-medium">{errors.about_me}</p>}
                             </div>
 
                             <Button

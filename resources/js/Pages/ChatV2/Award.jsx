@@ -6,7 +6,7 @@ import { ArrowLeft, Trophy, Heart, Target, Lightbulb, UserPlus, FileText, Gift, 
 export default function Award() {
     return (
         <>
-            <Head title="جائزة يوغرطة | تعريب" />
+            <Head title="جائزة يوغرطة | taarib" />
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden" dir="rtl">
                 
                 {/* Header */}
@@ -17,7 +17,7 @@ export default function Award() {
                                 <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                             </div>
                             <div>
-                                <h1 className="text-lg font-black text-slate-800 leading-tight">تعريب</h1>
+                                <h1 className="text-lg font-black text-slate-800 leading-tight">taarib</h1>
                                 <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">العودة للرئيسية</p>
                             </div>
                         </Link>
@@ -276,7 +276,7 @@ export default function Award() {
                                         <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-2xl text-white tracking-tight">تعريب</h3>
+                                        <h3 className="font-black text-2xl text-white tracking-tight">taarib</h3>
                                         <p className="text-[11px] text-blue-400 font-bold tracking-widest uppercase opacity-90 text-right">مبادرة لتوحيد المصطلحات</p>
                                     </div>
                                 </div>
@@ -308,12 +308,15 @@ export default function Award() {
                                 </ul>
                             </div>
 
-                            {/* Contact/Info Column */}
-                            <div className="md:col-span-3 space-y-6">
+                            <div className="md:col-span-3 space-y-4">
                                 <h4 className="font-bold text-white text-lg">تواصل معنا</h4>
                                 <p className="text-slate-400 text-sm leading-relaxed">
                                     نسعد باستقبال استفساراتكم ومقترحاتكم لتطوير هذا المشروع.
                                 </p>
+                                <a href="/#contact" className="inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 text-white text-sm font-bold px-4 py-2 rounded-xl transition-colors border border-slate-700 w-full sm:w-auto">
+                                    <Mail className="w-4 h-4" />
+                                    اتصل بنا
+                                </a>
                             </div>
                         </div>
 
@@ -323,7 +326,7 @@ export default function Award() {
                         {/* Bottom Bar */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
                             <p className="flex items-center gap-1.5">
-                                <span>© 2026 مشروع التعريب.</span>
+                                <span>© 2026 taarib.</span>
                                 <span className="hidden sm:inline text-slate-700">|</span>
                                 <span>جميع الحقوق محفوظة.</span>
                             </p>

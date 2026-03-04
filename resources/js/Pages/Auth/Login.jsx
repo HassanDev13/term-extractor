@@ -36,7 +36,7 @@ export default function Login() {
                             <div className="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/10">
                                 <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                             </div>
-                            <span className="font-black text-xl tracking-tight">تعريب</span>
+                            <span className="font-black text-xl tracking-tight">taarib</span>
                         </Link>
                     </div>
 
@@ -50,7 +50,7 @@ export default function Login() {
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4 text-sm text-slate-500 font-medium">
-                        <span>© 2026 تعريب</span>
+                        <span>© 2026 taarib</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700" />
                         <span>جميع الحقوق محفوظة</span>
                     </div>

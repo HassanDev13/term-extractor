@@ -30,6 +30,8 @@ class User extends Authenticatable implements FilamentUser
         'linkedin_url',
         'speciality_id',
         'status',
+        'years_of_experience',
+        'about_me',
     ];
 
     /**
@@ -64,7 +66,7 @@ class User extends Authenticatable implements FilamentUser
      */
     public function canAccessPanel(Panel $panel): bool
     {
-        return 1;
+        return (bool) $this->is_admin;
     }
 
     /**

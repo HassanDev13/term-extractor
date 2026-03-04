@@ -245,7 +245,7 @@ export default function Results({ q, initialChartData }) {
                                 <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-1.5 rounded-xl shadow-lg shadow-blue-900/10">
                                     <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                                 </div>
-                                <span className="hidden lg:block text-sm font-black text-slate-800 tracking-tight">تعريب</span>
+                                <span className="hidden lg:block text-sm font-black text-slate-800 tracking-tight">taarib</span>
                             </Link>
                         </div>
 
@@ -409,9 +409,9 @@ export default function Results({ q, initialChartData }) {
                                 
                                 {!loading && (
                                     <>
-                                        <div className="mt-8 mb-4 p-4 bg-amber-50 rounded-xl border border-amber-200/60 flex items-start gap-3 animate-in fade-in duration-500">
-                                            <AlertTriangle className="h-5 w-5 text-amber-500 shrink-0 mt-0.5" />
-                                            <p className="text-sm font-medium text-amber-800/80 leading-relaxed">
+                                        <div className="mt-6 mb-4 p-3 bg-amber-50 rounded-xl border border-amber-200/60 flex items-start gap-2 animate-in fade-in duration-500">
+                                            <AlertTriangle className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
+                                            <p className="text-xs font-medium text-amber-800/80 leading-relaxed">
                                                 <strong>تنويه:</strong> المخرجات المعروضة مستخرجة آلياً وقد تتضمن بعض الأخطاء. يُرجى مراجعة المصادر للتأكد. نحن نعمل بشكل مستمر على تدقيق وتنقيح قواعد بياناتنا للوصول إلى أعلى درجات الدقة.
                                             </p>
                                         </div>
@@ -583,7 +583,7 @@ export default function Results({ q, initialChartData }) {
                                         </div>
                                         <h3 className="text-xl font-black text-slate-700 mb-2">في انتظار استعلامك</h3>
                                         <p className="text-slate-400 font-medium leading-relaxed">
-                                            أدخل أي مصطلح تقني أو علمي للبحث عنه في قاعدة بيانات مشروع التعريب.
+                                            أدخل أي مصطلح تقني أو علمي للبحث عنه في قاعدة بيانات taarib.
                                         </p>
                                     </div>
                                 )}
@@ -608,7 +608,7 @@ export default function Results({ q, initialChartData }) {
                         </div>
                         
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-                             <span>تعريب © 2026</span>
+                             <span>taarib © 2026</span>
                              <span>•</span>
                              <span>جميع الحقوق محفوظة</span>
                         </div>

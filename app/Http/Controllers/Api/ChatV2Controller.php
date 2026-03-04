@@ -77,18 +77,11 @@ class ChatV2Controller extends Controller
                         ];
                     }
                     
-                    if (count($tiedTerms) > 1) {
-                        // Limit to first 3 to avoid super long title
-                        $displayTies = array_slice($tiedTerms, 0, 3);
-                        $titleAppend = 'تعادل بين: ' . implode(' و ', $displayTies) . (count($tiedTerms) > 3 ? '...' : '') . ' (انظر التقرير للترجيح)';
-                    } else {
-                        $dominantTerm = $tiedTerms[0] ?? $topGroup['global_stats'][0]['term'];
-                        $titleAppend = 'الأغلبية لـ: ' . $dominantTerm;
-                    }
+                    // titleAppend logic removed as requested by user.
                     
                     $initialChartData = [
                         'type' => 'bar',
-                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ') - ' . $titleAppend,
+                        'title' => 'توزيع انتشار التراجم (' . ($topGroup['display_term_en'] ?? $q) . ')',
                         'data' => array_slice($chartDataRows, 0, 10)
                     ];
                 }

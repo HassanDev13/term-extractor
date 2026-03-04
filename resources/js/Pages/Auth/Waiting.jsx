@@ -4,7 +4,7 @@ import { ArrowLeft, Hourglass } from 'lucide-react';
 export default function Waiting() {
     return (
         <>
-            <Head title="قيد المراجعة | تعريب" />
+            <Head title="قيد المراجعة | taarib" />
             
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900" dir="rtl">
 

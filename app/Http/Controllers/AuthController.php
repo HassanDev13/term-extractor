@@ -29,6 +29,8 @@ class AuthController extends Controller
             'password' => 'required|string|min:8|confirmed',
             'linkedin_url' => 'required|url|max:255',
             'speciality_id' => 'required|exists:specialities,id',
+            'years_of_experience' => 'required|integer|min:0|max:100',
+            'about_me' => 'required|string|max:1000',
         ]);
 
         $user = \App\Models\User::create([
@@ -37,6 +39,8 @@ class AuthController extends Controller
             'password' => bcrypt($validated['password']),
             'linkedin_url' => $validated['linkedin_url'],
             'speciality_id' => $validated['speciality_id'],
+            'years_of_experience' => $validated['years_of_experience'],
+            'about_me' => $validated['about_me'],
             'status' => 'pending',
         ]);
 
