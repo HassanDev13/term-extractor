@@ -47,6 +47,10 @@ class HandleInertiaRequests extends Middleware
             "locale" => "en",
             "availableLocales" => ["en"],
             "isRTL" => false,
+            "settings" => [
+                "site_name" => \App\Models\Setting::get('site_name', 'تعريب'),
+                "maintenance_mode" => \App\Models\Setting::get('maintenance_mode', false),
+            ],
         ];
     }
 }

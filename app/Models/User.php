@@ -32,6 +32,8 @@ class User extends Authenticatable implements FilamentUser
         'status',
         'years_of_experience',
         'about_me',
+        'subscribed_to_announcements',
+        'preferred_search_mode',
     ];
 
     /**
@@ -58,6 +60,7 @@ class User extends Authenticatable implements FilamentUser
             'is_admin' => 'boolean',
             'daily_credits' => 'integer',
             'is_unlimited' => 'boolean',
+            'subscribed_to_announcements' => 'boolean',
         ];
     }
 
@@ -86,8 +89,9 @@ class User extends Authenticatable implements FilamentUser
         $lastReset = $this->last_credit_reset_at;
 
         // Ensure daily_credits is integer
+        $defaultCredits = \App\Models\Setting::get('daily_free_credits', 10);
         if ($this->daily_credits === null) {
-            $this->daily_credits = 10;
+            $this->daily_credits = $defaultCredits;
         }
 
         // If unlimited, ensure they have high credits and return
@@ -100,15 +104,15 @@ class User extends Authenticatable implements FilamentUser
         }
 
         if (!$lastReset) {
-            $this->daily_credits = 10;
+            $this->daily_credits = $defaultCredits;
             $this->last_credit_reset_at = $now;
             $this->save();
             return;
         }
 
         if (!$lastReset || !$lastReset->isSameDay($now)) {
-            \Illuminate\Support\Facades\Log::info("User Model Reset: Resetting credits to 10 for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL') . " Now: " . $now->toDateTimeString());
-            $this->daily_credits = 10;
+            \Illuminate\Support\Facades\Log::info("User Model Reset: Resetting credits to $defaultCredits for User {$this->id}. LastReset: " . ($lastReset ? $lastReset->toDateTimeString() : 'NULL') . " Now: " . $now->toDateTimeString());
+            $this->daily_credits = $defaultCredits;
             $this->last_credit_reset_at = $now;
             $this->save();
         } else {

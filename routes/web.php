@@ -127,3 +127,10 @@ Route::post('/api/chat_v2/feedback', [TermSearchFeedbackController::class, 'stor
 
 use App\Http\Controllers\ContactController;
 Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+use App\Http\Controllers\UserSettingsController;
+Route::middleware(['auth'])->group(function () {
+    Route::get('/settings', [UserSettingsController::class, 'edit'])->name('settings.edit');
+    Route::put('/settings', [UserSettingsController::class, 'update'])->name('settings.update');
+    Route::delete('/settings', [UserSettingsController::class, 'destroy'])->name('settings.destroy');
+});

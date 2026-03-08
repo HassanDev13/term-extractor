@@ -7,7 +7,7 @@ import {
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
     AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users,
-    Rocket, Target, Calendar, Building2
+    Rocket, Target, Calendar, Building2, Settings
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -207,7 +207,7 @@ export default function LandingSearchPage() {
 
     return (
         <>
-            <Head title="taarib | توحيد المصطلحات المعلوماتية" />
+            <Head title="تعريب | توحيد المصطلحات المعلوماتية" />
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900 overflow-x-hidden" dir="rtl">
                 
                 {/* Fixed Header */}
@@ -219,7 +219,7 @@ export default function LandingSearchPage() {
                             <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1.5 rounded-xl shadow-sm">
                                 <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                             </div>
-                            <span className="text-sm font-black text-slate-800 tracking-tight">taarib</span>
+                            <span className="text-sm font-black text-slate-800 tracking-tight">تعريب</span>
                         </div>
 
                         {/* Desktop links */}
@@ -249,6 +249,9 @@ export default function LandingSearchPage() {
                                         <div className="bg-blue-600 text-white rounded-lg p-0.5"><User className="h-3 w-3" /></div>
                                         <span className="text-blue-700 text-xs font-bold">{auth.user.name}</span>
                                     </div>
+                                    <Link href={route('settings.edit')} className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors">
+                                        <Settings className="h-3.5 w-3.5" />
+                                    </Link>
                                     <Link href={route('logout')} method="post" as="button" className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors">
                                         <LogOut className="h-3.5 w-3.5" />
                                     </Link>
@@ -322,6 +325,9 @@ export default function LandingSearchPage() {
                                 {auth.user && (
                                     <>
                                         <div className="h-px bg-slate-100 mx-2 my-1" />
+                                        <Link href={route('settings.edit')} className="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-700 font-bold text-sm hover:bg-blue-50 w-full transition-colors">
+                                            <Settings className="h-4 w-4" /><span>الإعدادات</span>
+                                        </Link>
                                         <Link href={route('logout')} method="post" as="button" className="flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 font-bold text-sm hover:bg-red-50 w-full transition-colors">
                                             <LogOut className="h-4 w-4" /><span>خروج</span>
                                         </Link>
@@ -704,7 +710,7 @@ export default function LandingSearchPage() {
                                         <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                                     </div>
                                     <div>
-                                        <h3 className="font-black text-2xl text-white tracking-tight">taarib</h3>
+                                        <h3 className="font-black text-2xl text-white tracking-tight">تعريب</h3>
                                         <p className="text-[11px] text-blue-400 font-bold tracking-widest uppercase opacity-90 text-right">مبادرة لتوحيد المصطلحات</p>
                                     </div>
                                 </div>
@@ -752,7 +758,7 @@ export default function LandingSearchPage() {
                         {/* Bottom Bar */}
                         <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs font-medium text-slate-500">
                             <p className="flex items-center gap-1.5">
-                                <span>© 2026 taarib.</span>
+                                <span>© 2026 تعريب.</span>
                                 <span className="hidden sm:inline text-slate-700">|</span>
                                 <span>جميع الحقوق محفوظة.</span>
                             </p>

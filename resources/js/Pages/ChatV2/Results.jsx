@@ -6,7 +6,7 @@ import {
     Send, Bot, User, Loader2, Search,
     FileText, ArrowLeft, Database,
     BarChart3, Zap, LogOut, TrendingUp, BookOpen, CheckCircle2,
-    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle, Check, Download, ThumbsUp, ThumbsDown
+    AlertTriangle, Mail, ShieldAlert, Quote, ExternalLink, Play, Users, Home, AlertCircle, Check, Download, ThumbsUp, ThumbsDown, Settings
 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -17,8 +17,10 @@ export default function Results({ q, initialChartData }) {
     const [result, setResult] = useState("");
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
-    const [detailedMode, setDetailedMode] = useState(false);
     const { auth } = usePage().props;
+    const [detailedMode, setDetailedMode] = useState(() => {
+        return auth.user?.preferred_search_mode === 'simple' ? false : true;
+    });
     const initialSearchDone = useRef(null);
     
     // Local state for credits to update immediately without waiting for page reload
@@ -245,7 +247,7 @@ export default function Results({ q, initialChartData }) {
                                 <div className="bg-gradient-to-br from-blue-600 to-indigo-600 p-1.5 rounded-xl shadow-lg shadow-blue-900/10">
                                     <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                                 </div>
-                                <span className="hidden lg:block text-sm font-black text-slate-800 tracking-tight">taarib</span>
+                                <span className="hidden lg:block text-sm font-black text-slate-800 tracking-tight">تعريب</span>
                             </Link>
                         </div>
 
@@ -280,7 +282,9 @@ export default function Results({ q, initialChartData }) {
 
                             
                             {auth.user ? (
-                                null
+                                <Link href={route('settings.edit')} className="p-2 bg-slate-100 hover:bg-blue-50 text-slate-500 hover:text-blue-600 rounded-xl transition-colors border border-transparent hover:border-blue-100" title="الإعدادات">
+                                    <Settings className="h-4 w-4 md:h-5 md:w-5" />
+                                </Link>
                             ) : (
                                 <Link href={route('login')} className="h-9 px-3 md:px-4 flex items-center bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors shadow-lg shadow-slate-200 whitespace-nowrap">
                                     <span className="hidden sm:inline">تسجيل الدخول</span>
@@ -583,7 +587,7 @@ export default function Results({ q, initialChartData }) {
                                         </div>
                                         <h3 className="text-xl font-black text-slate-700 mb-2">في انتظار استعلامك</h3>
                                         <p className="text-slate-400 font-medium leading-relaxed">
-                                            أدخل أي مصطلح تقني أو علمي للبحث عنه في قاعدة بيانات taarib.
+                                            أدخل أي مصطلح تقني أو علمي للبحث عنه في قاعدة بيانات تعريب.
                                         </p>
                                     </div>
                                 )}
@@ -608,7 +612,7 @@ export default function Results({ q, initialChartData }) {
                         </div>
                         
                         <div className="flex items-center gap-2 text-xs font-bold text-slate-300">
-                             <span>taarib © 2026</span>
+                             <span>تعريب © 2026</span>
                              <span>•</span>
                              <span>جميع الحقوق محفوظة</span>
                         </div>

@@ -4,7 +4,7 @@ import { ArrowLeft, Rocket, Users, Database, Zap, Target, Calendar } from "lucid
 export default function Changelog() {
     return (
         <>
-            <Head title="سجل التحديثات وخطة الإصدارات | taarib" />
+            <Head title="سجل التحديثات وخطة الإصدارات | تعريب" />
             <div className="min-h-screen bg-slate-50 text-slate-900 font-arabic selection:bg-blue-100 selection:text-blue-900" dir="rtl">
                 
                 {/* Fixed Navbar Simple */}
@@ -14,7 +14,7 @@ export default function Changelog() {
                             <div className="bg-gradient-to-br from-blue-500 to-indigo-600 p-1.5 rounded-xl shadow-sm">
                                 <img src="/images/logo.png" alt="Logo" className="h-5 w-5 object-contain brightness-0 invert" />
                             </div>
-                            <span className="text-sm font-black text-slate-800 tracking-tight">taarib</span>
+                            <span className="text-sm font-black text-slate-800 tracking-tight">تعريب</span>
                         </Link>
                         <Link href="/" className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-blue-600 transition-colors">
                             <span>العودة للرئيسية</span>

@@ -36,21 +36,21 @@ export default function Login() {
                             <div className="bg-white/10 p-2 rounded-xl backdrop-blur-md border border-white/10">
                                 <img src="/images/logo.png" alt="Logo" className="h-8 w-8 object-contain brightness-0 invert" />
                             </div>
-                            <span className="font-black text-xl tracking-tight">taarib</span>
+                            <span className="font-black text-xl tracking-tight">تعريب</span>
                         </Link>
                     </div>
 
                     <div className="relative z-10 max-w-lg space-y-6">
                         <h2 className="text-5xl font-black leading-tight">
-                            مرحباً بك مجدداً في <span className="text-blue-400">مجتمع المعرفة</span>
+                            مرحباً بك مجدداً في <span className="text-blue-400">منصة تعريب</span>
                         </h2>
                         <p className="text-lg text-slate-400 font-medium leading-relaxed">
-                            ساهم معنا في إثراء المحتوى العربي وتوحيد المصطلحات التقنية. رحلتك نحو بناء معجم عربي حديث تبدأ هنا.
+                            أول محرك بحث ذكي مخصص لاستخراج وتوحيد المصطلحات التقنية، يعتمد منهجية قياس "الأكثر استعمالاً" من المصادر المعتمدة لبناء لغة عربية علمية حية.
                         </p>
                     </div>
 
                     <div className="relative z-10 flex items-center gap-4 text-sm text-slate-500 font-medium">
-                        <span>© 2026 taarib</span>
+                        <span>© 2026 تعريب</span>
                         <span className="w-1 h-1 rounded-full bg-slate-700" />
                         <span>جميع الحقوق محفوظة</span>
                     </div>

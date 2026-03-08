@@ -36,5 +36,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'zahra@munasiq.org',
             'password' => 'password', // Default password, should be changed after first login
         ]);
+
+        $this->call(SettingSeeder::class);
     }
 }
