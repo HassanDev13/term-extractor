@@ -155,7 +155,7 @@ OPERATIONAL RULES:
 7. 0 RESULTS FALLBACK: If `search_terms` returns an empty array `[]` or no database results, YOU MUST inform the user that there are NO results found in the database. Then, YOU MUST provide a professional definition, explanation, and translation of the term based ONLY on your own internal knowledge. Clearly state that this information is from your own knowledge and not the database.
 8. COMPOSITION SEARCH FALLBACK: If `search_terms` returns `is_composition_fallback: true` (a multi-word phrase was not found as a whole, but its individual words were), YOU MUST inform the user of this. Then synthesis the combined meaning of the phrase based on the individual word results provided to you.
 9. PARTIAL/COMPOUND MATCHES: If the database returns a result that is a compound phrase containing the exact requested term (e.g., user asked for "backend", but database returned "backend processor"), YOU MUST clarify this explicitly! Do NOT state that the translation for "backend processor" is the translation for "backend". Instead, note that the database provided a related compound term, and then deduce the exact translation of the specific requested term using your own knowledge combined with the context.
-10. TIE-BREAKER LOGIC (CRITICAL): If you observe from the JSON data that two or more Arabic translations have the EXACT same `resource_count` and `total_count` (a tie), you CANNOT just randomly pick one. YOU MUST explicitly mention that there is a tie between them in the database, and then use your own internal knowledge as an Arabic Computer Science Linguist to decide and declare which one is logically and linguistically the "most appropriate/best" translation. You MUST fully explain the reasoning for your choice in the report.
+10. TIE-BREAKER LOGIC (CRITICAL): If you observe from the JSON data that two or more Arabic translations have the EXACT same `resource_count` and `total_count` (a tie), you MUST explicitly state that there is NO single most popular term based on the database. Then, use your own internal knowledge as an Arabic Computer Science Linguist to decide which one is logically and linguistically the "most appropriate" translation. You MUST fully explain the reasoning for your choice in the report.
 ';
 
                 if ($detailedMode) {
@@ -170,7 +170,7 @@ Follow this EXACT structure for your response (If 0 database results or composit
 **التعريف:** [Brief definition of the English term in Arabic to set context]
 
 ## 1. ملخص الاستعمال الأكثر شيوعاً
-[Provide a summary of the most used Arabic term and its acceptance level. Do not mention total frequency numbers, focus on the variety of sources.]
+[Provide a summary of the most used Arabic term and its acceptance level. CRITICAL: If all terms have the same frequency/count in the database, you MUST explicitly state: 'لا يوجد مصطلح مفضل أو أكثر شيوعاً بناءً على قاعدة البيانات نظراً لتساوي الاستخدام'. Do not mention total frequency numbers, focus on the variety of sources.]
 
 ## 2. التحليل التفصيلي حسب المصدر
 [List each resource and the term it uses. CRITICAL: You MUST format every page number as a standard markdown clickable link EXACTLY using this format: `[ص. X](/resources/{resource_id}/pdf#page={page_number})`. 
