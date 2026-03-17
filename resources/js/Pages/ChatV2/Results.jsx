@@ -85,7 +85,7 @@ export default function Results({ q, initialChartData }) {
     const { chartData: extractedChartData, cleanText } = extractChartContent(result);
     // Use the backend-provided chart if available, otherwise fallback to extracted (if AI generated it)
     const resolvedChartData = initialChartData || extractedChartData;
-    const chartData = resolvedChartData?.data?.length > 0 ? resolvedChartData : null;
+    const chartData = false; // resolvedChartData?.data?.length > 0 ? resolvedChartData : null;
 
     useEffect(() => {
         if (q && initialSearchDone.current !== q) {
