@@ -362,6 +362,7 @@ export default function LandingSearchPage() {
                                 >
                                     <FileText className="h-4 w-4" />
                                     <span>تصفح الورقة المفاهيمية</span>
+                                    <span className="bg-white/20 text-white text-[10px] px-2 py-0.5 rounded-full font-bold mr-1">قريباً</span>
                                 </a>
                             </div>
                         </div>
